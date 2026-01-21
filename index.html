@@ -968,7 +968,6 @@ function followup_autoBackup(isManual = false) {
 }
 
 <script>
-
    
 function setSyncStatus(text, color) {
   const el = document.getElementById("syncStatus");
@@ -1052,7 +1051,7 @@ auth.onAuthStateChanged(user => {
   loadFromFirebase();
 });
 
-</script>
+
 
 document.addEventListener("DOMContentLoaded", () => {
   // Apply the layout (keeping 25/75 grid layout)
@@ -1068,8 +1067,6 @@ document.addEventListener("DOMContentLoaded", () => {
     dateInput.value = new Date().toISOString().split("T")[0];
   }
 });
-
-
 
 document.addEventListener("DOMContentLoaded", () => {
   const today = new Date().toISOString().split("T")[0];
