@@ -967,101 +967,64 @@ function followup_autoBackup(isManual = false) {
   followup_updateBackupUI();
 }
 
-</script>
-
+<script>
   // 🔹 Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCQzxsho8b9I2Pz8QJeLIXC7DdHXftEnNE",
+    authDomain: "reminder-multiuser.firebaseapp.com",
+    projectId: "reminder-multiuser",
+    storageBucket: "reminder-multiuser.firebasestorage.app",
+    messagingSenderId: "536887102416",
+    appId: "1:536887102416:web:fa2de3f8c5edc6b8a647d5"
+  };
 
-  apiKey: "AIzaSyCQzxsho8b9I2Pz8QJeLIXC7DdHXftEnNE",
-  authDomain: "reminder-multiuser.firebaseapp.com",
-  projectId: "reminder-multiuser",
-  storageBucket: "reminder-multiuser.firebasestorage.app",
-  messagingSenderId: "536887102416",
-  appId: "1:536887102416:web:fa2de3f8c5edc6b8a647d5"
-};
+  firebase.initializeApp(firebaseConfig);
 
-   
-function setSyncStatus(text, color) {
-  const el = document.getElementById("syncStatus");
-  if (!el) return;
-  el.innerText = "Sync: " + text;
-  el.style.background = color || "transparent";
-  el.style.padding = "3px 6px";
-  el.style.borderRadius = "6px";
-}
+  const auth = firebase.auth();
+  const db = firebase.firestore();
 
-async function saveToFirebase() {
-  try {
-    if (!currentUID) {
-      alert("User not logged in");
-      return;
-    }
+  let currentUID = null;
+  let followups = [];
 
-    if (!followups || !followups.length) {
-      alert("⚠️ कोई डेटा नहीं मिला जिसे सेव किया जा सके।");
-      return;
-    }
+  function setSyncStatus(text, color) {
+    const el = document.getElementById("syncStatus");
+    if (!el) return;
+    el.innerText = "Sync: " + text;
+    el.style.background = color || "transparent";
+    el.style.padding = "3px 6px";
+    el.style.borderRadius = "6px";
+  }
 
+  async function saveToFirebase() {
+    if (!currentUID) return;
     await db.collection("users")
       .doc(currentUID)
       .collection("followups")
       .doc("main")
-      .set({
-        data: followups,
-        updatedAt: Date.now()
-      });
-
+      .set({ data: followups, updatedAt: Date.now() });
     setSyncStatus("Online (saved)", "#dff0d8");
-    alert("✅ Data saved successfully!");
-  } catch (err) {
-    console.error("Save Error:", err);
-    setSyncStatus("Offline (save failed)", "#fff3cd");
-    alert("❌ Save failed: " + err.message);
   }
-}
 
-
-async function loadFromFirebase() {
-  try {
-    if (!currentUID) {
-      alert("User not logged in");
-      return;
-    }
-
+  async function loadFromFirebase() {
+    if (!currentUID) return;
     const doc = await db.collection("users")
       .doc(currentUID)
       .collection("followups")
       .doc("main")
       .get();
+    followups = doc.exists ? doc.data().data : [];
+    followup_renderTable();
+    setSyncStatus("Online (loaded)", "#d0ebff");
+  }
 
-    if (!doc.exists) {
-      alert("⚠️ Firebase पर कोई डेटा नहीं मिला।");
-      setSyncStatus("Online (no data)", "#fff");
+  auth.onAuthStateChanged(user => {
+    if (!user) {
+      location.href = "login.html";
       return;
     }
-
-    followups = doc.data().data || [];
-    followup_renderTable();
-
-    setSyncStatus("Online (loaded)", "#d0ebff");
-    alert("✅ Data loaded successfully!");
-  } catch (err) {
-    console.error("Load Error:", err);
-    setSyncStatus("Offline (load failed)", "#ffd6d6");
-    alert("❌ Load failed: " + err.message);
-  }
-}
-
-
-auth.onAuthStateChanged(user => {
-  if (!user) {
-    location.href = "login.html";
-    return;
-  }
-
-  currentUID = user.uid;
-  loadFromFirebase();
-});
-
+    currentUID = user.uid;
+    loadFromFirebase();
+  });
 </script>
 
 document.addEventListener("DOMContentLoaded", () => {
