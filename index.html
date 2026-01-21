@@ -967,7 +967,11 @@ function followup_autoBackup(isManual = false) {
   followup_updateBackupUI();
 }
 
-<script>
+</script>
+
+
+  
+ 
 
 
   // 🔹 Status UI Helper
@@ -1109,7 +1113,9 @@ document.addEventListener("DOMContentLoaded", () => {
     dateInput.value = new Date().toISOString().split("T")[0];
   }
 });
+</script>
 
+<script>
 document.addEventListener("DOMContentLoaded", () => {
   const today = new Date().toISOString().split("T")[0];
 document.querySelectorAll("input[type='date']:not(#followup-filterFrom):not(#followup-filterTo)")
