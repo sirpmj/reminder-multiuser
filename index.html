@@ -967,9 +967,9 @@ function followup_autoBackup(isManual = false) {
   followup_updateBackupUI();
 }
 
-<!-- page ka HTML yahan khatam -->
-
 <script>
+
+   
 function setSyncStatus(text, color) {
   const el = document.getElementById("syncStatus");
   if (!el) return;
@@ -980,43 +980,77 @@ function setSyncStatus(text, color) {
 }
 
 async function saveToFirebase() {
-  if (!currentUID) return;
+  try {
+    if (!currentUID) {
+      alert("User not logged in");
+      return;
+    }
 
-  await db.collection("users")
-    .doc(currentUID)
-    .collection("followups")
-    .doc("main")
-    .set({
-      data: followups,
-      updatedAt: Date.now()
-    });
+    if (!followups || !followups.length) {
+      alert("⚠️ कोई डेटा नहीं मिला जिसे सेव किया जा सके।");
+      return;
+    }
 
-  setSyncStatus("Online (saved)", "#dff0d8");
+    await db.collection("users")
+      .doc(currentUID)
+      .collection("followups")
+      .doc("main")
+      .set({
+        data: followups,
+        updatedAt: Date.now()
+      });
+
+    setSyncStatus("Online (saved)", "#dff0d8");
+    alert("✅ Data saved successfully!");
+  } catch (err) {
+    console.error("Save Error:", err);
+    setSyncStatus("Offline (save failed)", "#fff3cd");
+    alert("❌ Save failed: " + err.message);
+  }
 }
+
 
 async function loadFromFirebase() {
-  if (!currentUID) return;
+  try {
+    if (!currentUID) {
+      alert("User not logged in");
+      return;
+    }
 
-  const doc = await db.collection("users")
-    .doc(currentUID)
-    .collection("followups")
-    .doc("main")
-    .get();
+    const doc = await db.collection("users")
+      .doc(currentUID)
+      .collection("followups")
+      .doc("main")
+      .get();
 
-  followups = doc.exists ? doc.data().data : [];
-  followup_renderTable();
-  setSyncStatus("Online (loaded)", "#d0ebff");
+    if (!doc.exists) {
+      alert("⚠️ Firebase पर कोई डेटा नहीं मिला।");
+      setSyncStatus("Online (no data)", "#fff");
+      return;
+    }
+
+    followups = doc.data().data || [];
+    followup_renderTable();
+
+    setSyncStatus("Online (loaded)", "#d0ebff");
+    alert("✅ Data loaded successfully!");
+  } catch (err) {
+    console.error("Load Error:", err);
+    setSyncStatus("Offline (load failed)", "#ffd6d6");
+    alert("❌ Load failed: " + err.message);
+  }
 }
+
 
 auth.onAuthStateChanged(user => {
   if (!user) {
     location.href = "login.html";
     return;
   }
+
   currentUID = user.uid;
   loadFromFirebase();
 });
-</script>
 
 
 
