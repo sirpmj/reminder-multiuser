@@ -1,5 +1,6 @@
 
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -537,7 +538,7 @@ activateTab(lastTab);
 <!-- Reminder & Follow-Up script (scoped names) -->
 <script>
     // --- State & initial load ---
-    let followup_followups = JSON.parse(localStorage.getItem("followups") || "[]");
+    let followup_followups = [];
     let followup_isDark = localStorage.getItem("darkMode") === "true";
     let followup_editingId = null;
     const followup_predefinedTags = ["Important","Follow-Up","Urgent","Client A","Client B","Meeting","Call","Email"];
@@ -970,7 +971,6 @@ function followup_autoBackup(isManual = false) {
 
 
   // 🔹 Firebase Config
-  const firebaseConfig = {
 
   apiKey: "AIzaSyCQzxsho8b9I2Pz8QJeLIXC7DdHXftEnNE",
   authDomain: "reminder-multiuser.firebaseapp.com",
@@ -982,134 +982,87 @@ function followup_autoBackup(isManual = false) {
 
   
  
+function setSyncStatus(text, color) {
+  const el = document.getElementById("syncStatus");
+  if (!el) return;
+  el.innerText = "Sync: " + text;
+  el.style.background = color || "transparent";
+  el.style.padding = "3px 6px";
+  el.style.borderRadius = "6px";
+}
 
-  // 🔹 Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  const mainRef = ref(db, "data/main");
+async function saveToFirebase() {
+  try {
+    if (!currentUID) {
+      alert("User not logged in");
+      return;
+    }
 
-  // 🔹 Status UI Helper
-  function setSyncStatus(text, color) {
-    const el = document.getElementById("syncStatus");
-    if (!el) return;
-    el.innerText = "Sync: " + text;
-    el.style.background = color || "transparent";
-    el.style.padding = "3px 6px";
-    el.style.borderRadius = "6px";
+    if (!followups || !followups.length) {
+      alert("⚠️ कोई डेटा नहीं मिला जिसे सेव किया जा सके।");
+      return;
+    }
+
+    await db.collection("users")
+      .doc(currentUID)
+      .collection("followups")
+      .doc("main")
+      .set({
+        data: followups,
+        updatedAt: Date.now()
+      });
+
+    setSyncStatus("Online (saved)", "#dff0d8");
+    alert("✅ Data saved successfully!");
+  } catch (err) {
+    console.error("Save Error:", err);
+    setSyncStatus("Offline (save failed)", "#fff3cd");
+    alert("❌ Save failed: " + err.message);
   }
+}
 
-  // 🔹 Manual Save
-  window.saveToFirebase = async function () {
-    try {
-      const followups = JSON.parse(localStorage.getItem("followups") || "[]");
-      if (!followups.length) {
-        alert("⚠️ कोई डेटा नहीं मिला जिसे सेव किया जा सके।");
-        return;
-      }
-      await set(mainRef, { followups, updatedAt: Date.now() });
-      setSyncStatus("Online (saved)", "#dff0d8");
-      alert("✅ Data saved to Firebase successfully!");
-    } catch (err) {
-      console.error("Firebase Save Error:", err);
-      setSyncStatus("Offline (save failed)", "#fff3cd");
-      alert("❌ Save failed: " + err.message);
+
+async function loadFromFirebase() {
+  try {
+    if (!currentUID) {
+      alert("User not logged in");
+      return;
     }
-  };
 
-  // 🔹 Manual Load
-  window.loadFromFirebase = async function () {
-    try {
-      const snap = await get(mainRef);
-      if (!snap.exists()) {
-        alert("⚠️ Firebase पर कोई डेटा नहीं मिला।");
-        return;
-      }
-      const data = snap.val();
-      if (data.followups) {
-        localStorage.setItem("followups", JSON.stringify(data.followups));
-        setSyncStatus("Online (loaded)", "#d0ebff");
-        alert("✅ Data loaded — पेज reload होगा।");
-        setTimeout(() => location.reload(), 300);
-      } else {
-        alert("⚠️ Firebase डेटा फॉर्मेट गलत है।");
-      }
-    } catch (err) {
-      console.error("Firebase Load Error:", err);
-      setSyncStatus("Offline (load failed)", "#ffd6d6");
-      alert("❌ Load failed: " + err.message);
-    }
-  };
+    const doc = await db.collection("users")
+      .doc(currentUID)
+      .collection("followups")
+      .doc("main")
+      .get();
 
-  // 🔹 Real-Time Sync Listener
-  onValue(mainRef, (snapshot) => {
-    if (!snapshot.exists()) {
+    if (!doc.exists) {
+      alert("⚠️ Firebase पर कोई डेटा नहीं मिला।");
       setSyncStatus("Online (no data)", "#fff");
       return;
     }
-    const data = snapshot.val();
-    localStorage.setItem("followups", JSON.stringify(data.followups || []));
-    setSyncStatus("Online (synced)", "#dff0d8");
-    console.log("Real-time Data Sync:", data);
-  });
 
-  // 🔹 Auto Load on Page Open
-  (async () => {
-    try {
-      const snap = await get(mainRef);
-      if (snap.exists()) {
-        const data = snap.val();
-        console.log("Firebase Data Loaded:", data);
-        if (data.followups) {
-          localStorage.setItem("followups", JSON.stringify(data.followups));
+    followups = doc.data().data || [];
+    followup_renderTable();
 
-          document.addEventListener("DOMContentLoaded", () => {
-            if (typeof followup_renderTable === "function") {
-              followup_renderTable();
-            }
-          });
+    setSyncStatus("Online (loaded)", "#d0ebff");
+    alert("✅ Data loaded successfully!");
+  } catch (err) {
+    console.error("Load Error:", err);
+    setSyncStatus("Offline (load failed)", "#ffd6d6");
+    alert("❌ Load failed: " + err.message);
+  }
+}
 
-          setSyncStatus("☁️ Auto-loaded from Firebase", "#d0ebff");
-        }
-      } else {
-        console.log("No Firebase data found.");
-      }
-    } catch (err) {
-      console.error("Firebase load error:", err);
-    }
-  })();
 
-  // 🔹 Instant Firebase Save (Same Tab + Other Tabs)
-  let lastData = localStorage.getItem("followups") || "";
-
-  async function saveToFirebaseInstant() {
-    try {
-      const current = localStorage.getItem("followups") || "[]";
-      if (current !== lastData) {
-        const followups = JSON.parse(current);
-        await set(mainRef, { followups, updatedAt: Date.now() });
-        lastData = current;
-        setSyncStatus("Online (saved)", "#dff0d8");
-        console.log("✅ Instantly saved to Firebase");
-      }
-    } catch (err) {
-      console.warn("Instant save failed:", err);
-      setSyncStatus("Offline (save failed)", "#fff3cd");
-    }
+auth.onAuthStateChanged(user => {
+  if (!user) {
+    location.href = "login.html";
+    return;
   }
 
-  // ✅ Detect LocalStorage changes (cross-tab)
-  window.addEventListener("storage", saveToFirebaseInstant);
-
-  // ✅ Detect Same-Tab changes (override setItem)
-  const originalSetItem = localStorage.setItem;
-  localStorage.setItem = function (key, value) {
-    originalSetItem.apply(this, arguments);
-    if (key === "followups") saveToFirebaseInstant();
-  };
-
-  // ✅ One-time Sync on Load
-  saveToFirebaseInstant();
-
+  currentUID = user.uid;
+  loadFromFirebase();
+});
 
 
 
