@@ -1,0 +1,1144 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧭 Reminder</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config = { darkMode: 'class' };</script>
+<style>
+    /* Styles from Price Quote (scoped) */
+    .pq-body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 10px; }
+    .pq-container { display: flex; flex-wrap: wrap; gap: 10px; max-width: 960px; margin: auto; background: #fff; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .pq-left, .pq-right { flex: 1 1 300px; min-width: 300px; }
+    .pq-header { text-align: center; margin-bottom: 10px; }
+    .pq-header img { width: 40px; vertical-align: middle; }
+    .pq-header h1 { display: inline; font-size: 20px; margin-left: 8px; font-weight: bold; vertical-align: middle; }
+    .pq-website { text-align: center; font-size: 12px; margin-bottom: 15px; color: #333; }
+/* --- Price Quote Input Details: Premium UI --- */
+
+/* Base compact style */
+.pq-left label,
+.pq-left input,
+.pq-left select {
+    font-size: 14px;
+    padding-top: 1px;
+    padding-bottom: 2px;
+    transition: all 0.2s ease-in-out; /* smooth transitions */
+}
+
+/* Row styling */
+.pq-left .grid {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border-radius: 4px;
+    opacity: 0;
+    transform: translateY(5px);
+    animation: fadeIn 0.3s ease forwards;
+}
+@keyframes fadeIn {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Single line label + input --- */
+.pq-left .grid {
+  display: flex !important;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;                /* space between label and input */
+  padding: 4px 0;
+}
+
+/* label */
+.pq-left label {
+  flex: 0 0 200px;          /* fixed label width */
+  text-align: right;
+  padding-right: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* input / select */
+.pq-left input,
+.pq-left select {
+  flex: 0 0 180px;
+  max-width: 300px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* visual touches (optional) */
+.pq-left .grid:hover { background-color:#f9fafb; }
+.dark .pq-left .grid:hover { background-color:#374151; }
+
+.pq-left input:focus,
+.pq-left select:focus {
+  border-color:#3b82f6;
+  box-shadow:0 0 0 2px rgba(59,130,246,0.2);
+  outline:none;
+}
+
+.pq-left input::placeholder { font-size:11px; color:#9ca3af; }
+.pq-left input[type="number"] { text-align:right; }
+
+.pq-left .grid:nth-child(even) { background-color:#fafafa; }
+.dark .pq-left .grid:nth-child(even) { background-color:#2d3748; }
+
+.pq-left::before {
+  content:"Quote Details";
+  display:block;
+  background:#f3f4f6;
+  padding:4px 8px;
+  font-size:14px;
+  font-weight:bold;
+  border-radius:6px 6px 0 0;
+  margin-bottom:4px;
+}
+.dark .pq-left::before { background:#4b5563; }
+
+/* small screens – keep one line but adjust widths */
+@media (max-width:600px){
+  .pq-left label { flex:0 0 180px; font-size:14px; }
+  .pq-left input,
+  .pq-left select { max-width:180px; }
+}
+
+/* Plus fields (charges) */
+#pq-basic, #pq-freight, #pq-profit, #pq-other {
+    background-color: #f0fdf4;
+}
+.dark #pq-basic, 
+.dark #pq-freight, 
+.dark #pq-profit, 
+.dark #pq-other {
+    background-color: #064e3b;
+}
+
+/* Minus fields (discounts) */
+#pq-cd, #pq-otherDiscount {
+    background-color: #fef2f2;
+}
+.dark #pq-cd, 
+.dark #pq-otherDiscount {
+    background-color: #7f1d1d;
+}
+
+/* Changed value highlight */
+.pq-left input.changed {
+    animation: highlight 0.8s ease;
+}
+@keyframes highlight {
+    from { background-color: #fffbeb; }
+    to { background-color: inherit; }
+}
+
+/* Sticky action bar in right section */
+.pq-right .flex.flex-wrap {
+    position: sticky;
+    top: 0;
+    background: inherit;
+    z-index: 10;
+    padding: 4px 0;
+}
+
+/* Required field markers (example: Customer Name & Product) */
+#pq-customerName:required,
+#pq-product:required {
+    border-left: 3px solid #ef4444; /* red marker */
+}
+
+/* Hint text below focused field */
+.pq-left input:focus::after,
+.pq-left select:focus::after {
+    content: attr(placeholder);
+    display: block;
+    font-size: 10px;
+    color: #6b7280;
+    margin-top: 2px;
+}
+
+body {
+  min-width: 1024px;
+  overflow-x: auto;
+}
+
+/* Make desktop layout auto-fit smaller screens */
+html {
+  transform-origin: top center; /* keep scaling centered */
+  transform: scale(min(1, calc(100vw / 1024)));
+  width: 1024px;
+  margin: 0 auto;               /* ✅ center the whole layout */
+  display: flex;
+  justify-content: center;
+  overflow-x: hidden;
+  background: #f3f4f6;          /* optional subtle background */
+}
+
+body {
+  -webkit-text-size-adjust: 100%;
+}
+    /* 👉 Input Details: grid lines */
+    .pq-left h2 { margin: 0 0 8px 0; font-size: 14px; font-weight: 700; }
+    .pq-gridwrap { border: 1px solid #e5e7eb; border-radius: 8px; background: #fafafa; padding: 8px; }
+    .pq-row { display: grid; grid-template-columns: 160px 1fr; align-items: center; gap: 8px; padding: 6px 4px; border-bottom: 1px dashed #e5e7eb; }
+    .pq-row:last-child { border-bottom: none; }
+    .pq-row label { font-size: 14px; text-align: right; padding-right: 8px; border-right: 1px solid #e5e7eb; color: #111827; }
+    .pq-row input, .pq-row select { padding: 6px 8px; font-size: 13px; border: 1px solid #d1d5db; border-radius: 6px; background: #ffffff; }
+    .pq-row input[readonly] { background: #f3f4f6; text-align: right; color: #374151; }
+
+    .pq-pre { white-space: pre-wrap; background: #fdfdfd; padding: 12px; font-family: 'Courier New', monospace; font-size: 12px; border: 1px solid #e5e7eb; margin-top: 10px; line-height: 1.4; min-height: 280px; border-radius: 8px; }
+    .pq-footer { text-align: center; font-size: 11px; color: #777; margin-top: 20px; }
+    #pq-tooltip-msg { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 8px 14px; border-radius: 5px; font-size: 13px; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 1000; }
+    #pq-tooltip-msg.show { opacity: 1; pointer-events: auto; }
+
+    /* Styles from Reminder (kept) */
+    table td, table th { padding: 0.25rem 0.5rem; font-size: 0.85rem; white-space: nowrap; max-width: 130px; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
+    #followup-addForm input, #followup-addForm select, #followup-addForm textarea, #followup-addForm button { font-size: 0.85rem; padding: 0.4rem 0.6rem; }
+    #followup-tagDropdown li { font-size: 0.85rem; }
+    .priority-high { color: #dc2626; font-weight: bold; }
+    .priority-medium { color: #ea580c; font-weight: bold; }
+    .priority-low { color: #16a34a; font-weight: bold; }
+    /* Larger tap targets for mobile card actions */
+    #followup-mobileCards button, #followup-mobileCards a { padding: 6px 8px; border-radius: 6px; }
+
+    /* Tab styles */
+    .tabs { display:flex; gap:8px; max-width:1100px; margin:10px auto; }
+    .tab-btn { padding:8px 12px; border-radius:6px; cursor:pointer; border:1px solid #ddd; background:#fff; font-weight:600; }
+    .tab-btn.active { background:#1f2937; color:#fff; border-color:#111827; }
+    .tab-content { max-width:1100px; margin:0 auto 40px; }
+    .hidden-tab { display:none; }
+
+    /* 👉 Quotation buttons: unified look (no Tailwind @apply so it works without build step) */
+    .pq-btn { display:inline-flex; align-items:center; justify-content:center; border-radius: 0.75rem; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.1); transition: all .2s; }
+    .pq-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+    /* Extra: dark mode body text color for better contrast */
+    body.dark-mode { color: #e5e7eb; }
+    .dark .pq-body { background: #1f2937; color: #e5e7eb; }
+    .dark .pq-container { background: #374151; }
+    .dark .pq-gridwrap { background: #4b5563; border-color: #6b7280; }
+    .dark .pq-pre { background: #111827; border-color: #374151; color: #e5e7eb; }
+    .dark .pq-row label { color: #e5e7eb; border-color: #6b7280; }
+    .dark .pq-row input, .dark .pq-row select { background: #1f2937; border-color: #4b5563; color: #e5e7eb; }
+    .dark .pq-row input[readonly] { background: #374151; color: #e5e7eb; }
+    .dark .pq-footer { color: #9ca3af; }
+  
+/* --- Injected: smooth dark/light transitions --- */
+html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* --- Injected: sticky summary bar --- */
+#followup-summaryBar { position: sticky; top: 0; background: white; z-index: 10; padding: 0.25rem; }
+.dark #followup-summaryBar { background: #1f2937; }
+</style>
+
+
+<!-- firebase.js -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCQzxsho8b9I2Pz8QJeLIXC7DdHXftEnNE",
+  authDomain: "reminder-multiuser.firebaseapp.com",
+  projectId: "reminder-multiuser",
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db   = firebase.firestore();
+</script>
+
+
+
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+<!-- GLOBAL TOOLBAR -->
+<header class="max-w-6xl mx-auto px-3 pt-3">
+<div class="flex items-center justify-between flex-wrap gap-2 bg-white dark:bg-gray-800 rounded-xl shadow p-3">
+<div class="flex items-center gap-2 text-sm">
+<h1 class="text-xl font-bold text-indigo-600 dark:text-indigo-400">🧭 Personal follow up </h1>
+<span class="text-xs text-gray-500"></span>
+</div>
+<div class="flex items-center gap-2 flex-wrap text-sm">
+<label class="flex items-center gap-1">
+<input id="followup-enableAlerts" type="checkbox"/> Enable Alerts
+        </label>
+<button class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700" onclick="followup_exportCSV()">⬇️ Export CSV</button>
+<button class="bg-yellow-500 text-white px-3 py-1 rounded" onclick="followup_downloadBackup()">📦 Backup</button>
+
+<input accept=".json" class="hidden" id="followup-uploadBackup" onchange="followup_uploadBackup(event)" type="file"/>
+<button class="bg-blue-500 text-white px-3 py-1 rounded" onclick="document.getElementById('followup-uploadBackup').click()">📤 Restore</button>
+<button id="followup-layout-btn"
+        class="bg-purple-600 text-white px-3 py-1 rounded"
+        onclick="followup_toggleLayout()">↔ Layout: 25/75</button>
+
+<button class="bg-gray-800 text-white px-3 py-1 rounded" onclick="followup_toggleDarkMode()">🌓 Dark Mode</button>
+</div>
+</div>
+</header>
+<div class="tabs">
+
+<button class="tab-btn active" id="tab-followup-btn">📋 Reminder &amp; Follow-Up</button>
+<button class="tab-btn" id="tab-quote-btn">📋 Price Quote</button>
+
+<!-- Firebase Controls -->
+<div class="flex gap-2 items-center text-sm mt-2">
+<button onclick="followup_saveData()">☁️ Save Online</button>
+<button onclick="loadFollowups()">⬇️ Load Online</button>
+
+  <div id="syncStatus" class="text-xs text-gray-500">Sync: Local</div>
+</div>
+
+</div>
+<div class="tab-content" id="tab-followup">
+<!-- Reminder & Follow-Up original content (IDs prefixed with followup-) -->
+<div id="followup-layout" class="max-w-6xl mx-auto p-3 grid grid-cols-[25%_75%] gap-2">
+<!-- Form -->
+<form class="grid grid-cols-4 gap-3 bg-white dark:bg-gray-800 p-4 rounded-xl shadow m-0" id="followup-addForm">
+
+  <!-- Row 1 -->
+  <input class="border rounded w-full m-0" id="followup-name" placeholder="Name" required type="text"/>
+  <input class="border rounded w-full m-0" id="followup-phone" placeholder="Phone (optional) — e.g. +919876543210 or 9876543210" type="tel"/>
+  <input class="border rounded w-full m-0" id="followup-date" required type="date"/>
+  <select class="border rounded w-full m-0" id="followup-status">
+    <option value="Pending">Pending</option>
+    <option value="Completed">Completed</option>
+  </select>
+
+  <!-- Row 2 -->
+  <div class="relative col-span-2 m-0">
+    <input autocomplete="off" class="border rounded w-full pr-8 h-12" id="followup-tags" placeholder="Tags / Linked Quote" type="text"/>
+    <button class="absolute right-1 top-1/2 -translate-y-1/2 bg-indigo-600 text-white rounded px-2 py-1 text-xs hover:bg-indigo-700" id="followup-toggleTagDropdown" type="button">▼</button>
+    <ul class="absolute bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded max-h-32 overflow-auto w-full z-10 hidden" id="followup-tagDropdown"></ul>
+  </div>
+
+  <select class="border rounded w-full m-0" id="followup-priority">
+    <option value="High">High</option>
+    <option value="Medium">Medium</option>
+    <option value="Low">Low</option>
+  </select>
+
+  <label class="flex items-center gap-2 m-0">
+    <input checked id="followup-autoSnooze" type="checkbox"/> Auto-snooze (recreate 7 days later when marked completed)
+  </label>
+
+  <!-- Notes (full width) -->
+  <textarea class="border rounded w-full resize-none col-span-4 m-0" id="followup-note" placeholder="Add a note..."></textarea>
+
+  <!-- Buttons (full width) -->
+  <div class="flex gap-2 col-span-4 m-0">
+    <button class="flex-1 bg-indigo-600 text-white font-semibold py-2 rounded hover:bg-indigo-700" type="submit">➕ Add Follow-Up</button>
+    <button class="bg-gray-300 dark:bg-gray-700 px-3 rounded" onclick="followup_clearForm()" type="button">Clear</button>
+  </div>
+</form>
+<!-- Right section -->
+<section class="flex flex-col gap-2">
+<div class="flex flex-wrap gap-2 items-center text-sm">
+<input class="border rounded px-3 py-1 flex-grow min-w-[140px]" id="followup-filterName" oninput="followup_renderTable()" placeholder="Search by name..." type="text"/>
+<select class="border rounded px-2 py-1 max-w-[150px]" id="followup-filterStatus" onchange="followup_renderTable()">
+<option value="">All Status</option>
+<option value="Pending">Pending</option>
+<option value="Completed">Completed</option>
+</select>
+<input class="border rounded px-2 py-1 max-w-[140px]" id="followup-filterFrom" onchange="followup_renderTable()" type="date"/>
+<input class="border rounded px-2 py-1 max-w-[140px]" id="followup-filterTo" onchange="followup_renderTable()" type="date"/>
+<select class="border rounded px-2 py-1 max-w-[150px]" id="followup-sortBy" onchange="followup_renderTable()">
+<option value="date">Sort by Date</option>
+<option value="name">Sort by Name</option>
+<option value="priority">Sort by Priority</option>
+</select>
+<button class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs" onclick="followup_filterOverdue()">Show Overdue</button>
+</div>
+<div class="font-semibold text-xs text-gray-700 dark:text-gray-300 mt-1" id="followup-summaryBar"></div>
+<div class="overflow-x-auto bg-white dark:bg-gray-800 shadow rounded-xl mt-1 flex-grow min-h-[150px]">
+<table class="w-full table-auto text-left table">
+
+<thead class="bg-gray-50 dark:bg-gray-700 text-xs">
+<tr>
+<th class="p-1">⭐</th>
+<th class="p-1 max-w-[140px]">Name</th>
+<th class="p-1">Phone</th>
+<th class="p-1">Date</th>
+<th class="p-1 max-w-[140px]">Note</th>
+<th class="p-1 max-w-[100px]">Tags</th>
+<th class="p-1">Status</th>
+<th class="p-1">Priority</th>
+<th class="p-1">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y" id="followup-followupBody"></tbody>
+</table>
+</div>
+<div class="md:hidden flex flex-col gap-2 mt-2" id="followup-mobileCards"></div>
+</section>
+</div>
+</div>
+
+<div class="tab-content hidden-tab" id="tab-quote">
+<div class="max-w-6xl mx-auto p-0 grid grid-cols-[40%_60%] gap-3">
+<!-- Left: Input Details (keep .pq-left for JS) -->
+<section class="pq-left bg-white dark:bg-gray-800 p-0 rounded-xl shadow">
+<div>
+
+<div class="grid grid-cols-3 gap-2 py-1 items-center">
+  <label class="col-span-1 text-right pr-2 text-sm" for="pq-date">Date</label>
+  <input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700"
+         id="pq-date"
+         type="date">
+</div>
+
+<div class="grid grid-cols-3 gap-2 py-1 items-center">
+<label class="col-span-1 text-right pr-2 text-sm" for="pq-customerName">Customer Name</label>
+<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-customerName" placeholder="Enter customer Name" type="text"/>
+
+</div>
+<div class="grid grid-cols-3 gap-2 py-1 items-center">
+<label class="col-span-1 text-right pr-2 text-sm" for="pq-product">Product</label>
+<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-product" type="text" value="Caustic Soda Flakes"/>
+</div>
+<div class="grid grid-cols-3 gap-2 py-1 items-center">
+<label class="col-span-1 text-right pr-2 text-sm" for="pq-quantity">Quantity (Mt)</label>
+<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-quantity" type="number" value="10"/>
+</div>
+<div class="grid grid-cols-3 gap-2 py-1 items-center">
+<label class="col-span-1 text-right pr-2 text-sm" for="pq-make">Make</label>
+<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-make" type="text" value="DCM"/>
+</div>
+<div class="grid grid-cols-3 gap-2 py-1 items-center">
+<label class="col-span-1 text-right pr-2 text-sm" for="pq-basic">Basic + (₹)</label>
+<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-basic" type="number" value="43000"/>
+</div>
+<div class="grid grid-cols-3 gap-2 py-1 items-center">
+<label class="col-span-1 text-right pr-2 text-sm" for="pq-freight">Freight + (₹)</label>
+<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-freight" type="number" value="1000"/>
+</div>
+<div class="grid grid-cols-3 gap-2 py-1 items-center">
+<label class="col-span-1 text-right pr-2 text-sm" for="pq-profit">Profit + (₹)</label>
+<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-profit" type="number" value="500"/>
+</div>
+<div class="grid grid-cols-3 gap-2 py-1 items-center">
+<label class="col-span-1 text-right pr-2 text-sm" for="pq-other">Other Charges + (₹)</label>
+<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-other" type="number" value="0"/>
+</div>
+<div class="grid grid-cols-3 gap-2 py-1 items-center">
+<label class="col-span-1 text-right pr-2 text-sm" for="pq-cd">CD – (₹)</label>
+<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-cd" type="number" value="0"/>
+</div>
+<div class="grid grid-cols-3 gap-2 py-1 items-center">
+<label class="col-span-1 text-right pr-2 text-sm" for="pq-otherDiscount">Other Discount – (₹)</label>
+<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-otherDiscount" type="number" value="0"/>
+
+</div>
+<div class="grid grid-cols-3 gap-2 py-1 items-center">
+<label class="col-span-1 text-right pr-2 text-sm" for="pq-paymentTerms">Payment</label>
+<select class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-paymentTerms" onchange="pq_updateCreditPeriod()">
+<option value="Advance">Advance</option>
+<option value="Immediate">Immediate</option>
+<option selected="" value="Days">Days</option>
+</select>
+</div>
+
+<!-- 🆕 Delivery Field (Editable Dropdown) -->
+<div class="grid grid-cols-3 gap-2 py-1 items-center">
+  <label class="col-span-1 text-right pr-2 text-sm" for="pq-delivery">Delivery</label>
+  <input
+    class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700"
+    id="pq-delivery"
+    list="deliveryOptions"
+    type="text"
+    placeholder="Select or type delivery location"
+    value="Ex Vapi"
+  />
+</div>
+
+<!-- Dropdown list (kept outside the grid) -->
+<datalist id="deliveryOptions">
+  <option value="Ex Vapi"></option>
+  <option value="Ex Factory"></option>
+  <option value="Delivered"></option>
+    <option value="Ex Jhagdia"></option>
+<option value="Ex Dahej"></option>
+  <option value="Ex Vilayat"></option>
+</datalist>
+
+<div class="grid grid-cols-3 gap-2 py-1 items-center">
+<label class="col-span-1 text-right pr-2 text-sm" for="pq-creditDays">Credit Days</label>
+<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-creditDays" type="number" value="0"/>
+</div>
+<div class="grid grid-cols-3 gap-2 py-1 items-center">
+<label class="col-span-1 text-right pr-2 text-sm" for="pq-interestRate">Interest (%)</label>
+<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-interestRate" type="number" value="1"/>
+</div>
+<div class="grid grid-cols-3 gap-2 py-1 items-center">
+<label class="col-span-1 text-right pr-2 text-sm" for="pq-actualRateDisplay">Actual Rate (₹/kg)</label>
+<input class="col-span-2 border rounded w-full px-3 py-1 bg-gray-100 dark:bg-gray-700 bg-white" id="pq-actualRateDisplay" placeholder="Actual Rate (₹/kg)" readonly="" type="text"/>
+</div>
+</div>
+</section>
+<!-- Right: Output (give wrapper class pq-right for consistency, but Tailwind handles styling) -->
+<section class="pq-right bg-white dark:bg-gray-800 p-4 rounded-xl shadow flex flex-col gap-2">
+<h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200">Quotation Preview</h3>
+<div class="flex flex-wrap gap-2 mb-2">
+<button class="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700" onclick="pq_copyQuote()">📋 Copy</button>
+<button class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700" onclick="pq_openWhatsApp()">🟢 WhatsApp</button>
+<button class="bg-sky-600 text-white px-3 py-1 rounded hover:bg-sky-700" onclick="pq_shareViaEmail()">✉️ Share via Email</button>
+
+
+</div>
+<pre class="border rounded p-3 bg-gray-50 dark:bg-gray-900 text-xs min-h-[350px]" id="pq-output">Quotation will appear here...</pre>
+</section>
+</div>
+<!-- Tooltip element required by pq_showTooltip() -->
+<div class="text-xs" id="pq-tooltip-msg"></div>
+</div>
+<script>
+    // Tab switching
+    
+const tabFollowBtn = document.getElementById('tab-followup-btn');
+const tabQuoteBtn  = document.getElementById('tab-quote-btn');
+const tabFollow    = document.getElementById('tab-followup');
+const tabQuote     = document.getElementById('tab-quote');
+
+function activateTab(which) {
+  const show = which === 'followup' ? tabFollow : tabQuote;
+  const hide = which === 'followup' ? tabQuote : tabFollow;
+
+  if (which === 'followup') {
+    tabFollowBtn.classList.add('active');
+    tabQuoteBtn.classList.remove('active');
+  } else {
+    tabQuoteBtn.classList.add('active');
+    tabFollowBtn.classList.remove('active');
+  }
+
+  // Show selected with fade-in
+  show.classList.remove('hidden-tab');
+  show.style.opacity = 0;
+  void show.offsetWidth;
+  show.style.opacity = 1;
+
+  // Hide the other
+  hide.classList.add('hidden-tab');
+
+  localStorage.setItem('activeTab', which);
+}
+
+tabFollowBtn.addEventListener('click', () => activateTab('followup'));
+tabQuoteBtn.addEventListener('click', () => activateTab('quote'));
+
+const lastTab = localStorage.getItem('activeTab') || 'followup';
+activateTab(lastTab);
+</script>
+<!-- Reminder & Follow-Up script (scoped names) -->
+<script>
+    // --- State & initial load ---
+    let followup_followups = JSON.parse(localStorage.getItem("followups") || "[]");
+    let followup_isDark = localStorage.getItem("darkMode") === "true";
+    let followup_editingId = null;
+    const followup_predefinedTags = ["Important","Follow-Up","Urgent","Client A","Client B","Meeting","Call","Email"];
+    const followup_tagsInput = document.getElementById("followup-tags");
+    const followup_tagDropdown = document.getElementById("followup-tagDropdown");
+    const followup_toggleBtn = document.getElementById("followup-toggleTagDropdown");
+
+    function followup_formatDate(dateStr) {
+      if (!dateStr) return "";
+      const [y, m, d] = dateStr.split("-");
+      return `${d}-${m}-${y}`;
+    }
+    function followup_relativeDays(dateStr) {
+      const today = new Date(); today.setHours(0,0,0,0);
+      const t = new Date(dateStr); t.setHours(0,0,0,0);
+      const diff = Math.round((t - today) / (1000*60*60*24));
+      if (diff === 0) return "(Today)";
+      if (diff > 0) return `(in ${diff} days)`;
+      return `(${Math.abs(diff)} days ago)`;
+    }
+function followup_cleanPhoneDigits(raw = "") {
+  if (!raw) return { forTel: "", forWA: "" };
+  let digits = raw.replace(/\D+/g, "");
+  if (digits.length === 10) digits = "91" + digits;
+  else if (digits.startsWith("0") && digits.length === 11) digits = "91" + digits.slice(1);
+  else if (digits.startsWith("+91")) digits = digits.slice(1);
+  return { forTel: "+" + digits, forWA: digits };
+}
+
+    function followup_escapeHtml(str = "") {
+      return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("followup-filterStatus").value = "Pending";
+      if (followup_isDark) { document.documentElement.classList.add("dark"); document.body.classList.add("dark-mode"); }
+      const savedSort = localStorage.getItem("sortBy");
+      if (savedSort) document.getElementById("followup-sortBy").value = savedSort;
+      if (document.getElementById("followup-enableAlerts").checked && "Notification" in window && Notification.permission !== "granted") {
+        Notification.requestPermission();
+      }
+      followup_renderTable();
+    });
+
+
+let currentUID = null;   // 👈 यहाँ user की पहचान store होगी
+
+auth.onAuthStateChanged(user => {
+
+  // ❌ अगर user login नहीं है
+  if (!user) {
+    alert("Please login first");
+    window.location.href = "login.html";
+    return;
+  }
+
+  // ✅ अगर user login है
+  currentUID = user.uid;   // 🔑 यही सबसे IMPORTANT line है
+
+  console.log("Logged in UID:", currentUID);
+
+  // 👉 अब इसी UID का data load करेंगे
+  loadFollowups();
+});
+
+
+
+    document.getElementById("followup-addForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("followup-name").value.trim();
+      const phone = document.getElementById("followup-phone").value.trim();
+      const date = document.getElementById("followup-date").value;
+      const note = document.getElementById("followup-note").value.trim();
+      const tags = document.getElementById("followup-tags").value.trim();
+      const status = document.getElementById("followup-status").value;
+      const priority = document.getElementById("followup-priority").value;
+      const autoSnooze = document.getElementById("followup-autoSnooze").checked;
+      if (!name || !date) return alert("Name and date required!");
+
+      const data = { id: followup_editingId || Date.now(), name, phone, date, note, tags, status, priority, autoSnooze, starred: followup_editingId ? followup_followups.find(f => f.id === followup_editingId)?.starred || false : false };
+
+      if (followup_editingId) {
+        const idx = followup_followups.findIndex(f => f.id === followup_editingId);
+        if (idx !== -1) followup_followups[idx] = data;
+      } else { followup_followups.push(data); }
+
+      followup_editingId = null;
+      e.target.reset();
+      followup_saveData();
+      followup_renderTable();
+    });
+
+    function followup_clearForm() { followup_editingId = null; document.getElementById("followup-addForm").reset(); }
+    function followup_saveData() {
+
+  if (!currentUID) return;
+
+  db.collection("users")
+    .doc(currentUID)
+    .collection("followups")
+    .doc("main")
+    .set({
+      data: followup_followups,
+      updatedAt: Date.now()
+    });
+}
+
+
+function loadFollowups() {
+
+  if (!currentUID) return;
+
+  db.collection("users")
+    .doc(currentUID)
+    .collection("followups")
+    .doc("main")
+    .get()
+    .then(doc => {
+      followup_followups = doc.exists ? doc.data().data : [];
+      followup_renderTable();
+    });
+}
+
+
+    function followup_renderTable() {
+      const tbody = document.getElementById("followup-followupBody");
+      const mobile = document.getElementById("followup-mobileCards");
+      tbody.innerHTML = ""; mobile.innerHTML = "";
+      const nameFilter = document.getElementById("followup-filterName").value.toLowerCase();
+      const statusFilter = document.getElementById("followup-filterStatus").value;
+      const from = document.getElementById("followup-filterFrom").value;
+      const to = document.getElementById("followup-filterTo").value;
+      const sort = document.getElementById("followup-sortBy").value;
+      localStorage.setItem("sortBy", sort);
+      const today = new Date(); today.setHours(0,0,0,0);
+      let overdue = 0, todayCount = 0, upcoming = 0;
+
+      const filtered = followup_followups
+        .filter(f => (!nameFilter || f.name.toLowerCase().includes(nameFilter)))
+        .filter(f => (!statusFilter || f.status === statusFilter))
+        .filter(f => (!from || new Date(f.date) >= new Date(from)))
+        .filter(f => (!to || new Date(f.date) <= new Date(to)))
+        .sort((a,b) => { if (sort === "name") return a.name.localeCompare(b.name); if (sort === "priority") return ["High","Medium","Low"].indexOf(a.priority) - ["High","Medium","Low"].indexOf(b.priority); return new Date(b.date) - new Date(a.date); });
+
+      filtered.forEach(f => {
+        const taskDate = new Date(f.date); taskDate.setHours(0,0,0,0);
+        const isOverdue = f.status === "Pending" && taskDate < today;
+        const isToday = f.status === "Pending" && taskDate.getTime() === today.getTime();
+        if (isOverdue) overdue++; else if (isToday) todayCount++; else if (f.status === "Pending") upcoming++;
+        const priorityClass = f.priority === "High" ? "priority-high" : f.priority === "Medium" ? "priority-medium" : "priority-low";
+        const badge = isOverdue ? "🟥" : isToday ? "🟨" : "🟩";
+        const phoneClean = followup_cleanPhoneDigits(f.phone || "");
+        const telHref = phoneClean.forTel ? `tel:${phoneClean.forTel}` : "";
+// 📞 Clean number & build WhatsApp message
+// Build WhatsApp text
+let msg = "📅 *Follow-Up Reminder*\n\n";
+msg += "👤 Name: " + f.name + "\n";
+msg += "🗓️ Date: " + followup_formatDate(f.date) + "\n";
+msg += "📋 Status: " + f.status + "\n";
+msg += "📝 Note: " + (f.note || "—") + "\n\n";
+msg += "From Suresh B Prajapati";
+
+// Encode whole message once
+const encoded = encodeURIComponent(msg);
+
+// Full link
+const waHref = "https://api.whatsapp.com/send?phone=" + phoneClean.forWA + "&text=" + encoded;
+
+
+        tbody.innerHTML += `\
+          <tr class="${isOverdue ? 'bg-red-50 dark:bg-red-900' : isToday ? 'bg-yellow-50 dark:bg-yellow-800' : ''}">\
+            <td class="p-1 text-center cursor-pointer" onclick="followup_toggleStar(${f.id})" title="Toggle Star">${f.starred ? "⭐" : "☆"}</td>\
+            <td class="p-1 truncate" title="${followup_escapeHtml(f.name)}">${followup_escapeHtml(f.name)}</td>\
+            <td class="p-1">${telHref ? `<a href="${telHref}" title="Call ${followup_escapeHtml(f.phone)}">${followup_escapeHtml(f.phone || '')}</a>` : `<span class=\"text-gray-400\">—</span>`} ${phoneClean.forWA ? `<a href="${waHref}" target="_blank" rel="noopener" class="ml-2" title="WhatsApp ${followup_escapeHtml(f.phone)}">💬</a>` : ''}</td>\
+            <td class="p-1">${badge} ${followup_formatDate(f.date)} <span class="text-xs text-gray-500">${followup_relativeDays(f.date)}</span></td>\
+            <td class="p-1 truncate" title="${followup_escapeHtml(f.note)}">${followup_escapeHtml(f.note)}</td>\
+            <td class="p-1 truncate" title="${followup_escapeHtml(f.tags)}">${followup_escapeHtml(f.tags)}</td>\
+            <td class="p-1">${f.status}</td>\
+            <td class="p-1 ${priorityClass}">${f.priority}</td>\
+            <td class="p-1 space-x-1 text-center">\
+              <button onclick="followup_editFollowUp(${f.id})" class="text-blue-600" title="Edit">✏️</button>\
+              <button onclick="followup_deleteFollowUp(${f.id})" class="text-red-600" title="Delete">🗑️</button>\
+              <button onclick="followup_toggleStatus(${f.id})" class="text-green-600" title="Toggle Status">${f.status === "Pending" ? "✅" : "↩️"}</button>\
+              <a href="${waHref}" target="_blank" rel="noopener" class="text-green-700" title="Send WhatsApp">📱</a>\
+            </td>\
+          </tr>\
+        `;
+
+        mobile.innerHTML += `\
+          <div class="p-2 rounded border ${isOverdue ? 'border-red-300' : isToday ? 'border-yellow-300' : 'border-gray-200'} text-xs">\
+            <div class="flex justify-between items-center font-semibold">${followup_escapeHtml(f.name)}\
+              <span onclick="followup_toggleStar(${f.id})" class="cursor-pointer">${f.starred ? "⭐" : "☆"}</span>\
+            </div>\
+            <div class="text-xs mb-1">${badge} ${followup_formatDate(f.date)} ${followup_relativeDays(f.date)}</div>\
+            <div class="text-xs mb-1">${telHref ? `<a href="${telHref}" class="block" title="Call">${followup_escapeHtml(f.phone)}</a>` : `<span class=\"text-gray-400\">No phone</span>`} ${phoneClean.forWA ? `<a href="${waHref}" target="_blank" rel="noopener" class="inline-block ml-1">💬 WhatsApp</a>` : ''}</div>\
+            <div class="mt-1 truncate" title="${followup_escapeHtml(f.note)}">${followup_escapeHtml(f.note)}</div>\
+            <div class="text-xs text-gray-500 truncate" title="${followup_escapeHtml(f.tags)}">${followup_escapeHtml(f.tags)}</div>\
+            <div class="flex gap-2 mt-2 flex-wrap">\
+              <button onclick="followup_editFollowUp(${f.id})" class="text-blue-600 text-xs" title="Edit">✏️</button>\
+              <button onclick="followup_deleteFollowUp(${f.id})" class="text-red-600 text-xs" title="Delete">🗑️</button>\
+              <button onclick="followup_toggleStatus(${f.id})" class="text-green-600 text-xs" title="Toggle Status">${f.status === "Pending" ? "✅" : "↩️"}</button>\
+              <a href="${waHref}" target="_blank" rel="noopener" class="text-green-700 text-xs" title="Send WhatsApp">📱</a>\
+            </div>\
+          </div>\
+        `;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center p-4 text-gray-500">No follow-ups found.</td></tr>`;
+      }
+
+      document.getElementById("followup-summaryBar").innerText = `🔴 Overdue: ${overdue} | 🟡 Today: ${todayCount} | 🟢 Upcoming: ${upcoming}`;
+    }
+
+    function followup_toggleStar(id) { const f = followup_followups.find(x => x.id === id); if (!f) return; f.starred = !f.starred; followup_saveData(); followup_renderTable(); }
+    function followup_deleteFollowUp(id) { if (!confirm("Delete this follow-up?")) return; followup_followups = followup_followups.filter(f => f.id !== id); followup_saveData(); followup_renderTable(); }
+    function followup_editFollowUp(id) { const f = followup_followups.find(x => x.id === id); if (!f) return; followup_editingId = id; document.getElementById("followup-name").value = f.name; document.getElementById("followup-phone").value = f.phone || ""; document.getElementById("followup-date").value = f.date; document.getElementById("followup-note").value = f.note || ""; document.getElementById("followup-tags").value = f.tags || ""; document.getElementById("followup-status").value = f.status; document.getElementById("followup-priority").value = f.priority; document.getElementById("followup-autoSnooze").checked = !!f.autoSnooze; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    function followup_toggleStatus(id) { const f = followup_followups.find(x => x.id === id); if (!f) return; if (f.status === "Pending") { f.status = "Completed"; if (f.autoSnooze) { const newDate = new Date(f.date); newDate.setDate(newDate.getDate() + 7); followup_followups.push({ id: Date.now() + Math.floor(Math.random()*1000), name: f.name, phone: f.phone || "", date: newDate.toISOString().split("T")[0], note: f.note, tags: f.tags, status: "Pending", priority: f.priority, autoSnooze: f.autoSnooze, starred: f.starred }); } } else { f.status = "Pending"; } followup_saveData(); followup_renderTable(); }
+
+    function followup_toggleDarkMode() { followup_isDark = !followup_isDark; localStorage.setItem("darkMode", followup_isDark); document.documentElement.classList.toggle("dark", followup_isDark); document.body.classList.toggle("dark-mode", followup_isDark); }
+
+    function followup_exportCSV() { let csv = "Name,Phone,Date,Note,Tags,Status,Priority\n"; followup_followups.forEach(f => { csv += `"${f.name.replace(/"/g, '""')}","${(f.phone||'').replace(/"/g,'""')}","${followup_formatDate(f.date)}","${(f.note||'').replace(/"/g,'""')}","${(f.tags||'').replace(/"/g,'""')}","${f.status}","${f.priority}"\n`; }); const blob = new Blob([csv], { type: "text/csv" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "followups.csv"; a.click(); }
+    function followup_downloadBackup() { const blob = new Blob([JSON.stringify(followup_followups, null, 2)], { type: "application/json" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "followup-backup.json"; a.click(); }
+    function followup_uploadBackup(event) { const file = event.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const data = JSON.parse(e.target.result); if (!Array.isArray(data)) throw new Error("Invalid format"); const valid = data.every(item => item.name && item.date); if (!valid) throw new Error("Missing required fields"); followup_followups = data; followup_saveData(); followup_renderTable(); alert("Backup restored."); } catch (err) { alert("Invalid backup file."); } }; reader.readAsText(file); event.target.value = ""; }
+    function followup_filterOverdue() { const today = new Date(); today.setHours(0,0,0,0); const overdueItems = followup_followups.filter(f => new Date(f.date) < today && f.status === "Pending"); if (overdueItems.length === 0) { alert("No overdue follow-ups."); return; } document.getElementById("followup-filterName").value = ""; document.getElementById("followup-filterStatus").value = "Pending"; document.getElementById("followup-filterFrom").value = ""; document.getElementById("followup-filterTo").value = ""; document.getElementById("followup-sortBy").value = "date"; followup_renderTable(); alert(`Found ${overdueItems.length} overdue follow-up(s). Check the list.`); }
+
+    // Tag dropdown helpers
+    function followup_updateDropdown() {
+      const currentVal = followup_tagsInput.value;
+      const existingTags = currentVal.split(",").map(t => t.trim().toLowerCase()).filter(Boolean);
+      const availableTags = followup_predefinedTags.filter(t => !existingTags.includes(t.toLowerCase()));
+      if (availableTags.length === 0) { followup_tagDropdown.innerHTML = '<li class="p-2 text-gray-500 dark:text-gray-300">No tags available</li>'; } else { followup_tagDropdown.innerHTML = availableTags.map(t => `<li class="p-2 hover:bg-indigo-100 dark:hover:bg-indigo-600 cursor-pointer">${t}</li>`).join(""); }
+      followup_tagDropdown.style.display = availableTags.length ? "block" : "none";
+      [...followup_tagDropdown.children].forEach(li => { li.onclick = (e) => { e.stopPropagation(); const newTags = currentVal ? currentVal + ", " + li.textContent : li.textContent; followup_tagsInput.value = newTags; followup_tagDropdown.style.display = "none"; followup_tagsInput.focus(); }; });
+    }
+
+    followup_toggleBtn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); if (followup_tagDropdown.style.display === "block") followup_tagDropdown.style.display = "none"; else followup_updateDropdown(); });
+    followup_tagsInput.addEventListener("input", followup_updateDropdown);
+    document.addEventListener("click", e => { if (!followup_tagsInput.contains(e.target) && !followup_tagDropdown.contains(e.target) && !followup_toggleBtn.contains(e.target)) { followup_tagDropdown.style.display = "none"; } });
+
+    document.getElementById("followup-enableAlerts").addEventListener("change", (e) => { if (e.target.checked && "Notification" in window && Notification.permission !== "granted") { Notification.requestPermission(); } });
+  </script>
+<!-- Price Quote script (scoped names with pq_ prefix) -->
+<script>
+    function pq_get(id) { return document.getElementById(id).value; }
+    function pq_showTooltip(message) { const el = document.getElementById('pq-tooltip-msg'); el.textContent = message; el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 3000); }
+    function pq_updateCreditPeriod() { const selected = pq_get("pq-paymentTerms"); const creditInput = document.getElementById("pq-creditDays"); creditInput.disabled = (selected !== "Days"); }
+    function pq_calculate() {
+      pq_updateCreditPeriod();
+      const customerName = pq_get("pq-customerName").trim();
+      const greeting = customerName ? `Dear ${customerName},` : "Dear Sir / Madam,";
+      const product = pq_get("pq-product");
+      const quantity = parseFloat(pq_get("pq-quantity")) || 0;
+      const make = pq_get("pq-make");
+      const basic = parseFloat(pq_get("pq-basic")) || 0;
+      const freight = parseFloat(pq_get("pq-freight")) || 0;
+      const profit = parseFloat(pq_get("pq-profit")) || 0;
+      const other = parseFloat(pq_get("pq-other")) || 0;
+      const cd = parseFloat(pq_get("pq-cd")) || 0;
+      const otherDiscount = parseFloat(pq_get("pq-otherDiscount")) || 0;
+      const creditDays = parseFloat(pq_get("pq-creditDays")) || 0;
+      const interestRate = parseFloat(pq_get("pq-interestRate")) || 0;
+      const paymentTerms = pq_get("pq-paymentTerms");
+      if (paymentTerms === "Days" && creditDays === 0) { document.getElementById("pq-output").textContent = "Quotation will appear here..."; pq_showTooltip("Payment set to Days."); setTimeout(() => pq_showTooltip("Please enter valid Credit Days."), 3200); return; }
+      const totalPerMT = Math.max(0, Math.round(basic + freight + profit + other - cd - otherDiscount));
+      const effectiveRate = (paymentTerms === "Days") ? Math.max(1, interestRate) : 0;
+      const interest = Math.round(((creditDays / 30) * effectiveRate / 100) * totalPerMT);
+      const finalTotal = Math.round(totalPerMT + interest);
+      const rawRate = finalTotal / 1000;
+      const roundedRate = Math.round(rawRate * 4) / 4;
+      const ratePerKg = roundedRate.toFixed(2);
+      document.getElementById("pq-actualRateDisplay").value = rawRate.toFixed(2);
+      const paymentText = paymentTerms === "Days" ? `${creditDays} Days` : paymentTerms;
+      const today = new Date().toLocaleDateString("en-IN", { day: 'numeric', month: 'long', year: 'numeric' });
+      
+// ✅ Format the selected or current date
+let quoteDate = document.getElementById("pq-date")?.value;
+let formattedDate = "";
+if (quoteDate) {
+  const d = new Date(quoteDate);
+  formattedDate = d.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
+} else {
+  formattedDate = new Date().toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
+}
+
+// ✅ Get Delivery
+let delivery = document.getElementById("pq-delivery")?.value?.trim() || "Ex Vapi";
+
+// ✅ Build the final quotation
+const quotation = `Date: ${formattedDate}
+
+Dear Sir / Madam,
+
+Greetings from SUVIDHI INDUSTRIES PVT LTD !
+
+Thanks for your inquiry. We offer our best rate as below –
+
+Product    : ${product}
+Qty.       : ${quantity.toLocaleString()} Mt
+Make       : ${make}
+Rate       : ₹${ratePerKg} per kg
+Delivery   : ${delivery}
+Payment    : ${paymentText}
+
+Please confirm.
+
+Regards,
+SB Prajapati
+SUVIDHI INDUSTRIES PVT LTD – VAPI
+📞 8000932893
+✉️ sbprajapati@suvidhigroup.com`;
+
+      document.getElementById("pq-output").textContent = quotation.trim();
+    }
+    function pq_copyQuote() {
+      const message = document.getElementById("pq-output").textContent.trim();
+      if (!message || message === "Quotation will appear here...") { pq_showTooltip("Please generate the quotation first."); return; }
+      navigator.clipboard.writeText(message).then(() => {
+        pq_showTooltip("Quotation copied to clipboard!");
+        // 👉 Auto-add a Follow-Up when copying the quote
+        const name = document.getElementById("pq-customerName").value.trim() || "Unnamed";
+        const today = new Date().toISOString().split("T")[0];
+        followup_followups.push({
+          id: Date.now(),
+          name,
+          phone: "",
+          date: today,
+          note: "Quotation sent",
+          tags: "Quote",
+          status: "Pending",
+          priority: "Medium",
+          autoSnooze: false,
+          starred: false
+        });
+        followup_saveData();
+        followup_renderTable();
+      });
+    }
+    function pq_openWhatsApp() { const message = document.getElementById("pq-output").textContent.trim(); if (!message || message === "Quotation will appear here...") { pq_showTooltip("Please generate the quotation first."); return; } const encodedMessage = encodeURIComponent(message); const url = `https://wa.me/?text=${encodedMessage}`; window.open(url, "_blank"); }
+    function pq_shareViaEmail() { let message = document.getElementById("pq-output").textContent.trim(); if (!message || message === "Quotation will appear here...") { pq_showTooltip("Please generate the quotation first."); return; } const trimmedMessage = message.replace(/Regards[\s\S]+?(📞.*)?(✉️.*)?$/gi, "").trim(); const fullMessage = `${trimmedMessage}\n\nLet us know in case there is any query regarding the quote or product. Awaiting for your positive response.\n\nThanks & Regards \n\nSuresh Prajapati | Manager - Sales & Accounts  \na: SUVIDHI INDUSTRIES PVT LTD  \n   Plot No. 572, Shed No. C1-B/73, 100 Shed Area, GIDC, VAPI - 396 195, Gujarat  \ne: sbprajapati@suvidhigroup.com | w: www.suvidhigroup.com  \nm: 08000932893 | p: 07490053194`; const subject = encodeURIComponent("Quotation from Suvidhi Industries"); const body = encodeURIComponent(fullMessage); const mailto = `mailto:?subject=${subject}&body=${body}`; window.location.href = mailto; }
+
+    function pq_addAutoCalculate() { const inputs = document.querySelectorAll('.pq-left input, .pq-left select'); inputs.forEach(el => { el.addEventListener('input', pq_calculate); el.addEventListener('change', pq_calculate); }); }
+    pq_updateCreditPeriod(); pq_addAutoCalculate(); pq_calculate();
+  </script>
+<script>
+function followup_applyLayout(mode) {
+  const layout = document.getElementById("followup-layout");
+  if (!layout) return;
+
+  if (mode === "flex") {
+  layout.classList.remove("grid","grid-cols-[25%_75%]","gap-2");
+  layout.classList.add("flex","flex-col","gap-4");
+
+  // 👉 Make form 2-row grid
+  const form = document.getElementById("followup-addForm");
+  if (form) {
+    form.classList.remove("space-y-3");
+    form.classList.add("grid","grid-cols-4","gap-4");
+  }
+} else {
+  layout.classList.remove("flex","flex-col","gap-4");
+  layout.classList.add("grid","grid-cols-[25%_75%]","gap-2");
+
+  // 👉 Restore normal stacked form
+  const form = document.getElementById("followup-addForm");
+  if (form) {
+    form.classList.remove("grid","grid-cols-4","gap-3");
+    form.classList.add("space-y-3");
+  }
+}
+
+  localStorage.setItem("followupLayout", mode);
+  const btn = document.getElementById("followup-layout-btn");
+  if (btn) btn.textContent = (mode === "flex")
+    ? "↕ Layout: Stacked"
+    : "↔ Layout: 25/75";
+}
+function followup_toggleLayout() {
+  const current = localStorage.getItem("followupLayout") || "grid";
+  const next    = current === "flex" ? "grid" : "flex";
+  followup_applyLayout(next);
+}
+document.addEventListener("DOMContentLoaded", () => {
+  const saved = localStorage.getItem("followupLayout") || "grid";
+  followup_applyLayout(saved);
+});
+
+function followup_autoBackup(isManual = false) {
+  const data = {
+    followups: localStorage.getItem("followups"),
+    priceData: localStorage.getItem("priceData"),
+    layout: localStorage.getItem("layout"),
+    darkMode: localStorage.getItem("darkMode"),
+    activeTab: localStorage.getItem("activeTab"),
+    backupTime: new Date().toISOString(),
+  };
+
+  // Fix: Ensure date in filename is formatted correctly
+  const filename = `followup_${new Date().toISOString().split('T')[0]}.json`;  // Format: followup_YYYY-MM-DD.json
+
+  // Track last 5 backups
+  let list = JSON.parse(localStorage.getItem("backupList") || "[]");
+  list.push(filename);
+  if (list.length > 5) list = list.slice(-5);
+  localStorage.setItem("backupList", JSON.stringify(list));
+
+  // Auto-download the file
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;  // Correctly sets the filename with date
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  if (isManual) alert("Backup created!");
+  followup_updateBackupUI();
+}
+
+</script>
+
+
+  // 🔹 Firebase Config
+  const firebaseConfig = {
+
+  apiKey: "AIzaSyCQzxsho8b9I2Pz8QJeLIXC7DdHXftEnNE",
+  authDomain: "reminder-multiuser.firebaseapp.com",
+  projectId: "reminder-multiuser",
+  storageBucket: "reminder-multiuser.firebasestorage.app",
+  messagingSenderId: "536887102416",
+  appId: "1:536887102416:web:fa2de3f8c5edc6b8a647d5"
+};
+
+  
+ 
+
+  // 🔹 Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const mainRef = ref(db, "data/main");
+
+  // 🔹 Status UI Helper
+  function setSyncStatus(text, color) {
+    const el = document.getElementById("syncStatus");
+    if (!el) return;
+    el.innerText = "Sync: " + text;
+    el.style.background = color || "transparent";
+    el.style.padding = "3px 6px";
+    el.style.borderRadius = "6px";
+  }
+
+  // 🔹 Manual Save
+  window.saveToFirebase = async function () {
+    try {
+      const followups = JSON.parse(localStorage.getItem("followups") || "[]");
+      if (!followups.length) {
+        alert("⚠️ कोई डेटा नहीं मिला जिसे सेव किया जा सके।");
+        return;
+      }
+      await set(mainRef, { followups, updatedAt: Date.now() });
+      setSyncStatus("Online (saved)", "#dff0d8");
+      alert("✅ Data saved to Firebase successfully!");
+    } catch (err) {
+      console.error("Firebase Save Error:", err);
+      setSyncStatus("Offline (save failed)", "#fff3cd");
+      alert("❌ Save failed: " + err.message);
+    }
+  };
+
+  // 🔹 Manual Load
+  window.loadFromFirebase = async function () {
+    try {
+      const snap = await get(mainRef);
+      if (!snap.exists()) {
+        alert("⚠️ Firebase पर कोई डेटा नहीं मिला।");
+        return;
+      }
+      const data = snap.val();
+      if (data.followups) {
+        localStorage.setItem("followups", JSON.stringify(data.followups));
+        setSyncStatus("Online (loaded)", "#d0ebff");
+        alert("✅ Data loaded — पेज reload होगा।");
+        setTimeout(() => location.reload(), 300);
+      } else {
+        alert("⚠️ Firebase डेटा फॉर्मेट गलत है।");
+      }
+    } catch (err) {
+      console.error("Firebase Load Error:", err);
+      setSyncStatus("Offline (load failed)", "#ffd6d6");
+      alert("❌ Load failed: " + err.message);
+    }
+  };
+
+  // 🔹 Real-Time Sync Listener
+  onValue(mainRef, (snapshot) => {
+    if (!snapshot.exists()) {
+      setSyncStatus("Online (no data)", "#fff");
+      return;
+    }
+    const data = snapshot.val();
+    localStorage.setItem("followups", JSON.stringify(data.followups || []));
+    setSyncStatus("Online (synced)", "#dff0d8");
+    console.log("Real-time Data Sync:", data);
+  });
+
+  // 🔹 Auto Load on Page Open
+  (async () => {
+    try {
+      const snap = await get(mainRef);
+      if (snap.exists()) {
+        const data = snap.val();
+        console.log("Firebase Data Loaded:", data);
+        if (data.followups) {
+          localStorage.setItem("followups", JSON.stringify(data.followups));
+
+          document.addEventListener("DOMContentLoaded", () => {
+            if (typeof followup_renderTable === "function") {
+              followup_renderTable();
+            }
+          });
+
+          setSyncStatus("☁️ Auto-loaded from Firebase", "#d0ebff");
+        }
+      } else {
+        console.log("No Firebase data found.");
+      }
+    } catch (err) {
+      console.error("Firebase load error:", err);
+    }
+  })();
+
+  // 🔹 Instant Firebase Save (Same Tab + Other Tabs)
+  let lastData = localStorage.getItem("followups") || "";
+
+  async function saveToFirebaseInstant() {
+    try {
+      const current = localStorage.getItem("followups") || "[]";
+      if (current !== lastData) {
+        const followups = JSON.parse(current);
+        await set(mainRef, { followups, updatedAt: Date.now() });
+        lastData = current;
+        setSyncStatus("Online (saved)", "#dff0d8");
+        console.log("✅ Instantly saved to Firebase");
+      }
+    } catch (err) {
+      console.warn("Instant save failed:", err);
+      setSyncStatus("Offline (save failed)", "#fff3cd");
+    }
+  }
+
+  // ✅ Detect LocalStorage changes (cross-tab)
+  window.addEventListener("storage", saveToFirebaseInstant);
+
+  // ✅ Detect Same-Tab changes (override setItem)
+  const originalSetItem = localStorage.setItem;
+  localStorage.setItem = function (key, value) {
+    originalSetItem.apply(this, arguments);
+    if (key === "followups") saveToFirebaseInstant();
+  };
+
+  // ✅ One-time Sync on Load
+  saveToFirebaseInstant();
+
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Apply the layout (keeping 25/75 grid layout)
+  followup_applyLayout("grid");
+
+  // Hide mobile cards if the element exists
+  const mobileCards = document.getElementById("followup-mobileCards");
+  if (mobileCards) mobileCards.style.display = "none";
+
+  // Set the default date if not already set (current date)
+  const dateInput = document.getElementById("pq-date");
+  if (dateInput && !dateInput.value) {
+    dateInput.value = new Date().toISOString().split("T")[0];
+  }
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const today = new Date().toISOString().split("T")[0];
+document.querySelectorAll("input[type='date']:not(#followup-filterFrom):not(#followup-filterTo)")
+  .forEach(el => { el.value = today; });
+
+});
+</script>
+
+</body>
+</html>
+
