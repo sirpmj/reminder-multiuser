@@ -24,6 +24,7 @@
 .pq-left input,
 .pq-left select {
     font-size: 14px;
+margin-LEFT: 15px;
     padding-top: 1px;
     padding-bottom: 2px;
     transition: all 0.2s ease-in-out; /* smooth transitions */
@@ -47,7 +48,7 @@
   display: flex !important;
   align-items: center;
   justify-content: flex-start;
-  gap: 12px;                /* space between label and input */
+  gap: 0px;                /* space between label and input */
   padding: 4px 0;
 }
 
@@ -65,7 +66,7 @@
 .pq-left select {
   flex: 0 0 180px;
   max-width: 300px;
-  width: 100%;
+  width: 70%;
   box-sizing: border-box;
 }
 
@@ -87,11 +88,12 @@
 .dark .pq-left .grid:nth-child(even) { background-color:#2d3748; }
 
 .pq-left::before {
-  content:"Quote Details";
+
   display:block;
   background:#f3f4f6;
   padding:4px 8px;
   font-size:14px;
+
   font-weight:bold;
   border-radius:6px 6px 0 0;
   margin-bottom:4px;
@@ -160,7 +162,7 @@
 }
 
 body {
-  min-width: 1024px;
+  min-width: 1100px;
   overflow-x: auto;
 }
 
@@ -168,7 +170,7 @@ body {
 html {
   transform-origin: top center; /* keep scaling centered */
   transform: scale(min(1, calc(100vw / 1024)));
-  width: 1024px;
+  width: 1100px;
   margin: 0 auto;               /* ✅ center the whole layout */
   display: flex;
   justify-content: center;
@@ -204,7 +206,7 @@ body {
     #followup-mobileCards button, #followup-mobileCards a { padding: 6px 8px; border-radius: 6px; }
 
     /* Tab styles */
-    .tabs { display:flex; gap:8px; max-width:1100px; margin:10px auto; }
+    .tabs { display:flex; gap:8px; max-width:1100px; margin:10px auto; margin-LEFT: 15px;}
     .tab-btn { padding:8px 12px; border-radius:6px; cursor:pointer; border:1px solid #ddd; background:#fff; font-weight:600; }
     .tab-btn.active { background:#1f2937; color:#fff; border-color:#111827; }
     .tab-content { max-width:1100px; margin:0 auto 40px; }
@@ -289,7 +291,7 @@ const db   = firebase.firestore();
 
 <!-- Firebase Controls -->
 <div class="flex gap-2 items-center text-sm mt-2">
-<button onclick="followup_saveData()">☁️ Save Online</button>
+  <button onclick="followup_saveData()">☁️ Save Online</button>
 <button onclick="loadFollowups()">⬇️ Load Online</button>
 
   <div id="syncStatus" class="text-xs text-gray-500">Sync: Local</div>
@@ -338,7 +340,18 @@ const db   = firebase.firestore();
   </div>
 </form>
 <!-- Right section -->
-<section class="flex flex-col gap-2">
+<section class="flex flex-col gap-1">
+<div class="flex gap-2 text-sm mb-1">
+  <button class="bg-yellow-200 text-yellow-800 px-2 py-1 rounded"
+          onclick="followup_filterToday()">⚡ Today</button>
+
+  <button class="bg-blue-200 text-blue-800 px-2 py-1 rounded"
+          onclick="followup_filterTomorrow()">📆 Tomorrow</button>
+
+  <button class="bg-red-200 text-red-800 px-2 py-1 rounded"
+          onclick="followup_filterOverdue()">⛔ Overdue</button>
+</div>
+
 <div class="flex flex-wrap gap-2 items-center text-sm">
 <input class="border rounded px-3 py-1 flex-grow min-w-[140px]" id="followup-filterName" oninput="followup_renderTable()" placeholder="Search by name..." type="text"/>
 <select class="border rounded px-2 py-1 max-w-[150px]" id="followup-filterStatus" onchange="followup_renderTable()">
@@ -353,7 +366,7 @@ const db   = firebase.firestore();
 <option value="name">Sort by Name</option>
 <option value="priority">Sort by Priority</option>
 </select>
-<button class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs" onclick="followup_filterOverdue()">Show Overdue</button>
+
 </div>
 <div class="font-semibold text-xs text-gray-700 dark:text-gray-300 mt-1" id="followup-summaryBar"></div>
 <div class="overflow-x-auto bg-white dark:bg-gray-800 shadow rounded-xl mt-1 flex-grow min-h-[150px]">
@@ -362,7 +375,7 @@ const db   = firebase.firestore();
 <thead class="bg-gray-50 dark:bg-gray-700 text-xs">
 <tr>
 <th class="p-1">⭐</th>
-<th class="p-1 max-w-[140px]">Name</th>
+<th class="p-1 max-w-[50px]">Name</th>
 <th class="p-1">Phone</th>
 <th class="p-1">Date</th>
 <th class="p-1 max-w-[140px]">Note</th>
@@ -381,7 +394,8 @@ const db   = firebase.firestore();
 </div>
 
 <div class="tab-content hidden-tab" id="tab-quote">
-<div class="max-w-6xl mx-auto p-0 grid grid-cols-[40%_60%] gap-3">
+<div class="mx-auto p-0 grid grid-cols-[40%_60%] gap-3" style="max-width:1070px;">
+
 <!-- Left: Input Details (keep .pq-left for JS) -->
 <section class="pq-left bg-white dark:bg-gray-800 p-0 rounded-xl shadow">
 <div>
@@ -647,6 +661,24 @@ auth.onAuthStateChanged(user => {
 }
 
 
+function saveFollowups() {
+
+  if (!currentUID) return;
+
+  db.collection("users")
+    .doc(currentUID)
+    .collection("followups")
+    .doc("main")
+    .set({
+      data: followups,
+      updatedAt: Date.now()
+    })
+    .then(() => console.log("Saved for", currentUID))
+    .catch(err => alert(err.message));
+}
+
+
+
 function loadFollowups() {
 
   if (!currentUID) return;
@@ -661,7 +693,6 @@ function loadFollowups() {
       followup_renderTable();
     });
 }
-
 
     function followup_renderTable() {
       const tbody = document.getElementById("followup-followupBody");
@@ -722,7 +753,14 @@ const waHref = "https://api.whatsapp.com/send?phone=" + phoneClean.forWA + "&tex
               <button onclick="followup_editFollowUp(${f.id})" class="text-blue-600" title="Edit">✏️</button>\
               <button onclick="followup_deleteFollowUp(${f.id})" class="text-red-600" title="Delete">🗑️</button>\
               <button onclick="followup_toggleStatus(${f.id})" class="text-green-600" title="Toggle Status">${f.status === "Pending" ? "✅" : "↩️"}</button>\
-              <a href="${waHref}" target="_blank" rel="noopener" class="text-green-700" title="Send WhatsApp">📱</a>\
+           <button onclick="openWATemplates('${f.name}', '${f.phone}', '${f.note}')">📩</button>
+<div class="flex gap-2 mt-0">
+<button onclick="sendAutoWA('TODAY', '${f.name}', '${f.phone}', '${f.date}')">⚡</button>
+<button onclick="sendAutoWA('TOMORROW', '${f.name}', '${f.phone}', '${f.date}')">📆</button>
+<button onclick="sendAutoWA('OVERDUE', '${f.name}', '${f.phone}', '${f.date}')">⛔</button>
+
+</div>
+
             </td>\
           </tr>\
         `;
@@ -734,13 +772,26 @@ const waHref = "https://api.whatsapp.com/send?phone=" + phoneClean.forWA + "&tex
             </div>\
             <div class="text-xs mb-1">${badge} ${followup_formatDate(f.date)} ${followup_relativeDays(f.date)}</div>\
             <div class="text-xs mb-1">${telHref ? `<a href="${telHref}" class="block" title="Call">${followup_escapeHtml(f.phone)}</a>` : `<span class=\"text-gray-400\">No phone</span>`} ${phoneClean.forWA ? `<a href="${waHref}" target="_blank" rel="noopener" class="inline-block ml-1">💬 WhatsApp</a>` : ''}</div>\
+<div class="flex gap-2 mt-2">
+<button onclick="sendAutoWA('TODAY', '${f.name}', '${f.phone}', '${f.date}')">⚡</button>
+<button onclick="sendAutoWA('TOMORROW', '${f.name}', '${f.phone}', '${f.date}')">📆</button>
+<button onclick="sendAutoWA('OVERDUE', '${f.name}', '${f.phone}', '${f.date}')">⛔</button>
+
+
+</div>
+
             <div class="mt-1 truncate" title="${followup_escapeHtml(f.note)}">${followup_escapeHtml(f.note)}</div>\
             <div class="text-xs text-gray-500 truncate" title="${followup_escapeHtml(f.tags)}">${followup_escapeHtml(f.tags)}</div>\
             <div class="flex gap-2 mt-2 flex-wrap">\
               <button onclick="followup_editFollowUp(${f.id})" class="text-blue-600 text-xs" title="Edit">✏️</button>\
               <button onclick="followup_deleteFollowUp(${f.id})" class="text-red-600 text-xs" title="Delete">🗑️</button>\
               <button onclick="followup_toggleStatus(${f.id})" class="text-green-600 text-xs" title="Toggle Status">${f.status === "Pending" ? "✅" : "↩️"}</button>\
-              <a href="${waHref}" target="_blank" rel="noopener" class="text-green-700 text-xs" title="Send WhatsApp">📱</a>\
+    <button onclick="openWATemplates('${f.name}', '${f.phone}', '${f.note}')">📩</button>
+<button onclick="sendAutoWA('TODAY', '${f.name}', '${f.phone}', '${f.date}')">⚡</button>
+<button onclick="sendAutoWA('TOMORROW', '${f.name}', '${f.phone}', '${f.date}')">📆</button>
+<button onclick="sendAutoWA('OVERDUE', '${f.name}', '${f.phone}', '${f.date}')">⛔</button>
+
+
             </div>\
           </div>\
         `;
@@ -764,6 +815,60 @@ const waHref = "https://api.whatsapp.com/send?phone=" + phoneClean.forWA + "&tex
     function followup_downloadBackup() { const blob = new Blob([JSON.stringify(followup_followups, null, 2)], { type: "application/json" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "followup-backup.json"; a.click(); }
     function followup_uploadBackup(event) { const file = event.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const data = JSON.parse(e.target.result); if (!Array.isArray(data)) throw new Error("Invalid format"); const valid = data.every(item => item.name && item.date); if (!valid) throw new Error("Missing required fields"); followup_followups = data; followup_saveData(); followup_renderTable(); alert("Backup restored."); } catch (err) { alert("Invalid backup file."); } }; reader.readAsText(file); event.target.value = ""; }
     function followup_filterOverdue() { const today = new Date(); today.setHours(0,0,0,0); const overdueItems = followup_followups.filter(f => new Date(f.date) < today && f.status === "Pending"); if (overdueItems.length === 0) { alert("No overdue follow-ups."); return; } document.getElementById("followup-filterName").value = ""; document.getElementById("followup-filterStatus").value = "Pending"; document.getElementById("followup-filterFrom").value = ""; document.getElementById("followup-filterTo").value = ""; document.getElementById("followup-sortBy").value = "date"; followup_renderTable(); alert(`Found ${overdueItems.length} overdue follow-up(s). Check the list.`); }
+
+
+function followup_filterToday() {
+  const today = new Date().toISOString().split("T")[0];
+  document.getElementById("followup-filterFrom").value = today;
+  document.getElementById("followup-filterTo").value = today;
+  followup_renderTable();
+}
+
+function followup_filterTomorrow() {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  const tomorrow = d.toISOString().split("T")[0];
+  document.getElementById("followup-filterFrom").value = tomorrow;
+  document.getElementById("followup-filterTo").value = tomorrow;
+  followup_renderTable();
+}
+
+function followup_filterOverdue() {
+  const today = new Date().toISOString().split("T")[0];
+  document.getElementById("followup-filterFrom").value = "";
+  document.getElementById("followup-filterTo").value = today;
+  document.getElementById("followup-filterStatus").value = "Pending";
+  followup_renderTable();
+}
+
+
+
+
+function sendAutoWA(type, name, phone, date){
+  let finalPhone = cleanPhone(phone);
+  if(!finalPhone){
+    alert("Phone number missing!");
+    return;
+  }
+
+  date = date || "N/A";
+
+  let msg = "";
+
+  if(type === "TOMORROW"){
+    msg = `Hello ${name}, this is a reminder that your follow-up is scheduled for tomorrow (${date}).`;
+  }
+  else if(type === "TODAY"){
+    msg = `Hello ${name}, your follow-up is due today. Please confirm.`;
+  }
+  else if(type === "OVERDUE"){
+    msg = `Dear ${name}, your follow-up is overdue. Kindly revert at the earliest.`;
+  }
+
+  const url = "https://wa.me/" + finalPhone + "?text=" + encodeURIComponent(msg);
+  window.open(url, "_blank");
+}
+
 
     // Tag dropdown helpers
     function followup_updateDropdown() {
@@ -837,6 +942,8 @@ let delivery = document.getElementById("pq-delivery")?.value?.trim() || "Ex Vapi
 
 // ✅ Build the final quotation
 const quotation = `Date: ${formattedDate}
+
+${customerName}
 
 Dear Sir / Madam,
 
@@ -967,10 +1074,94 @@ function followup_autoBackup(isManual = false) {
   followup_updateBackupUI();
 }
 
+function cleanPhone(phone) {
+  if(!phone) return "";
+
+  // Remove spaces, +, -, brackets, text etc.
+  phone = phone.toString().replace(/\D+/g, "");
+
+  // If starts with 0 → remove 0
+  if(phone.length === 11 && phone.startsWith("0")) {
+    phone = phone.substring(1);
+  }
+
+  // If length=10 → add India code
+  if(phone.length === 10) {
+    phone = "91" + phone;
+  }
+
+  // If length=12 and starts with 91 → okay
+  // If length=12 but does not start with 91 → no change
+
+  return phone;
+}
+
+// WhatsApp Templates
+const waTemplates = [
+  "Hello {{name}}, this is a reminder for today's follow-up.\nRegards,\nSuresh Prajapati",
+  "Dear {{name}}, please confirm the quotation shared.\nThanks,\nSuresh Prajapati",
+  "Hi {{name}}, we tried calling you. Please revert when free.\nRegards,\nSuresh Prajapati",
+  "Hello {{name}}, just following up on our last discussion.\nRegards,\nSuresh Prajapati"
+];
+
+function openWATemplates(name, phone, note){
+  const box = document.getElementById("waTemplatesList");
+  box.innerHTML = "";
+
+  waTemplates.forEach(t=>{
+    const msg = t.replace("{{name}}", name);
+    const div = document.createElement("button");
+    div.className = "w-full text-left bg-blue-100 dark:bg-blue-700 p-2 rounded";
+    div.innerText = msg;
+    div.onclick = ()=> sendWATemplate(phone, msg, note);
+    box.appendChild(div);
+  });
+
+  document.getElementById("waTemplatesPopup").classList.remove("hidden");
+}
+
+function sendAutoWA(type, name, phone, date) {
+    let cleanPhone = phone.replace(/\D/g, "");
+    if (cleanPhone.startsWith("0")) cleanPhone = cleanPhone.substring(1);
+    if (!cleanPhone.startsWith("91")) cleanPhone = "91" + cleanPhone;
+
+    let msg = "";
+
+    if (type === "TODAY") {
+        msg = `Hello ${name}, your follow-up is due today. Please confirm.`;
+    }
+    if (type === "TOMORROW") {
+        msg = `Hello ${name}, this is a reminder that your follow-up is scheduled for tomorrow (${date}).`;
+    }
+    if (type === "OVERDUE") {
+        msg = `Dear ${name}, your follow-up is overdue. Kindly revert at the earliest.`;
+    }
+
+    window.open(`https://wa.me/${cleanPhone}?text=` + encodeURIComponent(msg));
+}
+
+function sendWATemplate(phone, msg){
+  let finalPhone = cleanPhone(phone);
+  
+  if(!finalPhone){
+    alert("Phone number missing!");
+    return;
+  }
+
+  const url = "https://wa.me/" + finalPhone + "?text=" + encodeURIComponent(msg);
+  window.open(url, "_blank");
+}
+
+
+function closeWATemplates(){
+  document.getElementById("waTemplatesPopup").classList.add("hidden");
+}
+
 </script>
 
- <script>
- 
+
+
+<script>
 
   // 🔹 Status UI Helper
   function setSyncStatus(text, color) {
@@ -982,107 +1173,7 @@ function followup_autoBackup(isManual = false) {
     el.style.borderRadius = "6px";
   }
 
-  // 🔹 Manual Save
-  window.saveToFirebase = async function () {
-    try {
-      const followups = JSON.parse(localStorage.getItem("followups") || "[]");
-      if (!followups.length) {
-        alert("⚠️ कोई डेटा नहीं मिला जिसे सेव किया जा सके।");
-        return;
-      }
-      await set(mainRef, { followups, updatedAt: Date.now() });
-      setSyncStatus("Online (saved)", "#dff0d8");
-      alert("✅ Data saved to Firebase successfully!");
-    } catch (err) {
-      console.error("Firebase Save Error:", err);
-      setSyncStatus("Offline (save failed)", "#fff3cd");
-      alert("❌ Save failed: " + err.message);
-    }
-  };
-
-  // 🔹 Manual Load
-  window.loadFromFirebase = async function () {
-    try {
-      const snap = await get(mainRef);
-      if (!snap.exists()) {
-        alert("⚠️ Firebase पर कोई डेटा नहीं मिला।");
-        return;
-      }
-      const data = snap.val();
-      if (data.followups) {
-        localStorage.setItem("followups", JSON.stringify(data.followups));
-        setSyncStatus("Online (loaded)", "#d0ebff");
-        alert("✅ Data loaded — पेज reload होगा।");
-        setTimeout(() => location.reload(), 300);
-      } else {
-        alert("⚠️ Firebase डेटा फॉर्मेट गलत है।");
-      }
-    } catch (err) {
-      console.error("Firebase Load Error:", err);
-      setSyncStatus("Offline (load failed)", "#ffd6d6");
-      alert("❌ Load failed: " + err.message);
-    }
-  };
-
-  // 🔹 Real-Time Sync Listener
-  onValue(mainRef, (snapshot) => {
-    if (!snapshot.exists()) {
-      setSyncStatus("Online (no data)", "#fff");
-      return;
-    }
-    const data = snapshot.val();
-    localStorage.setItem("followups", JSON.stringify(data.followups || []));
-    setSyncStatus("Online (synced)", "#dff0d8");
-    console.log("Real-time Data Sync:", data);
-  });
-
-  // 🔹 Auto Load on Page Open
-  (async () => {
-    try {
-      const snap = await get(mainRef);
-      if (snap.exists()) {
-        const data = snap.val();
-        console.log("Firebase Data Loaded:", data);
-        if (data.followups) {
-          localStorage.setItem("followups", JSON.stringify(data.followups));
-
-          document.addEventListener("DOMContentLoaded", () => {
-            if (typeof followup_renderTable === "function") {
-              followup_renderTable();
-            }
-          });
-
-          setSyncStatus("☁️ Auto-loaded from Firebase", "#d0ebff");
-        }
-      } else {
-        console.log("No Firebase data found.");
-      }
-    } catch (err) {
-      console.error("Firebase load error:", err);
-    }
-  })();
-
-  // 🔹 Instant Firebase Save (Same Tab + Other Tabs)
-  let lastData = localStorage.getItem("followups") || "";
-
-  async function saveToFirebaseInstant() {
-    try {
-      const current = localStorage.getItem("followups") || "[]";
-      if (current !== lastData) {
-        const followups = JSON.parse(current);
-        await set(mainRef, { followups, updatedAt: Date.now() });
-        lastData = current;
-        setSyncStatus("Online (saved)", "#dff0d8");
-        console.log("✅ Instantly saved to Firebase");
-      }
-    } catch (err) {
-      console.warn("Instant save failed:", err);
-      setSyncStatus("Offline (save failed)", "#fff3cd");
-    }
-  }
-
-  // ✅ Detect LocalStorage changes (cross-tab)
-  window.addEventListener("storage", saveToFirebaseInstant);
+ 
 
   // ✅ Detect Same-Tab changes (override setItem)
   const originalSetItem = localStorage.setItem;
@@ -1121,6 +1212,14 @@ document.querySelectorAll("input[type='date']:not(#followup-filterFrom):not(#fol
 
 });
 </script>
+<!-- WhatsApp Templates Popup -->
+<div id="waTemplatesPopup" class="fixed inset-0 bg-black bg-opacity-30 hidden items-center justify-center z-50">
+  <div class="bg-white dark:bg-gray-800 p-5 rounded-xl w-80 shadow-xl">
+    <h2 class="text-lg font-semibold mb-3">WhatsApp Templates</h2>
+    <div id="waTemplatesList" class="space-y-2"></div>
+    <button onclick="closeWATemplates()" class="mt-4 w-full bg-gray-300 dark:bg-gray-600 text-black dark:text-white py-2 rounded-lg">Close</button>
+  </div>
+</div>
 
 </body>
 </html>
