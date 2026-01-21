@@ -28,55 +28,24 @@ const auth = firebase.auth();
 <button onclick="signup()">Signup</button>
 
 <script>
-<script>
 function login(){
-  const emailVal = email.value.trim();
-  const passVal  = password.value.trim();
-
-  if (!emailVal || !passVal) {
-    alert("Email aur Password dono bharo");
-    return;
-  }
-
-  if (!emailVal.includes("@") || !emailVal.includes(".")) {
-    alert("❌ Sahi email address dalo");
-    return;
-  }
-
-  auth.signInWithEmailAndPassword(emailVal, passVal)
-    .then(() => {
-      location.href = "index.html";
-    })
-    .catch(e => alert(e.message));
+  auth.signInWithEmailAndPassword(
+    email.value,
+    password.value
+  ).then(()=>{
+    location.href = "index.html";
+  }).catch(e=>alert(e.message));
 }
 
 function signup(){
-  const emailVal = email.value.trim();
-  const passVal  = password.value.trim();
-
-  if (!emailVal || !passVal) {
-    alert("Email aur Password dono bharo");
-    return;
-  }
-
-  if (!emailVal.includes("@") || !emailVal.includes(".")) {
-    alert("❌ Sahi email address dalo");
-    return;
-  }
-
-  if (passVal.length < 6) {
-    alert("Password kam se kam 6 character ka hona chahiye");
-    return;
-  }
-
-  auth.createUserWithEmailAndPassword(emailVal, passVal)
-    .then(() => {
-      location.href = "index.html";
-    })
-    .catch(e => alert(e.message));
+  auth.createUserWithEmailAndPassword(
+    email.value,
+    password.value
+  ).then(()=>{
+    location.href = "index.html";
+  }).catch(e=>alert(e.message));
 }
 </script>
-
 
 </body>
 </html>
