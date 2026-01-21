@@ -891,7 +891,7 @@ SUVIDHI INDUSTRIES PVT LTD – VAPI
     function pq_addAutoCalculate() { const inputs = document.querySelectorAll('.pq-left input, .pq-left select'); inputs.forEach(el => { el.addEventListener('input', pq_calculate); el.addEventListener('change', pq_calculate); }); }
     pq_updateCreditPeriod(); pq_addAutoCalculate(); pq_calculate();
   </script>
-<script>
+
 function followup_applyLayout(mode) {
   const layout = document.getElementById("followup-layout");
   if (!layout) return;
@@ -966,8 +966,6 @@ function followup_autoBackup(isManual = false) {
   if (isManual) alert("Backup created!");
   followup_updateBackupUI();
 }
-
-<script>
 
    
 function setSyncStatus(text, color) {
