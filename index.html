@@ -9,10 +9,6 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script>tailwind.config = { darkMode: 'class' };</script>
 <style>
-
-
-
-
     /* Styles from Price Quote (scoped) */
     .pq-body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 10px; }
     .pq-container { display: flex; flex-wrap: wrap; gap: 10px; max-width: 960px; margin: auto; background: #fff; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -242,7 +238,7 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
 </style>
 
 
-<!-- Firebase SDK -->
+<!-- firebase.js -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -260,28 +256,10 @@ const auth = firebase.auth();
 const db   = firebase.firestore();
 </script>
 
-<script>
-let currentUID = null;
-
-auth.onAuthStateChanged(user => {
-  if (!user) {
-    location.href = "login.html";
-    return;
-  }
-
-  currentUID = user.uid;
-  loadUserBar(user.uid);
-});
-</script>
-
 
 
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-
-
-
-
 <!-- GLOBAL TOOLBAR -->
 <header class="max-w-6xl mx-auto px-3 pt-3">
 <div class="flex items-center justify-between flex-wrap gap-2 bg-white dark:bg-gray-800 rounded-xl shadow p-3">
@@ -315,10 +293,6 @@ auth.onAuthStateChanged(user => {
 <div class="flex gap-2 items-center text-sm mt-2">
   <button onclick="followup_saveData()">☁️ Save Online</button>
 <button onclick="loadFollowups()">⬇️ Load Online</button>
-<div id="userBar">
-  <span id="userName">Loading...</span>
-  <button onclick="logout()">Logout</button>
-</div>
 
   <div id="syncStatus" class="text-xs text-gray-500">Sync: Local</div>
 </div>
@@ -623,27 +597,26 @@ function followup_cleanPhoneDigits(raw = "") {
       followup_renderTable();
     });
 
-</script>
-<script>
-function loadUserBar(uid){
-  db.collection("users").doc(uid).get().then(doc=>{
-    if(doc.exists){
-      const d = doc.data();
-      document.getElementById("userName").innerText =
-        d.company ? `${d.name} • ${d.company}` : d.name;
-    } else {
-      document.getElementById("userName").innerText =
-        auth.currentUser.email;
-    }
-  });
-}
-</script>
 
+let currentUID = null;   // 👈 यहाँ user की पहचान store होगी
 
+auth.onAuthStateChanged(user => {
 
-<script>
+  // ❌ अगर user login नहीं है
+  if (!user) {
+    alert("Please login first");
+    window.location.href = "login.html";
+    return;
+  }
 
+  // ✅ अगर user login है
+  currentUID = user.uid;   // 🔑 यही सबसे IMPORTANT line है
 
+  console.log("Logged in UID:", currentUID);
+
+  // 👉 अब इसी UID का data load करेंगे
+  loadFollowups();
+});
 
 
 
@@ -867,17 +840,8 @@ function followup_filterOverdue() {
   document.getElementById("followup-filterStatus").value = "Pending";
   followup_renderTable();
 }
-</script>
 
-<script>
-function logout(){
-  auth.signOut()
-    .then(() => {
-      location.href = "login.html";
-    })
-    .catch(err => alert(err.message));
-}
-</script>
+
 
 
 function sendAutoWA(type, name, phone, date){
@@ -1256,58 +1220,6 @@ document.querySelectorAll("input[type='date']:not(#followup-filterFrom):not(#fol
     <button onclick="closeWATemplates()" class="mt-4 w-full bg-gray-300 dark:bg-gray-600 text-black dark:text-white py-2 rounded-lg">Close</button>
   </div>
 </div>
-
-<script>
-
-
-  db.collection("users").doc(user.uid).get()
-    .then(doc=>{
-      if(doc.exists){
-        const d = doc.data();
-        document.getElementById("userName").innerText =
-          d.company ? `${d.name} • ${d.company}` : d.name;
-      }else{
-        document.getElementById("userName").innerText = user.email;
-      }
-    });
-});
-
-function logout(){
-  console.log("Logout clicked"); // 🔍 debug
-  auth.signOut()
-    .then(()=>{
-      location.href = "login.html";
-    })
-    .catch(err=>{
-      alert(err.message);
-    });
-}
-</script>
-
-<script>
-function loadUserBar(uid){
-  db.collection("users").doc(uid).get().then(doc=>{
-    if(doc.exists){
-      const d = doc.data();
-      document.getElementById("userName").innerText =
-        d.company ? `${d.name} • ${d.company}` : d.name;
-    } else {
-      document.getElementById("userName").innerText =
-        auth.currentUser.email;
-    }
-  });
-}
-</script>
-
-<script>
-function logout(){
-  auth.signOut()
-    .then(() => {
-      location.href = "login.html";
-    })
-    .catch(err => alert(err.message));
-}
-</script>
 
 </body>
 </html>
