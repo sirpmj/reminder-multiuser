@@ -247,6 +247,35 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
+
+<div id="userBar" style="
+  position:fixed;
+  top:10px;
+  right:10px;
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:#fff;
+  padding:6px 10px;
+  border-radius:8px;
+  box-shadow:0 4px 12px rgba(0,0,0,.15);
+  font-size:13px;
+">
+  <span id="userName">Loading...</span>
+  <button onclick="logout()" style="
+    border:none;
+    padding:5px 10px;
+    border-radius:6px;
+    background:#ef4444;
+    color:#fff;
+    cursor:pointer;
+    font-weight:600;
+  ">Logout</button>
+</div>
+
+
+
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyCQzxsho8b9I2Pz8QJeLIXC7DdHXftEnNE",
@@ -266,33 +295,7 @@ const db   = firebase.firestore();
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
 
 
-<div id="userBar" style="
-  position:fixed;
-  top:10px;
-  right:10px;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  background:#ffffff;
-  padding:6px 10px;
-  border-radius:8px;
-  box-shadow:0 4px 12px rgba(0,0,0,.15);
-  font-family:system-ui,sans-serif;
-  font-size:13px;
-">
-  <span id="userName">Loading...</span>
-  <button onclick="logout()" style="
-    border:none;
-    padding:5px 10px;
-    border-radius:6px;
-    background:#ef4444;
-    color:#fff;
-    cursor:pointer;
-    font-weight:600;
-  ">
-    Logout
-  </button>
-</div>
+
 
 <!-- GLOBAL TOOLBAR -->
 <header class="max-w-6xl mx-auto px-3 pt-3">
@@ -1264,7 +1267,7 @@ document.querySelectorAll("input[type='date']:not(#followup-filterFrom):not(#fol
 const auth = firebase.auth();
 const db   = firebase.firestore();
 
-firebase.auth().onAuthStateChanged(user=>{
+auth.onAuthStateChanged(user=>{
   if(!user){
     location.href = "login.html";
     return;
@@ -1275,7 +1278,7 @@ firebase.auth().onAuthStateChanged(user=>{
       if(doc.exists){
         const d = doc.data();
         document.getElementById("userName").innerText =
-          d.company ? d.name + " • " + d.company : d.name;
+          d.company ? `${d.name} • ${d.company}` : d.name;
       }else{
         document.getElementById("userName").innerText = user.email;
       }
@@ -1283,8 +1286,14 @@ firebase.auth().onAuthStateChanged(user=>{
 });
 
 function logout(){
-  firebase.auth().signOut()
-    .then(()=>location.href="login.html");
+  console.log("Logout clicked"); // 🔍 debug
+  auth.signOut()
+    .then(()=>{
+      location.href = "login.html";
+    })
+    .catch(err=>{
+      alert(err.message);
+    });
 }
 </script>
 
