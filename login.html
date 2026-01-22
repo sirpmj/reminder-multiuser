@@ -1,49 +1,164 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Login</title>
+<title>Login / Signup</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<style>
+  body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(135deg,#6366f1,#3b82f6);
+    font-family:system-ui,sans-serif;
+  }
+  .card{
+    background:#fff;
+    width:100%;
+    max-width:380px;
+    padding:24px;
+    border-radius:14px;
+    box-shadow:0 10px 30px rgba(0,0,0,.15);
+  }
+  h2{
+    margin:0 0 18px;
+    text-align:center;
+  }
+  .field{margin-bottom:12px}
+  .field input{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    font-size:14px;
+  }
+  .btn{
+    width:100%;
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .btn-main{
+    background:#4f46e5;
+    color:#fff;
+  }
+  .btn-alt{
+    margin-top:8px;
+    background:#e5e7eb;
+  }
+  .note{
+    margin-top:12px;
+    font-size:12px;
+    text-align:center;
+    color:#6b7280;
+    cursor:pointer;
+  }
+  .hidden{display:none}
+</style>
 
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyCQzxsho8b9I2Pz8QJeLIXC7DdHXftEnNE",
   authDomain: "reminder-multiuser.firebaseapp.com",
 };
-
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+const db   = firebase.firestore();
 </script>
 </head>
 
 <body>
-<h3>Login / Signup</h3>
 
-<input id="email" placeholder="Email"><br><br>
-<input id="password" type="password" placeholder="Password"><br><br>
+<div class="card">
+  <h2 id="title">🔐 Login</h2>
 
-<button onclick="login()">Login</button>
-<button onclick="signup()">Signup</button>
+  <!-- Signup only -->
+  <div id="signupFields" class="hidden">
+    <div class="field"><input id="name" placeholder="Full Name"></div>
+    <div class="field"><input id="mobile" placeholder="Mobile Number"></div>
+    <div class="field"><input id="company" placeholder="Company Name"></div>
+  </div>
+
+  <!-- Common -->
+  <div class="field"><input id="email" placeholder="Email"></div>
+  <div class="field"><input id="password" type="password" placeholder="Password"></div>
+
+  <button id="mainBtn" class="btn btn-main" onclick="login()">Login</button>
+  <button id="altBtn" class="btn btn-alt" onclick="showSignup()">Signup</button>
+
+  <div class="note" id="note" onclick="toggleMode()">
+    Signup first if you are a new user
+  </div>
+</div>
 
 <script>
+let mode = "login"; // login | signup
+
+function toggleMode(){
+  if(mode === "login"){
+    showSignup();
+  }else{
+    showLogin();
+  }
+}
+
+function showSignup(){
+  mode = "signup";
+  document.getElementById("title").innerText = "📝 Signup";
+  document.getElementById("signupFields").classList.remove("hidden");
+  document.getElementById("mainBtn").innerText = "Signup";
+  document.getElementById("mainBtn").onclick = signup;
+  document.getElementById("altBtn").classList.add("hidden");
+  document.getElementById("note").innerText = "Already have an account? Login";
+}
+
+function showLogin(){
+  mode = "login";
+  document.getElementById("title").innerText = "🔐 Login";
+  document.getElementById("signupFields").classList.add("hidden");
+  document.getElementById("mainBtn").innerText = "Login";
+  document.getElementById("mainBtn").onclick = login;
+  document.getElementById("altBtn").classList.remove("hidden");
+  document.getElementById("note").innerText = "Signup first if you are a new user";
+}
+
 function login(){
-  auth.signInWithEmailAndPassword(
-    email.value,
-    password.value
-  ).then(()=>{
-    location.href = "index.html";
-  }).catch(e=>alert(e.message));
+  auth.signInWithEmailAndPassword(email.value, password.value)
+    .then(()=>location.href="index.html")
+    .catch(e=>alert(e.message));
 }
 
 function signup(){
-  auth.createUserWithEmailAndPassword(
-    email.value,
-    password.value
-  ).then(()=>{
-    location.href = "index.html";
-  }).catch(e=>alert(e.message));
+  const name    = nameInput = document.getElementById("name").value.trim();
+  const mobile  = document.getElementById("mobile").value.trim();
+  const company = document.getElementById("company").value.trim();
+  const emailV  = email.value.trim();
+  const passV   = password.value;
+
+  if(!name || !emailV || !passV){
+    alert("Please fill required fields");
+    return;
+  }
+
+  auth.createUserWithEmailAndPassword(emailV, passV)
+    .then(res=>{
+      return db.collection("users").doc(res.user.uid).set({
+        name, mobile, company, email: emailV, createdAt: Date.now()
+      });
+    })
+    .then(()=>location.href="index.html")
+    .catch(e=>alert(e.message));
 }
 </script>
 
