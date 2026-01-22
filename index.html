@@ -9,6 +9,37 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script>tailwind.config = { darkMode: 'class' };</script>
 <style>
+
+<div id="userBar" style="
+  position:fixed;
+  top:10px;
+  right:10px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:#ffffff;
+  padding:6px 10px;
+  border-radius:8px;
+  box-shadow:0 4px 12px rgba(0,0,0,.15);
+  font-family:system-ui,sans-serif;
+  font-size:13px;
+">
+  <span id="userName">Loading...</span>
+  <button onclick="logout()" style="
+    border:none;
+    padding:5px 10px;
+    border-radius:6px;
+    background:#ef4444;
+    color:#fff;
+    cursor:pointer;
+    font-weight:600;
+  ">
+    Logout
+  </button>
+</div>
+
+
+
     /* Styles from Price Quote (scoped) */
     .pq-body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 10px; }
     .pq-container { display: flex; flex-wrap: wrap; gap: 10px; max-width: 960px; margin: auto; background: #fff; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -598,6 +629,31 @@ function followup_cleanPhoneDigits(raw = "") {
     });
 
 
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+firebase.auth().onAuthStateChanged(user=>{
+  if(!user){
+    location.href = "login.html";
+    return;
+  }
+
+  // 🔹 user profile load
+  db.collection("users").doc(user.uid).get()
+    .then(doc=>{
+      if(doc.exists){
+        const d = doc.data();
+        document.getElementById("userName").innerText =
+          d.name + (d.company ? " • " + d.company : "");
+      }else{
+        document.getElementById("userName").innerText = user.email;
+      }
+    });
+});
+
+
+
+
 let currentUID = null;   // 👈 यहाँ user की पहचान store होगी
 
 auth.onAuthStateChanged(user => {
@@ -618,6 +674,14 @@ auth.onAuthStateChanged(user => {
   loadFollowups();
 });
 
+
+function logout(){
+  if(!confirm("Logout now?")) return;
+
+  firebase.auth().signOut()
+    .then(()=>location.href="login.html")
+    .catch(e=>alert(e.message));
+}
 
 
     document.getElementById("followup-addForm").addEventListener("submit", (e) => {
@@ -1223,4 +1287,3 @@ document.querySelectorAll("input[type='date']:not(#followup-filterFrom):not(#fol
 
 </body>
 </html>
-
