@@ -242,39 +242,10 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
 </style>
 
 
-<!-- firebase.js -->
+<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-
-<div id="userBar" style="
-  position:fixed;
-  top:10px;
-  right:10px;
-  z-index:9999;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  background:#fff;
-  padding:6px 10px;
-  border-radius:8px;
-  box-shadow:0 4px 12px rgba(0,0,0,.15);
-  font-size:13px;
-">
-  <span id="userName">Loading...</span>
-  <button onclick="logout()" style="
-    border:none;
-    padding:5px 10px;
-    border-radius:6px;
-    background:#ef4444;
-    color:#fff;
-    cursor:pointer;
-    font-weight:600;
-  ">Logout</button>
-</div>
-
-
 
 <script>
 const firebaseConfig = {
@@ -287,6 +258,20 @@ firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
 const db   = firebase.firestore();
+</script>
+
+<script>
+let currentUID = null;
+
+auth.onAuthStateChanged(user => {
+  if (!user) {
+    location.href = "login.html";
+    return;
+  }
+
+  currentUID = user.uid;
+  loadUserBar(user.uid);
+});
 </script>
 
 
@@ -330,6 +315,10 @@ const db   = firebase.firestore();
 <div class="flex gap-2 items-center text-sm mt-2">
   <button onclick="followup_saveData()">☁️ Save Online</button>
 <button onclick="loadFollowups()">⬇️ Load Online</button>
+<div id="userBar">
+  <span id="userName">Loading...</span>
+  <button onclick="logout()">Logout</button>
+</div>
 
   <div id="syncStatus" class="text-xs text-gray-500">Sync: Local</div>
 </div>
@@ -635,28 +624,24 @@ function followup_cleanPhoneDigits(raw = "") {
     });
 
 
+<script>
+function loadUserBar(uid){
+  db.collection("users").doc(uid).get().then(doc=>{
+    if(doc.exists){
+      const d = doc.data();
+      document.getElementById("userName").innerText =
+        d.company ? `${d.name} • ${d.company}` : d.name;
+    } else {
+      document.getElementById("userName").innerText =
+        auth.currentUser.email;
+    }
+  });
+}
+</script>
 
 
 
-let currentUID = null;   // 👈 यहाँ user की पहचान store होगी
 
-auth.onAuthStateChanged(user => {
-
-  // ❌ अगर user login नहीं है
-  if (!user) {
-    alert("Please login first");
-    window.location.href = "login.html";
-    return;
-  }
-
-  // ✅ अगर user login है
-  currentUID = user.uid;   // 🔑 यही सबसे IMPORTANT line है
-
-  console.log("Logged in UID:", currentUID);
-
-  // 👉 अब इसी UID का data load करेंगे
-  loadFollowups();
-});
 
 
 
@@ -884,6 +869,15 @@ function followup_filterOverdue() {
 }
 
 
+<script>
+function logout(){
+  auth.signOut()
+    .then(() => {
+      location.href = "login.html";
+    })
+    .catch(err => alert(err.message));
+}
+</script>
 
 
 function sendAutoWA(type, name, phone, date){
@@ -1264,14 +1258,7 @@ document.querySelectorAll("input[type='date']:not(#followup-filterFrom):not(#fol
 </div>
 
 <script>
-const auth = firebase.auth();
-const db   = firebase.firestore();
 
-auth.onAuthStateChanged(user=>{
-  if(!user){
-    location.href = "login.html";
-    return;
-  }
 
   db.collection("users").doc(user.uid).get()
     .then(doc=>{
@@ -1297,7 +1284,30 @@ function logout(){
 }
 </script>
 
+<script>
+function loadUserBar(uid){
+  db.collection("users").doc(uid).get().then(doc=>{
+    if(doc.exists){
+      const d = doc.data();
+      document.getElementById("userName").innerText =
+        d.company ? `${d.name} • ${d.company}` : d.name;
+    } else {
+      document.getElementById("userName").innerText =
+        auth.currentUser.email;
+    }
+  });
+}
+</script>
 
+<script>
+function logout(){
+  auth.signOut()
+    .then(() => {
+      location.href = "login.html";
+    })
+    .catch(err => alert(err.message));
+}
+</script>
 
 </body>
 </html>
