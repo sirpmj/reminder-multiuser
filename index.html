@@ -10,33 +10,6 @@
 <script>tailwind.config = { darkMode: 'class' };</script>
 <style>
 
-<div id="userBar" style="
-  position:fixed;
-  top:10px;
-  right:10px;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  background:#ffffff;
-  padding:6px 10px;
-  border-radius:8px;
-  box-shadow:0 4px 12px rgba(0,0,0,.15);
-  font-family:system-ui,sans-serif;
-  font-size:13px;
-">
-  <span id="userName">Loading...</span>
-  <button onclick="logout()" style="
-    border:none;
-    padding:5px 10px;
-    border-radius:6px;
-    background:#ef4444;
-    color:#fff;
-    cursor:pointer;
-    font-weight:600;
-  ">
-    Logout
-  </button>
-</div>
 
 
 
@@ -291,6 +264,36 @@ const db   = firebase.firestore();
 
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+
+
+<div id="userBar" style="
+  position:fixed;
+  top:10px;
+  right:10px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:#ffffff;
+  padding:6px 10px;
+  border-radius:8px;
+  box-shadow:0 4px 12px rgba(0,0,0,.15);
+  font-family:system-ui,sans-serif;
+  font-size:13px;
+">
+  <span id="userName">Loading...</span>
+  <button onclick="logout()" style="
+    border:none;
+    padding:5px 10px;
+    border-radius:6px;
+    background:#ef4444;
+    color:#fff;
+    cursor:pointer;
+    font-weight:600;
+  ">
+    Logout
+  </button>
+</div>
+
 <!-- GLOBAL TOOLBAR -->
 <header class="max-w-6xl mx-auto px-3 pt-3">
 <div class="flex items-center justify-between flex-wrap gap-2 bg-white dark:bg-gray-800 rounded-xl shadow p-3">
@@ -629,28 +632,6 @@ function followup_cleanPhoneDigits(raw = "") {
     });
 
 
-const auth = firebase.auth();
-const db   = firebase.firestore();
-
-firebase.auth().onAuthStateChanged(user=>{
-  if(!user){
-    location.href = "login.html";
-    return;
-  }
-
-  // 🔹 user profile load
-  db.collection("users").doc(user.uid).get()
-    .then(doc=>{
-      if(doc.exists){
-        const d = doc.data();
-        document.getElementById("userName").innerText =
-          d.name + (d.company ? " • " + d.company : "");
-      }else{
-        document.getElementById("userName").innerText = user.email;
-      }
-    });
-});
-
 
 
 
@@ -675,13 +656,7 @@ auth.onAuthStateChanged(user => {
 });
 
 
-function logout(){
-  if(!confirm("Logout now?")) return;
 
-  firebase.auth().signOut()
-    .then(()=>location.href="login.html")
-    .catch(e=>alert(e.message));
-}
 
 
     document.getElementById("followup-addForm").addEventListener("submit", (e) => {
@@ -1284,6 +1259,36 @@ document.querySelectorAll("input[type='date']:not(#followup-filterFrom):not(#fol
     <button onclick="closeWATemplates()" class="mt-4 w-full bg-gray-300 dark:bg-gray-600 text-black dark:text-white py-2 rounded-lg">Close</button>
   </div>
 </div>
+
+<script>
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+firebase.auth().onAuthStateChanged(user=>{
+  if(!user){
+    location.href = "login.html";
+    return;
+  }
+
+  db.collection("users").doc(user.uid).get()
+    .then(doc=>{
+      if(doc.exists){
+        const d = doc.data();
+        document.getElementById("userName").innerText =
+          d.company ? d.name + " • " + d.company : d.name;
+      }else{
+        document.getElementById("userName").innerText = user.email;
+      }
+    });
+});
+
+function logout(){
+  firebase.auth().signOut()
+    .then(()=>location.href="login.html");
+}
+</script>
+
+
 
 </body>
 </html>
