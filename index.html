@@ -287,6 +287,11 @@ auth.onAuthStateChanged(user => {
 <div class="flex items-center justify-between flex-wrap gap-2 bg-white dark:bg-gray-800 rounded-xl shadow p-3">
 <div class="flex items-center gap-2 text-sm">
 <h1 class="text-xl font-bold text-indigo-600 dark:text-indigo-400">🧭 Personal follow up </h1>
+<div id="userBar">
+  <span id="userName">Loading...</span>
+  <button onclick="logout()">Logout</button>
+</div>
+
 <span class="text-xs text-gray-500"></span>
 </div>
 <div class="flex items-center gap-2 flex-wrap text-sm">
@@ -315,10 +320,6 @@ auth.onAuthStateChanged(user => {
 <div class="flex gap-2 items-center text-sm mt-2">
   <button onclick="followup_saveData()">☁️ Save Online</button>
 <button onclick="loadFollowups()">⬇️ Load Online</button>
-<div id="userBar">
-  <span id="userName">Loading...</span>
-  <button onclick="logout()">Logout</button>
-</div>
 
   <div id="syncStatus" class="text-xs text-gray-500">Sync: Local</div>
 </div>
@@ -641,7 +642,7 @@ function loadUserBar(uid){
 
 
 
-
+<script>
 
 
 
