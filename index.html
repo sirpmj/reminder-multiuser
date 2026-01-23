@@ -280,21 +280,6 @@ const db   = firebase.firestore();
         class="bg-purple-600 text-white px-3 py-1 rounded"
         onclick="followup_toggleLayout()">↔ Layout: 25/75</button>
 
-<button onclick="logoutUser()" style="padding:6px 12px;">
-  🚪 Logout
-</button>
-
-<h3>👤 My Profile</h3>
-
-<input id="p_name" placeholder="Full Name">
-<input id="p_mobile" placeholder="Mobile">
-<input id="p_company" placeholder="Company">
-
-<button onclick="updateProfile()">💾 Update Profile</button>
-
-
-<span id="welcomeUser"></span>
-
 <button class="bg-gray-800 text-white px-3 py-1 rounded" onclick="followup_toggleDarkMode()">🌓 Dark Mode</button>
 </div>
 </div>
@@ -546,30 +531,6 @@ function activateTab(which) {
     tabFollowBtn.classList.remove('active');
   }
 
-
-
-async function updateProfile(){
-  if(!currentUID) return;
-
-  const name    = p_name.value.trim();
-  const mobile  = p_mobile.value.trim();
-  const company = p_company.value.trim();
-
-await db.collection("users").doc(currentUID).set({
-  profile: {
-    name,
-    mobile,
-    company,
-    updatedAt: Date.now()
-  }
-},{ merge:true });
-
-
-  alert("✅ Profile updated");
-  document.getElementById("welcomeUser").innerText = "Hi, " + name;
-}
-
-
   // Show selected with fade-in
   show.classList.remove('hidden-tab');
   show.style.opacity = 0;
@@ -637,28 +598,23 @@ function followup_cleanPhoneDigits(raw = "") {
     });
 
 
-let currentUID = null;
+let currentUID = null;   // 👈 यहाँ user की पहचान store होगी
 
-auth.onAuthStateChanged(async user => {
+auth.onAuthStateChanged(user => {
+
+  // ❌ अगर user login नहीं है
   if (!user) {
-    location.href = "Login.html";
+    alert("Please login first");
+    window.location.href = "login.html";
     return;
   }
 
-  currentUID = user.uid;
-  console.log("Logged in:", currentUID);
+  // ✅ अगर user login है
+  currentUID = user.uid;   // 🔑 यही सबसे IMPORTANT line है
 
-  // 🔹 Profile load
-  const doc = await db.collection("users").doc(currentUID).get();
-  if (doc.exists) {
-    const p = doc.data().profile || {};
-    welcomeUser.innerText = "Hi, " + (p.name || "User");
-    p_name.value = p.name || "";
-    p_mobile.value = p.mobile || "";
-    p_company.value = p.company || "";
-  }
+  console.log("Logged in UID:", currentUID);
 
-  // 🔹 Followups load
+  // 👉 अब इसी UID का data load करेंगे
   loadFollowups();
 });
 
@@ -705,7 +661,21 @@ auth.onAuthStateChanged(async user => {
 }
 
 
+function saveFollowups() {
 
+  if (!currentUID) return;
+
+  db.collection("users")
+    .doc(currentUID)
+    .collection("followups")
+    .doc("main")
+    .set({
+      data: followups,
+      updatedAt: Date.now()
+    })
+    .then(() => console.log("Saved for", currentUID))
+    .catch(err => alert(err.message));
+}
 
 
 
@@ -762,7 +732,6 @@ msg += "📋 Status: " + f.status + "\n";
 msg += "📝 Note: " + (f.note || "—") + "\n\n";
 const senderName = p_name.value || "User";
 msg += "From " + senderName;
-
 
 // Encode whole message once
 const encoded = encodeURIComponent(msg);
@@ -1252,14 +1221,6 @@ document.querySelectorAll("input[type='date']:not(#followup-filterFrom):not(#fol
     <button onclick="closeWATemplates()" class="mt-4 w-full bg-gray-300 dark:bg-gray-600 text-black dark:text-white py-2 rounded-lg">Close</button>
   </div>
 </div>
-
-function logoutUser(){
-  if(confirm("Are you sure you want to logout?")){
-    auth.signOut().then(() => {
-      location.href = "Login.html";
-    });
-  }
-}
 
 </body>
 </html>
