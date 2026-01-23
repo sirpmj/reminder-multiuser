@@ -162,23 +162,23 @@ function signup(){
     return;
   }
 
-  auth.createUserWithEmailAndPassword(emailV, passV)
-    .then(async res => {
-      await db.collection("users").doc(res.user.uid).set({
-        profile: {
-          name: fullName,
-          mobile,
-          company,
-          email: emailV,
-          createdAt: Date.now()
-        }
-      });
-      location.href = "index.html";
-    })
-    .catch(e => {
-      console.log(e.code);
-      alert(e.message);
+auth.createUserWithEmailAndPassword(emailV, passV)
+  .then(res => {
+    return db.collection("users").doc(res.user.uid).set({
+      profile: {
+        name: fullName,
+        mobile,
+        company,
+        email: emailV,
+        createdAt: Date.now()
+      }
     });
+  })
+  .then(() => {
+    location.href = "index.html";
+  })
+  .catch(e => alert(e.message));
+
 }
 </script>
 
