@@ -546,13 +546,7 @@ function activateTab(which) {
     tabFollowBtn.classList.remove('active');
   }
 
-function logoutUser(){
-  if(confirm("Are you sure you want to logout?")){
-    auth.signOut().then(() => {
-      location.href = "Login.html";
-    });
-  }
-}
+
 
 async function updateProfile(){
   if(!currentUID) return;
@@ -561,14 +555,15 @@ async function updateProfile(){
   const mobile  = p_mobile.value.trim();
   const company = p_company.value.trim();
 
-  await db.collection("users").doc(currentUID).update({
-    profile: {
-      name,
-      mobile,
-      company,
-      updatedAt: Date.now()
-    }
-  });
+await db.collection("users").doc(currentUID).set({
+  profile: {
+    name,
+    mobile,
+    company,
+    updatedAt: Date.now()
+  }
+},{ merge:true });
+
 
   alert("✅ Profile updated");
   document.getElementById("welcomeUser").innerText = "Hi, " + name;
@@ -642,43 +637,31 @@ function followup_cleanPhoneDigits(raw = "") {
     });
 
 
-let currentUID = null;   // 👈 यहाँ user की पहचान store होगी
-
-auth.onAuthStateChanged(user => {
-
-  // ❌ अगर user login नहीं है
-  if (!user) {
-    alert("Please login first");
-    window.location.href = "login.html";
-    return;
-  }
-
-  // ✅ अगर user login है
-  currentUID = user.uid;   // 🔑 यही सबसे IMPORTANT line है
-
-  console.log("Logged in UID:", currentUID);
-
-  // 👉 अब इसी UID का data load करेंगे
-  loadFollowups();
-});
+let currentUID = null;
 
 auth.onAuthStateChanged(async user => {
-  if(!user){
+  if (!user) {
     location.href = "Login.html";
     return;
   }
 
   currentUID = user.uid;
+  console.log("Logged in:", currentUID);
 
+  // 🔹 Profile load
   const doc = await db.collection("users").doc(currentUID).get();
-  const p = doc.data().profile;
+  if (doc.exists) {
+    const p = doc.data().profile || {};
+    welcomeUser.innerText = "Hi, " + (p.name || "User");
+    p_name.value = p.name || "";
+    p_mobile.value = p.mobile || "";
+    p_company.value = p.company || "";
+  }
 
-  welcomeUser.innerText = "Hi, " + (p.name || "User");
-
-  p_name.value = p.name || "";
-  p_mobile.value = p.mobile || "";
-  p_company.value = p.company || "";
+  // 🔹 Followups load
+  loadFollowups();
 });
+
 
 
     document.getElementById("followup-addForm").addEventListener("submit", (e) => {
@@ -722,21 +705,7 @@ auth.onAuthStateChanged(async user => {
 }
 
 
-function saveFollowups() {
 
-  if (!currentUID) return;
-
-  db.collection("users")
-    .doc(currentUID)
-    .collection("followups")
-    .doc("main")
-    .set({
-      data: followups,
-      updatedAt: Date.now()
-    })
-    .then(() => console.log("Saved for", currentUID))
-    .catch(err => alert(err.message));
-}
 
 
 
@@ -791,7 +760,9 @@ msg += "👤 Name: " + f.name + "\n";
 msg += "🗓️ Date: " + followup_formatDate(f.date) + "\n";
 msg += "📋 Status: " + f.status + "\n";
 msg += "📝 Note: " + (f.note || "—") + "\n\n";
-msg += "From Suresh B Prajapati";
+const senderName = p_name.value || "User";
+msg += "From " + senderName;
+
 
 // Encode whole message once
 const encoded = encodeURIComponent(msg);
@@ -1281,6 +1252,14 @@ document.querySelectorAll("input[type='date']:not(#followup-filterFrom):not(#fol
     <button onclick="closeWATemplates()" class="mt-4 w-full bg-gray-300 dark:bg-gray-600 text-black dark:text-white py-2 rounded-lg">Close</button>
   </div>
 </div>
+
+function logoutUser(){
+  if(confirm("Are you sure you want to logout?")){
+    auth.signOut().then(() => {
+      location.href = "Login.html";
+    });
+  }
+}
 
 </body>
 </html>
