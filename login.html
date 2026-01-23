@@ -140,26 +140,33 @@ function login(){
 }
 
 function signup(){
-  const name    = nameInput = document.getElementById("name").value.trim();
-  const mobile  = document.getElementById("mobile").value.trim();
-  const company = document.getElementById("company").value.trim();
-  const emailV  = email.value.trim();
-  const passV   = password.value;
+  const fullName = document.getElementById("name").value.trim();
+  const mobile   = document.getElementById("mobile").value.trim();
+  const company  = document.getElementById("company").value.trim();
+  const emailV   = email.value.trim();
+  const passV    = password.value;
 
-  if(!name || !emailV || !passV){
+  if(!fullName || !emailV || !passV){
     alert("Please fill required fields");
     return;
   }
 
   auth.createUserWithEmailAndPassword(emailV, passV)
-    .then(res=>{
-      return db.collection("users").doc(res.user.uid).set({
-        name, mobile, company, email: emailV, createdAt: Date.now()
+    .then(async res => {
+      await db.collection("users").doc(res.user.uid).set({
+        profile: {
+          name: fullName,
+          mobile,
+          company,
+          email: emailV,
+          createdAt: Date.now()
+        }
       });
+      location.href = "index.html";
     })
-    .then(()=>location.href="index.html")
-    .catch(e=>alert(e.message));
+    .catch(e => alert(e.message));
 }
+
 </script>
 
 </body>
