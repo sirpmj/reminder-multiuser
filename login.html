@@ -72,10 +72,14 @@ const firebaseConfig = {
   apiKey: "AIzaSyCQzxsho8b9I2Pz8QJeLIXC7DdHXftEnNE",
   authDomain: "reminder-multiuser.firebaseapp.com",
 };
+
 firebase.initializeApp(firebaseConfig);
+
+// 🔥 THESE TWO LINES ARE MUST
 const auth = firebase.auth();
 const db   = firebase.firestore();
 </script>
+
 </head>
 
 <body>
