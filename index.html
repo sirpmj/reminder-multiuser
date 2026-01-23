@@ -297,6 +297,18 @@ const db   = firebase.firestore();
   <div id="syncStatus" class="text-xs text-gray-500">Sync: Local</div>
 </div>
 
+<button id="logoutBtn" style="
+  padding:8px 14px;
+  background:#e74c3c;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+">
+  Logout
+</button>
+
+
 </div>
 <div class="tab-content" id="tab-followup">
 <!-- Reminder & Follow-Up original content (IDs prefixed with followup-) -->
@@ -617,6 +629,26 @@ auth.onAuthStateChanged(user => {
   // 👉 अब इसी UID का data load करेंगे
   loadFollowups();
 });
+
+
+
+
+document.getElementById("logoutBtn").addEventListener("click", function () {
+
+  if (!confirm("Are you sure you want to logout?")) return;
+
+  auth.signOut()
+    .then(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.replace("login.html");
+    })
+    .catch(err => {
+      alert("Logout failed: " + err.message);
+    });
+
+});
+
 
 
 
