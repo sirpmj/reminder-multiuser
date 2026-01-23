@@ -72,10 +72,14 @@ const firebaseConfig = {
   apiKey: "AIzaSyCQzxsho8b9I2Pz8QJeLIXC7DdHXftEnNE",
   authDomain: "reminder-multiuser.firebaseapp.com",
 };
+
 firebase.initializeApp(firebaseConfig);
+
+// 🔥 THESE TWO LINES ARE MUST
 const auth = firebase.auth();
 const db   = firebase.firestore();
 </script>
+
 </head>
 
 <body>
@@ -162,23 +166,23 @@ function signup(){
     return;
   }
 
-  auth.createUserWithEmailAndPassword(emailV, passV)
-    .then(async res => {
-      await db.collection("users").doc(res.user.uid).set({
-        profile: {
-          name: fullName,
-          mobile,
-          company,
-          email: emailV,
-          createdAt: Date.now()
-        }
-      });
-      location.href = "index.html";
-    })
-    .catch(e => {
-      console.log(e.code);
-      alert(e.message);
+auth.createUserWithEmailAndPassword(emailV, passV)
+  .then(res => {
+    return db.collection("users").doc(res.user.uid).set({
+      profile: {
+        name: fullName,
+        mobile,
+        company,
+        email: emailV,
+        createdAt: Date.now()
+      }
     });
+  })
+  .then(() => {
+    location.href = "index.html";
+  })
+  .catch(e => alert(e.message));
+
 }
 </script>
 
