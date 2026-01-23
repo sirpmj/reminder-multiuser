@@ -621,36 +621,6 @@ auth.onAuthStateChanged(user => {
     return;
   }
 
-auth.onAuthStateChanged(async user => {
-  if (!user) {
-    window.location.replace("login.html");
-    return;
-  }
-
-  currentUID = user.uid;
-
-  const userRef = db.collection("users").doc(currentUID);
-  const snap = await userRef.get();
-
-  // 🛠 profile missing? auto-create
-  if (!snap.exists) {
-    await userRef.set({
-      profile: {
-        name: user.email.split("@")[0],
-        email: user.email,
-        createdAt: Date.now(),
-        autoCreated: true
-      }
-    });
-    console.log("Profile auto-created for:", user.email);
-  }
-
-  currentUserProfile = (await userRef.get()).data();
-
-  loadFollowups();
-});
-
-
   // ✅ अगर user login है
   currentUID = user.uid;   // 🔑 यही सबसे IMPORTANT line है
 
@@ -661,20 +631,6 @@ auth.onAuthStateChanged(async user => {
 });
 
 
-let currentUserProfile = {
-  name: "",
-  company: ""
-};
-
-function loadCurrentUserProfile() {
-  if (!currentUID) return;
-
-  db.collection("users").doc(currentUID).get().then(doc => {
-    if (doc.exists && doc.data().profile) {
-      currentUserProfile = doc.data().profile;
-    }
-  });
-}
 
 
 document.getElementById("logoutBtn").addEventListener("click", function () {
@@ -693,12 +649,6 @@ document.getElementById("logoutBtn").addEventListener("click", function () {
 
 });
 
-function addWASignatory(msg) {
-  if (currentUserProfile && currentUserProfile.profile?.name) {
-    return msg + "\n\nRegards,\n" + currentUserProfile.profile.name;
-  }
-  return msg;
-}
 
 
 
@@ -812,10 +762,7 @@ msg += "👤 Name: " + f.name + "\n";
 msg += "🗓️ Date: " + followup_formatDate(f.date) + "\n";
 msg += "📋 Status: " + f.status + "\n";
 msg += "📝 Note: " + (f.note || "—") + "\n\n";
-if (currentUserProfile.name) {
-  msg += "\n\nFrom " + currentUserProfile.name;
-}
-
+msg += "From Suresh B Prajapati";
 
 // Encode whole message once
 const encoded = encodeURIComponent(msg);
@@ -1183,24 +1130,11 @@ function cleanPhone(phone) {
 
 // WhatsApp Templates
 const waTemplates = [
-  "Hello {{name}}, this is a reminder for today's follow-up.",
-  "Dear {{name}}, please confirm the quotation shared.",
-  "Hi {{name}}, we tried calling you. Please revert when free.",
-  "Hello {{name}}, just following up on our last discussion."
+  "Hello {{name}}, this is a reminder for today's follow-up.\nRegards,\nSuresh Prajapati",
+  "Dear {{name}}, please confirm the quotation shared.\nThanks,\nSuresh Prajapati",
+  "Hi {{name}}, we tried calling you. Please revert when free.\nRegards,\nSuresh Prajapati",
+  "Hello {{name}}, just following up on our last discussion.\nRegards,\nSuresh Prajapati"
 ];
-
-
-
-function addWASignatory(msg) {
-  if (currentUserProfile && currentUserProfile.name) {
-    return msg + "\n\nRegards,\n" + currentUserProfile.name;
-  }
-  return msg;
-}
-
-let msg = waTemplates[i];   // i = selected template index
-msg = addWASignatory(msg);
-
 
 function openWATemplates(name, phone, note){
   const box = document.getElementById("waTemplatesList");
