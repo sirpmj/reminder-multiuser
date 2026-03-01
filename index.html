@@ -404,7 +404,6 @@ const db   = firebase.firestore();
 <tbody class="divide-y" id="followup-followupBody"></tbody>
 </table>
 </div>
-<div class="md:hidden flex flex-col gap-2 mt-2" id="followup-mobileCards"></div>
 </section>
 </div>
 </div>
@@ -781,117 +780,114 @@ function loadFollowups() {
 }
 
     function followup_renderTable() {
-      const tbody = document.getElementById("followup-followupBody");
-      const mobile = document.getElementById("followup-mobileCards");
-      tbody.innerHTML = ""; mobile.innerHTML = "";
-      const nameFilter = document.getElementById("followup-filterName").value.toLowerCase();
-      const statusFilter = document.getElementById("followup-filterStatus").value;
-      const from = document.getElementById("followup-filterFrom").value;
-      const to = document.getElementById("followup-filterTo").value;
-      const sort = document.getElementById("followup-sortBy").value;
-      localStorage.setItem("sortBy", sort);
-      const today = new Date(); today.setHours(0,0,0,0);
-      let overdue = 0, todayCount = 0, upcoming = 0;
+  const tbody = document.getElementById("followup-followupBody");
+  tbody.innerHTML = "";
 
-      const filtered = followup_followups
-        .filter(f => (!nameFilter || f.name.toLowerCase().includes(nameFilter)))
-        .filter(f => (!statusFilter || f.status === statusFilter))
-        .filter(f => (!from || new Date(f.date) >= new Date(from)))
-        .filter(f => (!to || new Date(f.date) <= new Date(to)))
-        .sort((a,b) => { if (sort === "name") return a.name.localeCompare(b.name); if (sort === "priority") return ["High","Medium","Low"].indexOf(a.priority) - ["High","Medium","Low"].indexOf(b.priority); return new Date(b.date) - new Date(a.date); });
+  const nameFilter = document.getElementById("followup-filterName").value.toLowerCase();
+  const statusFilter = document.getElementById("followup-filterStatus").value;
+  const from = document.getElementById("followup-filterFrom").value;
+  const to = document.getElementById("followup-filterTo").value;
+  const sort = document.getElementById("followup-sortBy").value;
 
-      filtered.forEach(f => {
-        const taskDate = new Date(f.date); taskDate.setHours(0,0,0,0);
-        const isOverdue = f.status === "Pending" && taskDate < today;
-        const isToday = f.status === "Pending" && taskDate.getTime() === today.getTime();
-        if (isOverdue) overdue++; else if (isToday) todayCount++; else if (f.status === "Pending") upcoming++;
-        const priorityClass = f.priority === "High" ? "priority-high" : f.priority === "Medium" ? "priority-medium" : "priority-low";
-        const badge = isOverdue ? "🟥" : isToday ? "🟨" : "🟩";
-        const phoneClean = followup_cleanPhoneDigits(f.phone || "");
-        const telHref = phoneClean.forTel ? `tel:${phoneClean.forTel}` : "";
-// 📞 Clean number & build WhatsApp message
-// Build WhatsApp text
-let msg = "📅 *Follow-Up Reminder*\n\n";
-msg += "👤 Name: " + f.name + "\n";
-msg += "🗓️ Date: " + followup_formatDate(f.date) + "\n";
-msg += "📋 Status: " + f.status + "\n";
-msg += "📝 Note: " + (f.note || "—") + "\n\n";
-if (currentUserProfile.name) {
-  msg += "\n\nFrom " + currentUserProfile.name;
+  localStorage.setItem("sortBy", sort);
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  let overdue = 0, todayCount = 0, upcoming = 0;
+
+  const filtered = followup_followups
+    .filter(f => (!nameFilter || f.name.toLowerCase().includes(nameFilter)))
+    .filter(f => (!statusFilter || f.status === statusFilter))
+    .filter(f => (!from || new Date(f.date) >= new Date(from)))
+    .filter(f => (!to || new Date(f.date) <= new Date(to)))
+    .sort((a,b) => {
+      if (sort === "name") return a.name.localeCompare(b.name);
+      if (sort === "priority") 
+        return ["High","Medium","Low"].indexOf(a.priority) -
+               ["High","Medium","Low"].indexOf(b.priority);
+      return new Date(b.date) - new Date(a.date);
+    });
+
+  filtered.forEach(f => {
+    const taskDate = new Date(f.date);
+    taskDate.setHours(0,0,0,0);
+
+    const isOverdue = f.status === "Pending" && taskDate < today;
+    const isToday = f.status === "Pending" && taskDate.getTime() === today.getTime();
+
+    if (isOverdue) overdue++;
+    else if (isToday) todayCount++;
+    else if (f.status === "Pending") upcoming++;
+
+    const priorityClass =
+      f.priority === "High" ? "priority-high" :
+      f.priority === "Medium" ? "priority-medium" :
+      "priority-low";
+
+    const badge = isOverdue ? "🟥" : isToday ? "🟨" : "🟩";
+
+    const phoneClean = followup_cleanPhoneDigits(f.phone || "");
+    const telHref = phoneClean.forTel ? `tel:${phoneClean.forTel}` : "";
+
+    let msg = `📅 Follow-Up Reminder
+
+Name: ${f.name}
+Date: ${followup_formatDate(f.date)}
+Status: ${f.status}
+Note: ${f.note || "-"}`;
+
+    const waHref = phoneClean.forWA
+      ? `https://wa.me/${phoneClean.forWA}?text=${encodeURIComponent(msg)}`
+      : "";
+
+    tbody.innerHTML += `
+      <tr class="${isOverdue ? 'bg-red-50 dark:bg-red-900' : isToday ? 'bg-yellow-50 dark:bg-yellow-800' : ''}">
+        <td class="p-1 text-center cursor-pointer" onclick="followup_toggleStar(${f.id})">
+          ${f.starred ? "⭐" : "☆"}
+        </td>
+
+        <td class="p-1 truncate">${followup_escapeHtml(f.name)}</td>
+
+        <td class="p-1">
+          ${telHref ? `<a href="${telHref}">${followup_escapeHtml(f.phone)}</a>` : '<span class="text-gray-400">—</span>'}
+          ${waHref ? `<a href="${waHref}" target="_blank" class="ml-2">💬</a>` : ''}
+        </td>
+
+        <td class="p-1">
+          ${badge} ${followup_formatDate(f.date)}
+          <span class="text-xs text-gray-500">${followup_relativeDays(f.date)}</span>
+        </td>
+
+        <td class="p-1 truncate">${followup_escapeHtml(f.note)}</td>
+        <td class="p-1 truncate">${followup_escapeHtml(f.tags)}</td>
+        <td class="p-1">${f.status}</td>
+        <td class="p-1 ${priorityClass}">${f.priority}</td>
+
+        <td class="p-1 space-x-1 text-center">
+          <button onclick="followup_editFollowUp(${f.id})" class="text-blue-600">✏️</button>
+          <button onclick="followup_deleteFollowUp(${f.id})" class="text-red-600">🗑️</button>
+          <button onclick="followup_toggleStatus(${f.id})" class="text-green-600">
+            ${f.status === "Pending" ? "✅" : "↩️"}
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="9" class="text-center p-4 text-gray-500">
+          No follow-ups found.
+        </td>
+      </tr>
+    `;
+  }
+
+  document.getElementById("followup-summaryBar").innerText =
+    `🔴 Overdue: ${overdue} | 🟡 Today: ${todayCount} | 🟢 Upcoming: ${upcoming}`;
 }
-
-
-// Encode whole message once
-const encoded = encodeURIComponent(msg);
-
-// Full link
-const waHref = "https://api.whatsapp.com/send?phone=" + phoneClean.forWA + "&text=" + encoded;
-
-
-        tbody.innerHTML += `\
-          <tr class="${isOverdue ? 'bg-red-50 dark:bg-red-900' : isToday ? 'bg-yellow-50 dark:bg-yellow-800' : ''}">\
-            <td class="p-1 text-center cursor-pointer" onclick="followup_toggleStar(${f.id})" title="Toggle Star">${f.starred ? "⭐" : "☆"}</td>\
-            <td class="p-1 truncate" title="${followup_escapeHtml(f.name)}">${followup_escapeHtml(f.name)}</td>\
-            <td class="p-1">${telHref ? `<a href="${telHref}" title="Call ${followup_escapeHtml(f.phone)}">${followup_escapeHtml(f.phone || '')}</a>` : `<span class=\"text-gray-400\">—</span>`} ${phoneClean.forWA ? `<a href="${waHref}" target="_blank" rel="noopener" class="ml-2" title="WhatsApp ${followup_escapeHtml(f.phone)}">💬</a>` : ''}</td>\
-            <td class="p-1">${badge} ${followup_formatDate(f.date)} <span class="text-xs text-gray-500">${followup_relativeDays(f.date)}</span></td>\
-            <td class="p-1 truncate" title="${followup_escapeHtml(f.note)}">${followup_escapeHtml(f.note)}</td>\
-            <td class="p-1 truncate" title="${followup_escapeHtml(f.tags)}">${followup_escapeHtml(f.tags)}</td>\
-            <td class="p-1">${f.status}</td>\
-            <td class="p-1 ${priorityClass}">${f.priority}</td>\
-            <td class="p-1 space-x-1 text-center">\
-              <button onclick="followup_editFollowUp(${f.id})" class="text-blue-600" title="Edit">✏️</button>\
-              <button onclick="followup_deleteFollowUp(${f.id})" class="text-red-600" title="Delete">🗑️</button>\
-              <button onclick="followup_toggleStatus(${f.id})" class="text-green-600" title="Toggle Status">${f.status === "Pending" ? "✅" : "↩️"}</button>\
-           <button onclick="openWATemplates('${f.name}', '${f.phone}', '${f.note}')">📩</button>
-<div class="flex gap-2 mt-0">
-<button onclick="sendAutoWA('TODAY', '${f.name}', '${f.phone}', '${f.date}')">⚡</button>
-<button onclick="sendAutoWA('TOMORROW', '${f.name}', '${f.phone}', '${f.date}')">📆</button>
-<button onclick="sendAutoWA('OVERDUE', '${f.name}', '${f.phone}', '${f.date}')">⛔</button>
-
-</div>
-
-            </td>\
-          </tr>\
-        `;
-
-        mobile.innerHTML += `\
-          <div class="p-2 rounded border ${isOverdue ? 'border-red-300' : isToday ? 'border-yellow-300' : 'border-gray-200'} text-xs">\
-            <div class="flex justify-between items-center font-semibold">${followup_escapeHtml(f.name)}\
-              <span onclick="followup_toggleStar(${f.id})" class="cursor-pointer">${f.starred ? "⭐" : "☆"}</span>\
-            </div>\
-            <div class="text-xs mb-1">${badge} ${followup_formatDate(f.date)} ${followup_relativeDays(f.date)}</div>\
-            <div class="text-xs mb-1">${telHref ? `<a href="${telHref}" class="block" title="Call">${followup_escapeHtml(f.phone)}</a>` : `<span class=\"text-gray-400\">No phone</span>`} ${phoneClean.forWA ? `<a href="${waHref}" target="_blank" rel="noopener" class="inline-block ml-1">💬 WhatsApp</a>` : ''}</div>\
-<div class="flex gap-2 mt-2">
-<button onclick="sendAutoWA('TODAY', '${f.name}', '${f.phone}', '${f.date}')">⚡</button>
-<button onclick="sendAutoWA('TOMORROW', '${f.name}', '${f.phone}', '${f.date}')">📆</button>
-<button onclick="sendAutoWA('OVERDUE', '${f.name}', '${f.phone}', '${f.date}')">⛔</button>
-
-
-</div>
-
-            <div class="mt-1 truncate" title="${followup_escapeHtml(f.note)}">${followup_escapeHtml(f.note)}</div>\
-            <div class="text-xs text-gray-500 truncate" title="${followup_escapeHtml(f.tags)}">${followup_escapeHtml(f.tags)}</div>\
-            <div class="flex gap-2 mt-2 flex-wrap">\
-              <button onclick="followup_editFollowUp(${f.id})" class="text-blue-600 text-xs" title="Edit">✏️</button>\
-              <button onclick="followup_deleteFollowUp(${f.id})" class="text-red-600 text-xs" title="Delete">🗑️</button>\
-              <button onclick="followup_toggleStatus(${f.id})" class="text-green-600 text-xs" title="Toggle Status">${f.status === "Pending" ? "✅" : "↩️"}</button>\
-    <button onclick="openWATemplates('${f.name}', '${f.phone}', '${f.note}')">📩</button>
-<button onclick="sendAutoWA('TODAY', '${f.name}', '${f.phone}', '${f.date}')">⚡</button>
-<button onclick="sendAutoWA('TOMORROW', '${f.name}', '${f.phone}', '${f.date}')">📆</button>
-<button onclick="sendAutoWA('OVERDUE', '${f.name}', '${f.phone}', '${f.date}')">⛔</button>
-
-
-            </div>\
-          </div>\
-        `;
-      });
-
-      if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="text-center p-4 text-gray-500">No follow-ups found.</td></tr>`;
-      }
-
-      document.getElementById("followup-summaryBar").innerText = `🔴 Overdue: ${overdue} | 🟡 Today: ${todayCount} | 🟢 Upcoming: ${upcoming}`;
-    }
 
     function followup_toggleStar(id) { const f = followup_followups.find(x => x.id === id); if (!f) return; f.starred = !f.starred; followup_saveData(); followup_renderTable(); }
     function followup_deleteFollowUp(id) { if (!confirm("Delete this follow-up?")) return; followup_followups = followup_followups.filter(f => f.id !== id); followup_saveData(); followup_renderTable(); }
