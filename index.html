@@ -316,7 +316,7 @@ const db   = firebase.firestore();
 </div>
 <div class="tab-content" id="tab-followup">
 <!-- Reminder & Follow-Up original content (IDs prefixed with followup-) -->
-<div id="followup-layout" class="max-w-6xl mx-auto p-3 grid grid-cols-[25%_75%] gap-2">
+<div id="followup-layout" class="max-w-6xl mx-auto p-3 grid grid-cols-1 md:grid-cols-[25%_75%] gap-2">
 <!-- Form -->
 <form class="grid grid-cols-4 gap-3 bg-white dark:bg-gray-800 p-4 rounded-xl shadow m-0" id="followup-addForm">
 
@@ -1331,6 +1331,11 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js')
     .then(() => console.log("Service Worker Registered"));
 }
+
+window.addEventListener("resize", () => {
+  const saved = localStorage.getItem("followupLayout") || "grid";
+  followup_applyLayout(saved);
+});
 </script>
 
 
