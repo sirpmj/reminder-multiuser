@@ -323,17 +323,44 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
 }
 
 /* ============================= */
-/* 📱 MOBILE FIX ONLY           */
+/* 📱 FOLLOWUP MOBILE FIX       */
 /* ============================= */
 
 @media (max-width:768px){
 
+  /* Make layout single column */
   #followup-layout {
     grid-template-columns: 1fr !important;
   }
 
-  #followup-layout > * {
-    grid-column: 1 / -1 !important;
+  /* Form full width */
+  #followup-addForm {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Right section full width */
+  #followup-layout section {
+    width: 100%;
+  }
+
+  /* Table scroll */
+  #followup-layout table {
+    min-width: 850px;   /* adjust if needed */
+  }
+
+}
+
+@media (max-width:768px){
+
+  #followup-layout .flex-wrap {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #followup-layout .flex-wrap input,
+  #followup-layout .flex-wrap select {
+    width: 100%;
   }
 
 }
