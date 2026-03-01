@@ -165,32 +165,21 @@ margin-LEFT: 15px;
     margin-top: 2px;
 }
 
-/* ✅ Proper responsive container */
-#followup-layout {
-  grid-template-columns: 1fr;
+body {
+  min-width: 1100px;
+  overflow-x: auto;
 }
 
-/* Desktop view */
-@media (min-width: 768px) {
-  #followup-layout {
-    grid-template-columns: 25% 75%;
-  }
-}
-
-/* Table mobile optimization */
-@media (max-width: 768px) {
-  table th,
-  table td {
-    font-size: 12px;
-    padding: 4px 6px;
-  }
-
-  table th:nth-child(3),
-  table td:nth-child(3),
-  table th:nth-child(6),
-  table td:nth-child(6) {
-    display: none; /* Hide Phone & Tags on mobile */
-  }
+/* Make desktop layout auto-fit smaller screens */
+html {
+  transform-origin: top center; /* keep scaling centered */
+  transform: scale(min(1, calc(100vw / 1024)));
+  width: 1100px;
+  margin: 0 auto;               /* ✅ center the whole layout */
+  display: flex;
+  justify-content: center;
+  overflow-x: hidden;
+  background: #f3f4f6;          /* optional subtle background */
 }
 
 body {
@@ -221,15 +210,7 @@ body {
     #followup-mobileCards button, #followup-mobileCards a { padding: 6px 8px; border-radius: 6px; }
 
     /* Tab styles */
-.tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  max-width: 1100px;
-  margin: 15px auto;
-  justify-content: center;   /* ✅ Center horizontally */
-  align-items: center;
-}
+    .tabs { display:flex; gap:8px; max-width:1100px; margin:10px auto; margin-LEFT: 15px;}
     .tab-btn { padding:8px 12px; border-radius:6px; cursor:pointer; border:1px solid #ddd; background:#fff; font-weight:600; }
     .tab-btn.active { background:#1f2937; color:#fff; border-color:#111827; }
     .tab-content { max-width:1100px; margin:0 auto 40px; }
@@ -286,7 +267,7 @@ const db   = firebase.firestore();
 <!-- GLOBAL TOOLBAR -->
 <header class="max-w-6xl mx-auto px-3 pt-3">
 <div class="flex items-center justify-between flex-wrap gap-2 bg-white dark:bg-gray-800 rounded-xl shadow p-3">
-<div class="grid grid-cols-1 md:grid-cols-5 gap-2 text-sm w-full">
+<div class="flex items-center gap-2 text-sm">
 <h1 class="text-xl font-bold text-indigo-600 dark:text-indigo-400">🧭 Personal follow up </h1>
 <span class="text-xs text-gray-500"></span>
 </div>
@@ -314,11 +295,12 @@ const db   = firebase.firestore();
 
 <!-- Firebase Controls -->
 <div class="flex gap-2 items-center text-sm mt-2">
-<div class="flex items-center gap-3 text-sm">
-  <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
-    👤 <span id="loggedInUser"></span>
-  </span>
+  <button onclick="followup_saveData()">☁️ Save Online</button>
+<button onclick="loadFollowups()">⬇️ Load Online</button>
+
+  <div id="syncStatus" class="text-xs text-gray-500">Sync: Local</div>
 </div>
+
 <button id="logoutBtn" style="
   padding:8px 14px;
   background:#e74c3c;
@@ -334,9 +316,10 @@ const db   = firebase.firestore();
 </div>
 <div class="tab-content" id="tab-followup">
 <!-- Reminder & Follow-Up original content (IDs prefixed with followup-) -->
-<div id="followup-layout" class="max-w-6xl mx-auto p-3 grid grid-cols-1 md:grid-cols-[25%_75%] gap-2">
+<div id="followup-layout" class="max-w-6xl mx-auto p-3 grid grid-cols-[25%_75%] gap-2">
 <!-- Form -->
-<form class="grid grid-cols-1 md:grid-cols-4 gap-3 bg-white dark:bg-gray-800 p-4 rounded-xl shadow m-0" id="followup-addForm">
+<form class="grid grid-cols-4 gap-3 bg-white dark:bg-gray-800 p-4 rounded-xl shadow m-0" id="followup-addForm">
+
   <!-- Row 1 -->
   <input class="border rounded w-full m-0" id="followup-name" placeholder="Name" required type="text"/>
   <input class="border rounded w-full m-0" id="followup-phone" placeholder="Phone (optional) — e.g. +919876543210 or 9876543210" type="tel"/>
@@ -426,7 +409,7 @@ const db   = firebase.firestore();
 </div>
 
 <div class="tab-content hidden-tab" id="tab-quote">
-<div class="mx-auto p-3 grid grid-cols-1 md:grid-cols-[40%_60%] gap-3" style="max-width:1070px;">
+<div class="mx-auto p-0 grid grid-cols-[40%_60%] gap-3" style="max-width:1070px;">
 
 <!-- Left: Input Details (keep .pq-left for JS) -->
 <section class="pq-left bg-white dark:bg-gray-800 p-0 rounded-xl shadow">
@@ -646,15 +629,6 @@ auth.onAuthStateChanged(async user => {
     window.location.replace("login.html");
     return;
   }
-
-
-firebase.auth().onAuthStateChanged(function(user) {
-  if (user) {
-    document.getElementById("loggedInUser").innerText =
-      user.displayName ? user.displayName : "User";
-  }
-});
-
 
   currentUID = user.uid;
 
