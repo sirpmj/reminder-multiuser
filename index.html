@@ -323,47 +323,43 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
 }
 
 /* ============================= */
-/* 📱 FOLLOWUP MOBILE FIX       */
+/* 📱 FOLLOWUP MOBILE FINAL FIX */
 /* ============================= */
 
 @media (max-width:768px){
 
-  /* Make layout single column */
-  #followup-layout {
+  /* 1️⃣ Layout single column */
+  #followup-layout{
+    grid-template-columns: 1fr !important;
+    padding: 10px !important;
+  }
+
+  /* 2️⃣ Form full width */
+  #followup-addForm{
+    width: 100% !important;
+    max-width: 100% !important;
     grid-template-columns: 1fr !important;
   }
 
-  /* Form full width */
-  #followup-addForm {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  /* Right section full width */
-  #followup-layout section {
+  /* 3️⃣ Right section full width */
+  #followup-layout > section{
     width: 100%;
   }
 
-  /* Table scroll */
-  #followup-layout table {
-    min-width: 850px;   /* adjust if needed */
+  /* 4️⃣ Table wrapper full width + scroll */
+  #followup-layout .overflow-x-auto{
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  /* 5️⃣ Table minimum width so scroll works */
+  #followup-layout table{
+    min-width: 900px;  /* adjust if needed */
   }
 
 }
 
-@media (max-width:768px){
 
-  #followup-layout .flex-wrap {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  #followup-layout .flex-wrap input,
-  #followup-layout .flex-wrap select {
-    width: 100%;
-  }
-
-}
 </style>
 
 
