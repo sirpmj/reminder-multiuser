@@ -28,7 +28,6 @@
 .pq-left input,
 .pq-left select {
     font-size: 14px;
-margin-LEFT: 15px;
     padding-top: 1px;
     padding-bottom: 2px;
     transition: all 0.2s ease-in-out; /* smooth transitions */
@@ -166,20 +165,12 @@ margin-LEFT: 15px;
 }
 
 body {
-  min-width: 1100px;
-  overflow-x: auto;
+  min-width: 100%;
+  overflow-x: hidden;
 }
 
-/* Make desktop layout auto-fit smaller screens */
 html {
-  transform-origin: top center; /* keep scaling centered */
-  transform: scale(min(1, calc(100vw / 1024)));
-  width: 1100px;
-  margin: 0 auto;               /* ✅ center the whole layout */
-  display: flex;
-  justify-content: center;
-  overflow-x: hidden;
-  background: #f3f4f6;          /* optional subtle background */
+  width: 100%;
 }
 
 body {
@@ -210,7 +201,14 @@ body {
     #followup-mobileCards button, #followup-mobileCards a { padding: 6px 8px; border-radius: 6px; }
 
     /* Tab styles */
-    .tabs { display:flex; gap:8px; max-width:1100px; margin:10px auto; margin-LEFT: 15px;}
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: 1100px;
+  margin: 10px auto;
+}
     .tab-btn { padding:8px 12px; border-radius:6px; cursor:pointer; border:1px solid #ddd; background:#fff; font-weight:600; }
     .tab-btn.active { background:#1f2937; color:#fff; border-color:#111827; }
     .tab-content { max-width:1100px; margin:0 auto 40px; }
@@ -239,6 +237,39 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
 /* --- Injected: sticky summary bar --- */
 #followup-summaryBar { position: sticky; top: 0; background: white; z-index: 10; padding: 0.25rem; }
 .dark #followup-summaryBar { background: #1f2937; }
+
+
+
+
+@media (max-width:768px){
+
+  .pq-row {
+    grid-template-columns: 1fr;
+  }
+
+  .pq-row label {
+    text-align: left;
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .pq-left .grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  .pq-left label {
+    flex: unset;
+    text-align: left;
+  }
+
+  .pq-left input,
+  .pq-left select {
+    width: 100%;
+    max-width: 100%;
+  }
+
+}
 </style>
 
 
@@ -408,8 +439,7 @@ const db   = firebase.firestore();
 </div>
 
 <div class="tab-content hidden-tab" id="tab-quote">
-<div class="mx-auto p-0 grid grid-cols-[40%_60%] gap-3" style="max-width:1070px;">
-
+<div class="mx-auto p-0 grid grid-cols-1 md:grid-cols-[40%_60%] gap-3" style="max-width:1070px;">
 <!-- Left: Input Details (keep .pq-left for JS) -->
 <section class="pq-left bg-white dark:bg-gray-800 p-0 rounded-xl shadow">
 <div>
