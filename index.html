@@ -295,11 +295,11 @@ const db   = firebase.firestore();
 
 <!-- Firebase Controls -->
 <div class="flex gap-2 items-center text-sm mt-2">
-  <button onclick="followup_saveData()">☁️ Save Online</button>
-<button onclick="loadFollowups()">⬇️ Load Online</button>
-
-  <div id="syncStatus" class="text-xs text-gray-500">Sync: Local</div>
+  <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+    👤 <span id="loggedInUser"></span>
+  </span>
 </div>
+
 
 <button id="logoutBtn" style="
   padding:8px 14px;
@@ -629,6 +629,13 @@ auth.onAuthStateChanged(async user => {
     window.location.replace("login.html");
     return;
   }
+
+firebase.auth().onAuthStateChanged(function(user) {
+  if (user) {
+    document.getElementById("loggedInUser").innerText =
+      user.displayName ? user.displayName : "User";
+  }
+});
 
   currentUID = user.uid;
 
