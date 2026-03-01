@@ -367,22 +367,12 @@ const db   = firebase.firestore();
         onclick="followup_toggleLayout()">↔ Layout: 25/75</button>
 
 <button class="bg-gray-800 text-white px-3 py-1 rounded" onclick="followup_toggleDarkMode()">🌓 Dark Mode</button>
-</div>
-</div>
-</header>
-<div class="tabs">
-
-<button class="tab-btn active" id="tab-followup-btn">📋 Reminder &amp; Follow-Up</button>
-<button class="tab-btn" id="tab-quote-btn">📋 Price Quote</button>
-
 <!-- Firebase Controls -->
 <div class="flex gap-2 items-center text-sm mt-2">
   <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
     👤 <span id="loggedInUser"></span>
   </span>
 </div>
-
-
 <button id="logoutBtn" style="
   padding:8px 14px;
   background:#e74c3c;
@@ -393,6 +383,18 @@ const db   = firebase.firestore();
 ">
   Logout
 </button>
+</div>
+
+</header>
+<div class="tabs">
+
+<button class="tab-btn active" id="tab-followup-btn">📋 Reminder &amp; Follow-Up</button>
+<button class="tab-btn" id="tab-quote-btn">📋 Price Quote</button>
+
+
+
+
+
 
 
 </div>
@@ -400,7 +402,7 @@ const db   = firebase.firestore();
 <!-- Reminder & Follow-Up original content (IDs prefixed with followup-) -->
 <div id="followup-layout" class="max-w-6xl mx-auto p-3 grid grid-cols-1 md:grid-cols-[25%_75%] gap-3">
 <!-- Form -->
-<form class="grid grid-cols-1 md:grid-cols-4 gap-3 bg-white dark:bg-gray-800 p-4 rounded-xl shadow m-0" id="followup-addForm">
+<form class="grid grid-cols-1 md:grid-cols-1 gap-3 bg-white dark:bg-gray-800 p-4 rounded-xl shadow m-0" id="followup-addForm">
   <!-- Row 1 -->
   <input class="border rounded w-full m-0" id="followup-name" placeholder="Name" required type="text"/>
   <input class="border rounded w-full m-0" id="followup-phone" placeholder="Phone (optional) — e.g. +919876543210 or 9876543210" type="tel"/>
