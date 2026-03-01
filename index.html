@@ -270,6 +270,57 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
   }
 
 }
+
+/* ============================= */
+/* 📱 MOBILE SINGLE LINE FIX    */
+/* ============================= */
+
+@media (max-width:768px){
+
+  .pq-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+  }
+
+  .pq-row label {
+    flex: 0 0 45%;
+    text-align: left;
+    border: none;
+    padding: 0;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .pq-row input,
+  .pq-row select {
+    flex: 1;
+    width: 100%;
+    font-size: 14px;
+  }
+
+  /* Remove column stacking */
+  .pq-left .grid {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .pq-left label {
+    flex: 0 0 45%;
+    text-align: left;
+    padding-right: 6px;
+  }
+
+  .pq-left input,
+  .pq-left select {
+    flex: 1;
+    max-width: 100%;
+  }
+
+}
 </style>
 
 
