@@ -1,8 +1,12 @@
 
+
 <!DOCTYPE html>
 
 <html lang="en">
 <head>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4a90e2">
+
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🧭 Reminder</title>
@@ -1318,6 +1322,14 @@ document.querySelectorAll("input[type='date']:not(#followup-filterFrom):not(#fol
     <button onclick="closeWATemplates()" class="mt-4 w-full bg-gray-300 dark:bg-gray-600 text-black dark:text-white py-2 rounded-lg">Close</button>
   </div>
 </div>
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js')
+    .then(() => console.log("Service Worker Registered"));
+}
+</script>
+
 
 </body>
 </html>
