@@ -334,10 +334,9 @@ const db   = firebase.firestore();
 </div>
 <div class="tab-content" id="tab-followup">
 <!-- Reminder & Follow-Up original content (IDs prefixed with followup-) -->
-<div id="followup-layout" class="max-w-6xl mx-auto p-3 grid grid-cols-[25%_75%] gap-2">
+<div id="followup-layout" class="max-w-6xl mx-auto p-3 grid grid-cols-1 md:grid-cols-[25%_75%] gap-2">
 <!-- Form -->
-<form class="grid grid-cols-4 gap-3 bg-white dark:bg-gray-800 p-4 rounded-xl shadow m-0" id="followup-addForm">
-
+<form class="grid grid-cols-1 md:grid-cols-4 gap-3 bg-white dark:bg-gray-800 p-4 rounded-xl shadow m-0" id="followup-addForm">
   <!-- Row 1 -->
   <input class="border rounded w-full m-0" id="followup-name" placeholder="Name" required type="text"/>
   <input class="border rounded w-full m-0" id="followup-phone" placeholder="Phone (optional) — e.g. +919876543210 or 9876543210" type="tel"/>
@@ -427,7 +426,7 @@ const db   = firebase.firestore();
 </div>
 
 <div class="tab-content hidden-tab" id="tab-quote">
-<div class="mx-auto p-0 grid grid-cols-[40%_60%] gap-3" style="max-width:1070px;">
+<div class="mx-auto p-3 grid grid-cols-1 md:grid-cols-[40%_60%] gap-3" style="max-width:1070px;">
 
 <!-- Left: Input Details (keep .pq-left for JS) -->
 <section class="pq-left bg-white dark:bg-gray-800 p-0 rounded-xl shadow">
