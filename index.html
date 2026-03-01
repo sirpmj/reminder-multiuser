@@ -165,21 +165,32 @@ margin-LEFT: 15px;
     margin-top: 2px;
 }
 
-body {
-  min-width: 1100px;
-  overflow-x: auto;
+/* ✅ Proper responsive container */
+#followup-layout {
+  grid-template-columns: 1fr;
 }
 
-/* Make desktop layout auto-fit smaller screens */
-html {
-  transform-origin: top center; /* keep scaling centered */
-  transform: scale(min(1, calc(100vw / 1024)));
-  width: 1100px;
-  margin: 0 auto;               /* ✅ center the whole layout */
-  display: flex;
-  justify-content: center;
-  overflow-x: hidden;
-  background: #f3f4f6;          /* optional subtle background */
+/* Desktop view */
+@media (min-width: 768px) {
+  #followup-layout {
+    grid-template-columns: 25% 75%;
+  }
+}
+
+/* Table mobile optimization */
+@media (max-width: 768px) {
+  table th,
+  table td {
+    font-size: 12px;
+    padding: 4px 6px;
+  }
+
+  table th:nth-child(3),
+  table td:nth-child(3),
+  table th:nth-child(6),
+  table td:nth-child(6) {
+    display: none; /* Hide Phone & Tags on mobile */
+  }
 }
 
 body {
@@ -210,7 +221,15 @@ body {
     #followup-mobileCards button, #followup-mobileCards a { padding: 6px 8px; border-radius: 6px; }
 
     /* Tab styles */
-    .tabs { display:flex; gap:8px; max-width:1100px; margin:10px auto; margin-LEFT: 15px;}
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  max-width: 1100px;
+  margin: 15px auto;
+  justify-content: center;   /* ✅ Center horizontally */
+  align-items: center;
+}
     .tab-btn { padding:8px 12px; border-radius:6px; cursor:pointer; border:1px solid #ddd; background:#fff; font-weight:600; }
     .tab-btn.active { background:#1f2937; color:#fff; border-color:#111827; }
     .tab-content { max-width:1100px; margin:0 auto 40px; }
@@ -267,7 +286,7 @@ const db   = firebase.firestore();
 <!-- GLOBAL TOOLBAR -->
 <header class="max-w-6xl mx-auto px-3 pt-3">
 <div class="flex items-center justify-between flex-wrap gap-2 bg-white dark:bg-gray-800 rounded-xl shadow p-3">
-<div class="flex items-center gap-2 text-sm">
+<div class="grid grid-cols-1 md:grid-cols-5 gap-2 text-sm w-full">
 <h1 class="text-xl font-bold text-indigo-600 dark:text-indigo-400">🧭 Personal follow up </h1>
 <span class="text-xs text-gray-500"></span>
 </div>
@@ -295,10 +314,10 @@ const db   = firebase.firestore();
 
 <!-- Firebase Controls -->
 <div class="flex gap-2 items-center text-sm mt-2">
-  <button onclick="followup_saveData()">☁️ Save Online</button>
-<button onclick="loadFollowups()">⬇️ Load Online</button>
-
-  <div id="syncStatus" class="text-xs text-gray-500">Sync: Local</div>
+<div class="flex items-center gap-3 text-sm">
+  <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+    👤 <span id="loggedInUser"></span>
+  </span>
 </div>
 
 <button id="logoutBtn" style="
@@ -311,6 +330,7 @@ const db   = firebase.firestore();
 ">
   Logout
 </button>
+
 
 
 </div>
@@ -368,21 +388,40 @@ const db   = firebase.firestore();
           onclick="followup_filterOverdue()">⛔ Overdue</button>
 </div>
 
-<div class="flex flex-wrap gap-2 items-center text-sm">
-<input class="border rounded px-3 py-1 flex-grow min-w-[140px]" id="followup-filterName" oninput="followup_renderTable()" placeholder="Search by name..." type="text"/>
-<select class="border rounded px-2 py-1 max-w-[150px]" id="followup-filterStatus" onchange="followup_renderTable()">
-<option value="">All Status</option>
-<option value="Pending">Pending</option>
-<option value="Completed">Completed</option>
-</select>
-<input class="border rounded px-2 py-1 max-w-[140px]" id="followup-filterFrom" onchange="followup_renderTable()" type="date"/>
-<input class="border rounded px-2 py-1 max-w-[140px]" id="followup-filterTo" onchange="followup_renderTable()" type="date"/>
-<select class="border rounded px-2 py-1 max-w-[150px]" id="followup-sortBy" onchange="followup_renderTable()">
-<option value="date">Sort by Date</option>
-<option value="name">Sort by Name</option>
-<option value="priority">Sort by Priority</option>
-</select>
+<div class="flex gap-2 text-sm w-full">
 
+  <!-- Search -->
+  <input
+    class="border rounded px-3 py-2 flex-[2]"
+    id="followup-filterName"
+    oninput="followup_renderTable()"
+    placeholder="Search..."
+    type="text"
+  />
+
+  <!-- Status -->
+  <select
+    class="border rounded px-3 py-2 flex-1"
+    id="followup-filterStatus"
+    onchange="followup_renderTable()"
+  >
+    <option value="">All</option>
+    <option value="Pending">Pending</option>
+    <option value="Completed">Done</option>
+  </select>
+
+  <!-- Sort -->
+  <select
+    class="border rounded px-3 py-2 flex-1"
+    id="followup-sortBy"
+    onchange="followup_renderTable()"
+  >
+    <option value="date">Date</option>
+    <option value="name">Name</option>
+    <option value="priority">Priority</option>
+  </select>
+
+</div>
 </div>
 <div class="font-semibold text-xs text-gray-700 dark:text-gray-300 mt-1" id="followup-summaryBar"></div>
 <div class="overflow-x-auto bg-white dark:bg-gray-800 shadow rounded-xl mt-1 flex-grow min-h-[150px]">
@@ -888,6 +927,31 @@ Note: ${f.note || "-"}`;
   document.getElementById("followup-summaryBar").innerText =
     `🔴 Overdue: ${overdue} | 🟡 Today: ${todayCount} | 🟢 Upcoming: ${upcoming}`;
 }
+
+
+firebase.auth().onAuthStateChanged(function(user) {
+  if (user) {
+    document.getElementById("loggedInUser").innerText =
+      user.displayName ? user.displayName : "User";
+  }
+});
+
+
+firebase.auth().createUserWithEmailAndPassword(email, password)
+.then((userCredential) => {
+  const user = userCredential.user;
+
+  return user.updateProfile({
+    displayName: document.getElementById("signupName").value
+  });
+})
+.then(() => {
+  alert("Signup successful");
+})
+.catch((error) => {
+  alert(error.message);
+});
+
 
     function followup_toggleStar(id) { const f = followup_followups.find(x => x.id === id); if (!f) return; f.starred = !f.starred; followup_saveData(); followup_renderTable(); }
     function followup_deleteFollowUp(id) { if (!confirm("Delete this follow-up?")) return; followup_followups = followup_followups.filter(f => f.id !== id); followup_saveData(); followup_renderTable(); }

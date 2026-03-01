@@ -168,23 +168,31 @@ function signup(){
     return;
   }
 
-auth.createUserWithEmailAndPassword(emailV, passV)
-  .then(res => {
-    return db.collection("users").doc(res.user.uid).set({
-      profile: {
-        name: fullName,
-        mobile,
-        company,
-        email: emailV,
-        createdAt: Date.now()
-      }
-    });
-  })
-  .then(() => {
-    location.href = "index.html";
-  })
-  .catch(e => alert(e.message));
+  auth.createUserWithEmailAndPassword(emailV, passV)
+    .then(res => {
 
+      // ✅ 1. Set displayName in Firebase Auth
+      return res.user.updateProfile({
+        displayName: fullName
+      }).then(() => {
+
+        // ✅ 2. Save extra profile in Firestore
+        return db.collection("users").doc(res.user.uid).set({
+          profile: {
+            name: fullName,
+            mobile,
+            company,
+            email: emailV,
+            createdAt: Date.now()
+          }
+        });
+
+      });
+    })
+    .then(() => {
+      location.href = "index.html";
+    })
+    .catch(e => alert(e.message));
 }
 </script>
 
