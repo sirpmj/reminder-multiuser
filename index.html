@@ -614,11 +614,18 @@ function followup_cleanPhoneDigits(raw = "") {
     });
 
 
-let currentUID = null;
-let currentUserProfile = {};
+let currentUID = null;   // 👈 यहाँ user की पहचान store होगी
 
-auth.onAuthStateChanged(async (user) => {
+auth.onAuthStateChanged(user => {
 
+  // ❌ अगर user login नहीं है
+  if (!user) {
+    alert("Please login first");
+    window.location.href = "login.html";
+    return;
+  }
+
+auth.onAuthStateChanged(async user => {
   if (!user) {
     window.location.replace("login.html");
     return;
@@ -629,19 +636,20 @@ auth.onAuthStateChanged(async (user) => {
   const userRef = db.collection("users").doc(currentUID);
   const snap = await userRef.get();
 
-  // Auto create profile if missing
+  // 🛠 profile missing? auto-create
   if (!snap.exists) {
     await userRef.set({
       profile: {
         name: user.email.split("@")[0],
         email: user.email,
-        createdAt: Date.now()
+        createdAt: Date.now(),
+        autoCreated: true
       }
     });
+    console.log("Profile auto-created for:", user.email);
   }
 
-  const updatedSnap = await userRef.get();
-  currentUserProfile = updatedSnap.data().profile || {};
+  currentUserProfile = (await userRef.get()).data();
 
   loadFollowups();
 });
