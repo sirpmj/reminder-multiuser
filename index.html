@@ -1454,47 +1454,62 @@ document.querySelectorAll("input[type='date']:not(#followup-filterFrom):not(#fol
   </div>
 </div>
 
+<!-- Install Button -->
+<button id="installBtn" class="hidden"
+        style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+               background:#4a90e2;color:white;padding:12px 20px;
+               border-radius:8px;cursor:pointer;z-index:1000;">
+  ➕ Install Reminder App
+</button>
+
 <script>
-let deferredPrompt;
+let deferredPrompt = null;
 
-window.addEventListener('beforeinstallprompt', (e) => {
-  // Default prompt रोक दें
-  e.preventDefault();
-  
-  // Event save करें ताकि बाद में trigger कर सकें
-  deferredPrompt = e;
+// Check if already installed or dismissed
+if (!localStorage.getItem('reminderAppInstallDismissed')) {
 
-  // Auto-show custom button या popup
-  showInstallPopup();
-});
+  window.addEventListener('beforeinstallprompt', (e) => {
+    console.log("Install event fired ✅");
+    e.preventDefault(); // Default prompt रोकें
+    deferredPrompt = e;
 
-function showInstallPopup() {
-  const popup = document.createElement('div');
-  popup.id = 'install-popup';
-  popup.innerHTML = `
-    <div style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
-                background:#4a90e2;color:white;padding:12px 20px;
-                border-radius:8px;box-shadow:0 4px 10px rgba(0,0,0,0.2);
-                font-family:sans-serif;cursor:pointer;">
-      ➕ Install Reminder App
-    </div>
-  `;
-  document.body.appendChild(popup);
-
-  popup.addEventListener('click', async () => {
-    popup.remove(); // popup बंद करें
-    if (deferredPrompt) {
-      deferredPrompt.prompt(); // native install prompt दिखाएँ
-      const choiceResult = await deferredPrompt.userChoice;
-      if (choiceResult.outcome === 'accepted') {
-        console.log('User accepted the install');
-      } else {
-        console.log('User dismissed the install');
-      }
-      deferredPrompt = null;
-    }
+    // Auto-show button after 1 sec
+    setTimeout(() => {
+      document.getElementById('installBtn').classList.remove('hidden');
+    }, 1000);
   });
 }
+
+// Install function
+function installApp() {
+  if (!deferredPrompt) {
+    alert("Install not available yet");
+    return;
+  }
+
+  deferredPrompt.prompt();
+
+  deferredPrompt.userChoice.then((choiceResult) => {
+    if (choiceResult.outcome === 'accepted') {
+      console.log('User accepted install');
+    } else {
+      console.log('User dismissed install');
+    }
+
+    deferredPrompt = null;
+    document.getElementById('installBtn').classList.add('hidden');
+
+    // Save dismiss to avoid showing again
+    localStorage.setItem('reminderAppInstallDismissed', 'true');
+  });
+}
+
+// Optional: auto prompt on load if supported
+window.addEventListener('load', () => {
+  if (deferredPrompt && !localStorage.getItem('reminderAppInstallDismissed')) {
+    document.getElementById('installBtn').click(); // auto-click for native prompt
+  }
+});
 </script>
 
 </body>
