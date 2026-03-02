@@ -1,8 +1,9 @@
-const CACHE_NAME = "Reminder-app-v11";
+const CACHE_NAME = "Reminder-app-v12";   // 🔥 version change important
 
 const urlsToCache = [
   "./",
   "./index.html",
+  "./login.html",
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png"
@@ -37,8 +38,11 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
   event.respondWith(
     caches.match(event.request)
-      .then(response => response || fetch(event.request))
-      .catch(() => caches.match("./index.html"))
+      .then(response => {
+        return response || fetch(event.request);
+      })
+      .catch(() => {
+        return caches.match("./index.html");
+      })
   );
-
 });
