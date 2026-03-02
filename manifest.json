@@ -1,7 +1,8 @@
 {
   "name": "Personal Reminder System",
   "short_name": "ReminderApp",
-  "start_url": "./index.html",
+  "start_url": "/index.html",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#f0f4f8",
   "theme_color": "#4a90e2",
