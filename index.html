@@ -356,28 +356,22 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
 }
 
 /* ===================================== */
-/* 📱 APP STYLE STICKY HEADER (MOBILE) */
+/* 📱 FINAL APP STYLE STICKY HEADER     */
 /* ===================================== */
 
 @media (max-width:768px){
 
-  /* Make header sticky */
+  /* Sticky header */
   header{
     position:sticky;
     top:0;
     z-index:1000;
     background:#ffffff;
-    padding-bottom:6px;
+    padding-bottom:8px;
   }
 
   .dark header{
     background:#1f2937;
-  }
-
-  /* Top App Bar */
-  header h1{
-    font-size:18px;
-    font-weight:700;
   }
 
   /* Hide layout toggle */
@@ -385,24 +379,40 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
     display:none !important;
   }
 
-  /* First row align */
+  /* Main header container vertical */
   header .flex.items-center.justify-between{
     flex-direction:column;
     align-items:stretch;
-    gap:8px;
+    gap:10px;
   }
 
-  /* Action Row Scrollable */
+  /* ===== ROW 1 ===== */
+  header .flex.items-center.gap-2.text-sm{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+
+  header h1{
+    font-size:18px;
+    font-weight:700;
+  }
+
+  /* Alerts right corner small */
+  label:has(#followup-enableAlerts){
+    font-size:12px;
+    white-space:nowrap;
+  }
+
+  /* ===== ROW 2 ===== */
   header .flex.items-center.gap-2.flex-wrap{
     display:flex;
     flex-wrap:nowrap;
     overflow-x:auto;
     -webkit-overflow-scrolling:touch;
     gap:6px;
-    padding-bottom:4px;
   }
 
-  /* Compact buttons */
   header button{
     flex:0 0 auto;
     font-size:12px;
@@ -410,22 +420,20 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
     white-space:nowrap;
   }
 
-  /* Alerts smaller */
-  label:has(#followup-enableAlerts){
-    font-size:12px;
-  }
-
-  /* User badge compact */
-  .bg-blue-100{
-    font-size:12px;
-    padding:4px 8px;
-    white-space:nowrap;
-  }
-
-  /* Logout compact */
+  /* ===== ROW 3 ===== */
   #logoutBtn{
     font-size:12px;
     padding:6px 10px !important;
+  }
+
+  /* User badge handling long name */
+  .bg-blue-100{
+    flex:1;
+    max-width:70%;
+    font-size:12px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
   }
 
 }
