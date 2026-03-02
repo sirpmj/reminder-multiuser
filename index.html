@@ -356,7 +356,7 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
 }
 
 /* ===================================== */
-/* 📱 FINAL APP STYLE STICKY HEADER     */
+/* 📱 FINAL STABLE APP HEADER MOBILE    */
 /* ===================================== */
 
 @media (max-width:768px){
@@ -379,15 +379,15 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
     display:none !important;
   }
 
-  /* Main header container vertical */
-  header .flex.items-center.justify-between{
+  /* Main container vertical */
+  header > div{
+    display:flex;
     flex-direction:column;
-    align-items:stretch;
     gap:10px;
   }
 
   /* ===== ROW 1 ===== */
-  header .flex.items-center.gap-2.text-sm{
+  header > div > div:first-child{
     display:flex;
     justify-content:space-between;
     align-items:center;
@@ -398,14 +398,18 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
     font-weight:700;
   }
 
-  /* Alerts right corner small */
-  label:has(#followup-enableAlerts){
+  /* Alerts small */
+  #followup-enableAlerts{
+    transform:scale(0.9);
+  }
+
+  header label{
     font-size:12px;
     white-space:nowrap;
   }
 
   /* ===== ROW 2 ===== */
-  header .flex.items-center.gap-2.flex-wrap{
+  header > div > div:nth-child(2){
     display:flex;
     flex-wrap:nowrap;
     overflow-x:auto;
@@ -420,20 +424,18 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
     white-space:nowrap;
   }
 
-  /* ===== ROW 3 ===== */
-  #logoutBtn{
-    font-size:12px;
-    padding:6px 10px !important;
-  }
-
-  /* User badge handling long name */
+  /* ===== ROW 3 (User + Logout) ===== */
   .bg-blue-100{
-    flex:1;
-    max-width:70%;
-    font-size:12px;
+    max-width:65%;
     overflow:hidden;
     text-overflow:ellipsis;
     white-space:nowrap;
+    font-size:12px;
+  }
+
+  #logoutBtn{
+    font-size:12px;
+    padding:6px 10px !important;
   }
 
 }
