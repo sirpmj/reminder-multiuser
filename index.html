@@ -1449,17 +1449,8 @@ document.querySelectorAll("input[type='date']:not(#followup-filterFrom):not(#fol
     <button onclick="closeWATemplates()" class="mt-4 w-full bg-gray-300 dark:bg-gray-600 text-black dark:text-white py-2 rounded-lg">Close</button>
   </div>
 </div>
+
 <script>
-    window.addEventListener("resize", () => {
-  const saved = localStorage.getItem("followupLayout") || "grid";
-  followup_applyLayout(saved);
-});
-</script>
-<script>
-
-
-
-
  if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js')
     .then(() => console.log("Service Worker Registered"));
@@ -1467,9 +1458,9 @@ document.querySelectorAll("input[type='date']:not(#followup-filterFrom):not(#fol
     
 </script>
 
-
 </body>
 </html>
+
 
 
 
