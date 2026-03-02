@@ -356,49 +356,45 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
 }
 
 /* ===================================== */
-/* 📱 FINAL AUTO-FIT MOBILE HEADER      */
+/* 📱 STRICT 3 SINGLE-LINE MOBILE HEADER */
 /* ===================================== */
 
 @media (max-width:768px){
 
-  /* Sticky */
   header{
     position:sticky;
     top:0;
     z-index:1000;
-    background:#ffffff;
+    background:#fff;
   }
 
   .dark header{
     background:#1f2937;
   }
 
-  /* Hide layout button */
+  /* Hide Layout Button */
   #followup-layout-btn{
     display:none !important;
   }
 
-  /* Main vertical layout */
+  /* Main container vertical */
   header > div{
     flex-direction:column !important;
     align-items:stretch !important;
-    gap:12px;
+    gap:8px;
   }
 
-  /* ===================== */
-  /* ROW 1 */
-  /* ===================== */
-
+  /* ================= ROW 1 ================= */
   header > div > div:first-child{
     display:flex !important;
-    justify-content:space-between !important;
+    justify-content:space-between;
     align-items:center;
-    width:100%;
+    flex-wrap:nowrap !important;
   }
 
   header h1{
-    font-size:18px;
-    font-weight:700;
+    font-size:16px;
+    white-space:nowrap;
   }
 
   header label{
@@ -406,51 +402,36 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
     white-space:nowrap;
   }
 
-  #followup-enableAlerts{
-    transform:scale(0.9);
-  }
-
-  /* ===================== */
-  /* ROW 2 (AUTO FIT GRID) */
-  /* ===================== */
-
+  /* ================= ROW 2 ================= */
   header > div > div:nth-child(2){
-    display:grid !important;
-    grid-template-columns:repeat(auto-fit, minmax(120px, 1fr));
-    gap:8px;
-    width:100%;
+    display:flex !important;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:nowrap !important;
+    gap:4px;
   }
 
   header > div > div:nth-child(2) button{
-    width:100%;
-    font-size:12px;
-    padding:6px 8px !important;
-  }
-
-  /* ===================== */
-  /* ROW 3 (USER + LOGOUT) */
-  /* ===================== */
-
-  header > div .flex.gap-2.items-center{
-    display:flex !important;
-    justify-content:space-between !important;
-    align-items:center;
-    width:100%;
-    gap:8px;
-  }
-
-  .bg-blue-100{
     flex:1;
-    font-size:13px;
-    white-space:normal;
-    word-break:break-word;
+    font-size:11px;
+    padding:5px 4px !important;
+    white-space:nowrap;
   }
 
+  /* ================= ROW 3 ================= */
+  header .bg-blue-100,
   #logoutBtn{
-    flex-shrink:0;
-    font-size:12px;
-    padding:6px 12px !important;
+    font-size:11px;
+    padding:5px 6px !important;
     white-space:nowrap;
+  }
+
+  header .flex.gap-2.items-center{
+    display:flex !important;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:nowrap !important;
+    gap:6px;
   }
 
 }
