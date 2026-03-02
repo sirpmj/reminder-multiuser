@@ -356,11 +356,12 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
 }
 
 /* ===================================== */
-/* 📱 STRICT 3 SINGLE-LINE MOBILE HEADER */
+/* 📱 FORCE STRICT SINGLE LINE MOBILE   */
 /* ===================================== */
 
 @media (max-width:768px){
 
+  /* Sticky */
   header{
     position:sticky;
     top:0;
@@ -372,66 +373,76 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
     background:#1f2937;
   }
 
-  /* Hide Layout Button */
+  /* Hide Layout button */
   #followup-layout-btn{
     display:none !important;
   }
 
-  /* Main container vertical */
+  /* Break main container */
   header > div{
+    display:flex !important;
     flex-direction:column !important;
-    align-items:stretch !important;
-    gap:8px;
+    gap:6px !important;
   }
 
-  /* ================= ROW 1 ================= */
+  /* ===== ROW 1 ===== */
   header > div > div:first-child{
     display:flex !important;
-    justify-content:space-between;
-    align-items:center;
     flex-wrap:nowrap !important;
+    justify-content:space-between !important;
+    align-items:center !important;
+    width:100% !important;
   }
 
   header h1{
-    font-size:16px;
-    white-space:nowrap;
+    font-size:15px !important;
+    white-space:nowrap !important;
   }
 
   header label{
-    font-size:12px;
-    white-space:nowrap;
+    font-size:11px !important;
+    white-space:nowrap !important;
   }
 
-  /* ================= ROW 2 ================= */
+  /* ===== ROW 2 ===== */
   header > div > div:nth-child(2){
     display:flex !important;
-    justify-content:space-between;
-    align-items:center;
     flex-wrap:nowrap !important;
-    gap:4px;
+    justify-content:space-between !important;
+    gap:3px !important;
+    width:100% !important;
   }
 
   header > div > div:nth-child(2) button{
-    flex:1;
-    font-size:11px;
-    padding:5px 4px !important;
-    white-space:nowrap;
+    flex:1 1 0 !important;
+    font-size:10px !important;
+    padding:4px 2px !important;
+    white-space:nowrap !important;
   }
 
-  /* ================= ROW 3 ================= */
-  header .bg-blue-100,
-  #logoutBtn{
-    font-size:11px;
-    padding:5px 6px !important;
-    white-space:nowrap;
-  }
-
+  /* ===== ROW 3 ===== */
   header .flex.gap-2.items-center{
     display:flex !important;
-    justify-content:space-between;
-    align-items:center;
     flex-wrap:nowrap !important;
-    gap:6px;
+    justify-content:space-between !important;
+    gap:4px !important;
+    width:100% !important;
+  }
+
+  .bg-blue-100{
+    flex:1 1 auto !important;
+    font-size:10px !important;
+    padding:4px 6px !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+  }
+
+  #logoutBtn{
+    flex:0 0 auto !important;
+    font-size:10px !important;
+    padding:4px 6px !important;
+    white-space:nowrap !important;
   }
 
 }
