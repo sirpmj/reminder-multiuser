@@ -356,51 +356,44 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
 }
 
 /* ===================================== */
-/* 📱 FINAL STABLE APP HEADER MOBILE    */
+/* 📱 FORCE 3 ROW MOBILE HEADER FIX     */
 /* ===================================== */
 
 @media (max-width:768px){
 
-  /* Sticky header */
+  /* Sticky */
   header{
     position:sticky;
     top:0;
     z-index:1000;
     background:#ffffff;
-    padding-bottom:8px;
   }
 
   .dark header{
     background:#1f2937;
   }
 
-  /* Hide layout toggle */
+  /* Hide layout button */
   #followup-layout-btn{
     display:none !important;
   }
 
-  /* Main container vertical */
+  /* Break main flex into column */
   header > div{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
+    flex-direction:column !important;
+    align-items:stretch !important;
   }
 
   /* ===== ROW 1 ===== */
   header > div > div:first-child{
-    display:flex;
-    justify-content:space-between;
+    width:100%;
+    display:flex !important;
+    justify-content:space-between !important;
     align-items:center;
   }
 
   header h1{
     font-size:18px;
-    font-weight:700;
-  }
-
-  /* Alerts small */
-  #followup-enableAlerts{
-    transform:scale(0.9);
   }
 
   header label{
@@ -410,32 +403,31 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
 
   /* ===== ROW 2 ===== */
   header > div > div:nth-child(2){
-    display:flex;
-    flex-wrap:nowrap;
+    width:100%;
+    display:flex !important;
+    flex-wrap:nowrap !important;
     overflow-x:auto;
-    -webkit-overflow-scrolling:touch;
     gap:6px;
   }
 
-  header button{
+  header > div > div:nth-child(2) button{
     flex:0 0 auto;
     font-size:12px;
     padding:6px 10px !important;
     white-space:nowrap;
   }
 
-  /* ===== ROW 3 (User + Logout) ===== */
+  /* ===== ROW 3 ===== */
+  #logoutBtn{
+    margin-top:6px;
+  }
+
   .bg-blue-100{
     max-width:65%;
     overflow:hidden;
     text-overflow:ellipsis;
     white-space:nowrap;
     font-size:12px;
-  }
-
-  #logoutBtn{
-    font-size:12px;
-    padding:6px 10px !important;
   }
 
 }
