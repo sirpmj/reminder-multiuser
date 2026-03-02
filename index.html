@@ -356,12 +356,12 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
 }
 
 /* ===================================== */
-/* 📱 FORCE 3 ROW MOBILE HEADER FIX     */
+/* 📱 FINAL CLEAN 3-ROW MOBILE HEADER   */
 /* ===================================== */
 
 @media (max-width:768px){
 
-  /* Sticky */
+  /* Sticky header */
   header{
     position:sticky;
     top:0;
@@ -373,27 +373,32 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
     background:#1f2937;
   }
 
-  /* Hide layout button */
+  /* Hide Layout toggle button */
   #followup-layout-btn{
     display:none !important;
   }
 
-  /* Break main flex into column */
+  /* Make main container vertical */
   header > div{
     flex-direction:column !important;
     align-items:stretch !important;
+    gap:12px;
   }
 
-  /* ===== ROW 1 ===== */
+  /* ===================== */
+  /* ROW 1: Title + Alerts */
+  /* ===================== */
+
   header > div > div:first-child{
-    width:100%;
     display:flex !important;
     justify-content:space-between !important;
     align-items:center;
+    width:100%;
   }
 
   header h1{
     font-size:18px;
+    font-weight:700;
   }
 
   header label{
@@ -401,33 +406,54 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
     white-space:nowrap;
   }
 
-  /* ===== ROW 2 ===== */
+  #followup-enableAlerts{
+    transform:scale(0.9);
+  }
+
+  /* ===================== */
+  /* ROW 2: 2x2 Button Grid */
+  /* ===================== */
+
   header > div > div:nth-child(2){
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:8px;
     width:100%;
-    display:flex !important;
-    flex-wrap:nowrap !important;
-    overflow-x:auto;
-    gap:6px;
   }
 
   header > div > div:nth-child(2) button{
-    flex:0 0 auto;
+    width:100%;
     font-size:12px;
-    padding:6px 10px !important;
-    white-space:nowrap;
+    padding:6px 6px !important;
   }
 
-  /* ===== ROW 3 ===== */
-  #logoutBtn{
-    margin-top:6px;
+  /* ===================== */
+  /* ROW 3: User + Logout */
+  /* ===================== */
+
+  /* User container */
+  header > div .flex.gap-2.items-center{
+    display:flex !important;
+    justify-content:space-between !important;
+    align-items:center;
+    width:100%;
   }
 
+  /* Full username visible */
   .bg-blue-100{
-    max-width:65%;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
+    font-size:13px;
+    white-space:normal;
+    overflow:visible;
+    text-overflow:unset;
+    max-width:100%;
+    word-break:break-word;
+  }
+
+  /* Logout button */
+  #logoutBtn{
     font-size:12px;
+    padding:6px 12px !important;
+    white-space:nowrap;
   }
 
 }
