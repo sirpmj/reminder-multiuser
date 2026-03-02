@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 
 <html lang="en">
@@ -28,7 +26,6 @@
 .pq-left input,
 .pq-left select {
     font-size: 14px;
-margin-LEFT: 15px;
     padding-top: 1px;
     padding-bottom: 2px;
     transition: all 0.2s ease-in-out; /* smooth transitions */
@@ -149,6 +146,14 @@ margin-LEFT: 15px;
     padding: 4px 0;
 }
 
+.app-title {
+  font-size: 24px;
+  font-weight: 700;
+  background: linear-gradient(90deg, #4e73df, #1cc88a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 /* Required field markers (example: Customer Name & Product) */
 #pq-customerName:required,
 #pq-product:required {
@@ -166,20 +171,12 @@ margin-LEFT: 15px;
 }
 
 body {
-  min-width: 1100px;
-  overflow-x: auto;
+  min-width: 100%;
+  overflow-x: hidden;
 }
 
-/* Make desktop layout auto-fit smaller screens */
 html {
-  transform-origin: top center; /* keep scaling centered */
-  transform: scale(min(1, calc(100vw / 1024)));
-  width: 1100px;
-  margin: 0 auto;               /* ✅ center the whole layout */
-  display: flex;
-  justify-content: center;
-  overflow-x: hidden;
-  background: #f3f4f6;          /* optional subtle background */
+  width: 100%;
 }
 
 body {
@@ -210,7 +207,14 @@ body {
     #followup-mobileCards button, #followup-mobileCards a { padding: 6px 8px; border-radius: 6px; }
 
     /* Tab styles */
-    .tabs { display:flex; gap:8px; max-width:1100px; margin:10px auto; margin-LEFT: 15px;}
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: 1100px;
+  margin: 10px auto;
+}
     .tab-btn { padding:8px 12px; border-radius:6px; cursor:pointer; border:1px solid #ddd; background:#fff; font-weight:600; }
     .tab-btn.active { background:#1f2937; color:#fff; border-color:#111827; }
     .tab-content { max-width:1100px; margin:0 auto 40px; }
@@ -239,6 +243,132 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
 /* --- Injected: sticky summary bar --- */
 #followup-summaryBar { position: sticky; top: 0; background: white; z-index: 10; padding: 0.25rem; }
 .dark #followup-summaryBar { background: #1f2937; }
+
+
+
+
+@media (max-width:768px){
+
+  .pq-row {
+    grid-template-columns: 1fr;
+  }
+
+  .pq-row label {
+    text-align: left;
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .pq-left .grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  .pq-left label {
+    flex: unset;
+    text-align: left;
+  }
+
+  .pq-left input,
+  .pq-left select {
+    width: 100%;
+    max-width: 100%;
+  }
+
+}
+
+/* ============================= */
+/* 📱 MOBILE SINGLE LINE FIX    */
+/* ============================= */
+
+@media (max-width:768px){
+
+  .pq-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+  }
+
+  .pq-row label {
+    flex: 0 0 45%;
+    text-align: left;
+    border: none;
+    padding: 0;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .pq-row input,
+  .pq-row select {
+    flex: 1;
+    width: 100%;
+    font-size: 14px;
+  }
+
+  /* Remove column stacking */
+  .pq-left .grid {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .pq-left label {
+    flex: 0 0 45%;
+    text-align: left;
+    padding-right: 6px;
+  }
+
+  .pq-left input,
+  .pq-left select {
+    flex: 1;
+    max-width: 100%;
+  }
+
+}
+
+/* ============================= */
+/* 📱 FOLLOWUP MOBILE FINAL FIX */
+/* ============================= */
+
+@media (max-width:768px){
+
+  /* 1️⃣ Layout single column */
+  #followup-layout{
+    grid-template-columns: 1fr !important;
+    padding: 10px !important;
+  }
+
+  /* 2️⃣ Form full width */
+  #followup-addForm{
+    width: 100% !important;
+    max-width: 100% !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  /* 3️⃣ Right section full width */
+  #followup-layout > section{
+    width: 100%;
+  }
+
+  /* 4️⃣ Table wrapper full width + scroll */
+  #followup-layout .overflow-x-auto{
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  /* 5️⃣ Table minimum width so scroll works */
+  #followup-layout table{
+    min-width: 900px;  /* adjust if needed */
+  }
+
+}
+/* Prevent form from stretching */
+#followup-layout {
+  align-items: start;
+}
+
 </style>
 
 
@@ -284,23 +414,17 @@ const db   = firebase.firestore();
         class="bg-purple-600 text-white px-3 py-1 rounded"
         onclick="followup_toggleLayout()">↔ Layout: 25/75</button>
 
-<button class="bg-gray-800 text-white px-3 py-1 rounded" onclick="followup_toggleDarkMode()">🌓 Dark Mode</button>
-</div>
-</div>
-</header>
-<div class="tabs">
-
-<button class="tab-btn active" id="tab-followup-btn">📋 Reminder &amp; Follow-Up</button>
-<button class="tab-btn" id="tab-quote-btn">📋 Price Quote</button>
-
+<button id="installBtn"
+        onclick="installApp()"
+        class="hidden bg-green-500 text-white px-3 py-1 rounded">
+  📲 Install App
+</button>
 <!-- Firebase Controls -->
 <div class="flex gap-2 items-center text-sm mt-2">
   <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
     👤 <span id="loggedInUser"></span>
   </span>
 </div>
-
-
 <button id="logoutBtn" style="
   padding:8px 14px;
   background:#e74c3c;
@@ -311,15 +435,26 @@ const db   = firebase.firestore();
 ">
   Logout
 </button>
+</div>
+
+</header>
+<div class="tabs">
+
+<button class="tab-btn active" id="tab-followup-btn">📋 Reminder &amp; Follow-Up</button>
+<button class="tab-btn" id="tab-quote-btn">📋 Price Quote</button>
+
+
+
+
+
 
 
 </div>
 <div class="tab-content" id="tab-followup">
 <!-- Reminder & Follow-Up original content (IDs prefixed with followup-) -->
-<div id="followup-layout" class="max-w-6xl mx-auto p-3 grid grid-cols-[25%_75%] gap-2">
+<div id="followup-layout" class="max-w-6xl mx-auto p-3 grid grid-cols-1 md:grid-cols-[25%_75%] gap-3">
 <!-- Form -->
-<form class="grid grid-cols-4 gap-3 bg-white dark:bg-gray-800 p-4 rounded-xl shadow m-0" id="followup-addForm">
-
+<form class="grid grid-cols-1 md:grid-cols-4 gap-3 bg-white dark:bg-gray-800 p-4 rounded-xl shadow m-0" id="followup-addForm">
   <!-- Row 1 -->
   <input class="border rounded w-full m-0" id="followup-name" placeholder="Name" required type="text"/>
   <input class="border rounded w-full m-0" id="followup-phone" placeholder="Phone (optional) — e.g. +919876543210 or 9876543210" type="tel"/>
@@ -369,15 +504,15 @@ const db   = firebase.firestore();
 </div>
 
 <div class="flex flex-wrap gap-2 items-center text-sm">
-<input class="border rounded px-3 py-1 flex-grow min-w-[140px]" id="followup-filterName" oninput="followup_renderTable()" placeholder="Search by name..." type="text"/>
-<select class="border rounded px-2 py-1 max-w-[150px]" id="followup-filterStatus" onchange="followup_renderTable()">
+<input class="border rounded px-3 py-1 flex-grow min-w-[100px]" id="followup-filterName" oninput="followup_renderTable()" placeholder="Search by name..." type="text"/>
+<select class="border rounded px-2 py-1 max-w-[100px]" id="followup-filterStatus" onchange="followup_renderTable()">
 <option value="">All Status</option>
 <option value="Pending">Pending</option>
 <option value="Completed">Completed</option>
 </select>
-<input class="border rounded px-2 py-1 max-w-[140px]" id="followup-filterFrom" onchange="followup_renderTable()" type="date"/>
-<input class="border rounded px-2 py-1 max-w-[140px]" id="followup-filterTo" onchange="followup_renderTable()" type="date"/>
-<select class="border rounded px-2 py-1 max-w-[150px]" id="followup-sortBy" onchange="followup_renderTable()">
+<input class="border rounded px-2 py-1 max-w-[100px]" id="followup-filterFrom" onchange="followup_renderTable()" type="date"/>
+<input class="border rounded px-2 py-1 max-w-[100px]" id="followup-filterTo" onchange="followup_renderTable()" type="date"/>
+<select class="border rounded px-2 py-1 max-w-[100px]" id="followup-sortBy" onchange="followup_renderTable()">
 <option value="date">Sort by Date</option>
 <option value="name">Sort by Name</option>
 <option value="priority">Sort by Priority</option>
@@ -409,8 +544,7 @@ const db   = firebase.firestore();
 </div>
 
 <div class="tab-content hidden-tab" id="tab-quote">
-<div class="mx-auto p-0 grid grid-cols-[40%_60%] gap-3" style="max-width:1070px;">
-
+<div class="mx-auto p-0 grid grid-cols-1 md:grid-cols-[40%_60%] gap-3" style="max-width:1070px;">
 <!-- Left: Input Details (keep .pq-left for JS) -->
 <section class="pq-left bg-white dark:bg-gray-800 p-0 rounded-xl shadow">
 <div>
@@ -514,9 +648,9 @@ const db   = firebase.firestore();
 <section class="pq-right bg-white dark:bg-gray-800 p-4 rounded-xl shadow flex flex-col gap-2">
 <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200">Quotation Preview</h3>
 <div class="flex flex-wrap gap-2 mb-2">
-<button class="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700" onclick="pq_copyQuote()">📋 Copy</button>
-<button class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700" onclick="pq_openWhatsApp()">🟢 WhatsApp</button>
-<button class="bg-sky-600 text-white px-3 py-1 rounded hover:bg-sky-700" onclick="pq_shareViaEmail()">✉️ Share via Email</button>
+<button class="bg-indigo-600 text-white px-2 py-1 rounded hover:bg-indigo-700" onclick="pq_copyQuote()">📋 Copy</button>
+<button class="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700" onclick="pq_openWhatsApp()">🟢 WhatsApp</button>
+<button class="bg-sky-600 text-white px-2 py-1 rounded hover:bg-sky-700" onclick="pq_shareViaEmail()">✉️ Share via Email</button>
 
 
 </div>
@@ -1325,13 +1459,40 @@ document.querySelectorAll("input[type='date']:not(#followup-filterFrom):not(#fol
     <button onclick="closeWATemplates()" class="mt-4 w-full bg-gray-300 dark:bg-gray-600 text-black dark:text-white py-2 rounded-lg">Close</button>
   </div>
 </div>
+
 <script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js')
-    .then(() => console.log("Service Worker Registered"));
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  console.log("Install event fired ✅");
+  e.preventDefault();
+  deferredPrompt = e;
+
+  document.getElementById('installBtn').classList.remove('hidden');
+});
+
+function installApp() {
+  if (!deferredPrompt) {
+    alert("Install not available yet");
+    return;
+  }
+
+  deferredPrompt.prompt();
+
+  deferredPrompt.userChoice.then((choiceResult) => {
+    if (choiceResult.outcome === 'accepted') {
+      console.log('User accepted install');
+    } else {
+      console.log('User dismissed install');
+    }
+
+    deferredPrompt = null;
+    document.getElementById('installBtn').classList.add('hidden');
+  });
 }
 </script>
 
-
 </body>
 </html>
+
+
