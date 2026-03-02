@@ -356,12 +356,12 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
 }
 
 /* ===================================== */
-/* 📱 FINAL CLEAN 3-ROW MOBILE HEADER   */
+/* 📱 FINAL AUTO-FIT MOBILE HEADER      */
 /* ===================================== */
 
 @media (max-width:768px){
 
-  /* Sticky header */
+  /* Sticky */
   header{
     position:sticky;
     top:0;
@@ -373,12 +373,12 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
     background:#1f2937;
   }
 
-  /* Hide Layout toggle button */
+  /* Hide layout button */
   #followup-layout-btn{
     display:none !important;
   }
 
-  /* Make main container vertical */
+  /* Main vertical layout */
   header > div{
     flex-direction:column !important;
     align-items:stretch !important;
@@ -386,7 +386,7 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
   }
 
   /* ===================== */
-  /* ROW 1: Title + Alerts */
+  /* ROW 1 */
   /* ===================== */
 
   header > div > div:first-child{
@@ -411,12 +411,12 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
   }
 
   /* ===================== */
-  /* ROW 2: 2x2 Button Grid */
+  /* ROW 2 (AUTO FIT GRID) */
   /* ===================== */
 
   header > div > div:nth-child(2){
     display:grid !important;
-    grid-template-columns:1fr 1fr !important;
+    grid-template-columns:repeat(auto-fit, minmax(120px, 1fr));
     gap:8px;
     width:100%;
   }
@@ -424,33 +424,30 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
   header > div > div:nth-child(2) button{
     width:100%;
     font-size:12px;
-    padding:6px 6px !important;
+    padding:6px 8px !important;
   }
 
   /* ===================== */
-  /* ROW 3: User + Logout */
+  /* ROW 3 (USER + LOGOUT) */
   /* ===================== */
 
-  /* User container */
   header > div .flex.gap-2.items-center{
     display:flex !important;
     justify-content:space-between !important;
     align-items:center;
     width:100%;
+    gap:8px;
   }
 
-  /* Full username visible */
   .bg-blue-100{
+    flex:1;
     font-size:13px;
     white-space:normal;
-    overflow:visible;
-    text-overflow:unset;
-    max-width:100%;
     word-break:break-word;
   }
 
-  /* Logout button */
   #logoutBtn{
+    flex-shrink:0;
     font-size:12px;
     padding:6px 12px !important;
     white-space:nowrap;
