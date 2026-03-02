@@ -408,7 +408,11 @@ const db   = firebase.firestore();
         class="bg-purple-600 text-white px-3 py-1 rounded"
         onclick="followup_toggleLayout()">↔ Layout: 25/75</button>
 
-<button class="bg-gray-800 text-white px-3 py-1 rounded" onclick="followup_toggleDarkMode()">🌓 Dark Mode</button>
+<button id="installBtn"
+        onclick="installApp()"
+        class="hidden bg-green-500 text-white px-3 py-1 rounded">
+  📲 Install App
+</button>
 <!-- Firebase Controls -->
 <div class="flex gap-2 items-center text-sm mt-2">
   <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
@@ -1451,16 +1455,35 @@ document.querySelectorAll("input[type='date']:not(#followup-filterFrom):not(#fol
 </div>
 
 <script>
- if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js')
-    .then(() => console.log("Service Worker Registered"));
-}   
-    
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault(); // default mini infobar rokta hai
+  deferredPrompt = e;
+
+  // Custom install button dikhao
+  document.getElementById("installBtn").classList.remove("hidden");
+});
+
+function installApp(){
+  if(!deferredPrompt) return;
+
+  deferredPrompt.prompt();
+
+  deferredPrompt.userChoice.then((choiceResult) => {
+    if (choiceResult.outcome === 'accepted') {
+      console.log('User accepted install');
+    } else {
+      console.log('User dismissed install');
+    }
+    deferredPrompt = null;
+    document.getElementById("installBtn").classList.add("hidden");
+  });
+}
 </script>
 
 </body>
 </html>
-
 
 
 
