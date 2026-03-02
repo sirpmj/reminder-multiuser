@@ -356,67 +356,79 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
 }
 
 /* ===================================== */
-/* 📱 FOLLOWUP HEADER 3-LINE MOBILE FIX */
+/* 📱 APP STYLE STICKY HEADER (MOBILE) */
 /* ===================================== */
 
 @media (max-width:768px){
+
+  /* Make header sticky */
+  header{
+    position:sticky;
+    top:0;
+    z-index:1000;
+    background:#ffffff;
+    padding-bottom:6px;
+  }
+
+  .dark header{
+    background:#1f2937;
+  }
+
+  /* Top App Bar */
+  header h1{
+    font-size:18px;
+    font-weight:700;
+  }
 
   /* Hide layout toggle */
   #followup-layout-btn{
     display:none !important;
   }
 
-  /* Make header vertical */
+  /* First row align */
   header .flex.items-center.justify-between{
     flex-direction:column;
     align-items:stretch;
-    gap:10px;
+    gap:8px;
   }
 
-  /* Target action container */
+  /* Action Row Scrollable */
   header .flex.items-center.gap-2.flex-wrap{
     display:flex;
-    flex-wrap:wrap;
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
     gap:6px;
+    padding-bottom:4px;
   }
 
-  /* -------- LINE 1 -------- */
-  h1{
-    flex:1 1 70%;
-    font-size:20px;
+  /* Compact buttons */
+  header button{
+    flex:0 0 auto;
+    font-size:12px;
+    padding:6px 10px !important;
+    white-space:nowrap;
   }
 
+  /* Alerts smaller */
   label:has(#followup-enableAlerts){
-    flex:1 1 30%;
     font-size:12px;
-    justify-content:flex-end;
   }
 
-  /* -------- LINE 2 -------- */
-  button[onclick="followup_exportCSV()"],
-  button[onclick="followup_downloadBackup()"],
-  button[onclick*="followup-uploadBackup"]{
-    flex:1 1 30%;
-    font-size:12px;
-    padding:6px 4px;
-    text-align:center;
-  }
-
-  /* -------- LINE 3 -------- */
-  #installBtn,
-  #logoutBtn,
+  /* User badge compact */
   .bg-blue-100{
-    flex:1 1 30%;
     font-size:12px;
-    text-align:center;
+    padding:4px 8px;
+    white-space:nowrap;
   }
 
+  /* Logout compact */
   #logoutBtn{
-    padding:6px 6px !important;
+    font-size:12px;
+    padding:6px 10px !important;
   }
 
 }
-
 
 </style>
 
@@ -452,9 +464,9 @@ const db   = firebase.firestore();
 </div>
 <div class="flex items-center gap-2 flex-wrap text-sm">
 <label class="flex items-center gap-1">
-<input id="followup-enableAlerts" type="checkbox"/> Enable Alerts
+<input id="followup-enableAlerts" type="checkbox"/>Alerts
         </label>
-<button class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700" onclick="followup_exportCSV()">⬇️ Export CSV</button>
+<button class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700" onclick="followup_exportCSV()">⬇️ Export</button>
 <button class="bg-yellow-500 text-white px-3 py-1 rounded" onclick="followup_downloadBackup()">📦 Backup</button>
 
 <input accept=".json" class="hidden" id="followup-uploadBackup" onchange="followup_uploadBackup(event)" type="file"/>
