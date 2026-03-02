@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -247,126 +249,88 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
 
 
 
-@media (max-width:768px){
-
-  .pq-row {
-    grid-template-columns: 1fr;
-  }
-
-  .pq-row label {
-    text-align: left;
-    border-right: none;
-    padding-right: 0;
-  }
-
-  .pq-left .grid {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-  }
-
-  .pq-left label {
-    flex: unset;
-    text-align: left;
-  }
-
-  .pq-left input,
-  .pq-left select {
-    width: 100%;
-    max-width: 100%;
-  }
-
-}
-
-/* ============================= */
-/* 📱 MOBILE SINGLE LINE FIX    */
-/* ============================= */
+/* ===================================== */
+/* 📱 FINAL MOBILE FIX (PQ + REMINDER)  */
+/* ===================================== */
 
 @media (max-width:768px){
 
-  .pq-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 0;
+  /* ---------------------- */
+  /* PRICE QUOTE FIX       */
+  /* ---------------------- */
+
+  .pq-container{
+    flex-direction:column;
   }
 
-  .pq-row label {
-    flex: 0 0 45%;
-    text-align: left;
-    border: none;
-    padding: 0;
-    font-size: 13px;
-    white-space: nowrap;
+  .pq-left,
+  .pq-right{
+    min-width:100%;
+    flex:1 1 100%;
+  }
+
+  /* Keep single line but responsive */
+  .pq-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:6px 0;
+  }
+
+  .pq-row label{
+    flex:0 0 45%;
+    text-align:left;
+    border:none;
+    padding:0;
+    font-size:13px;
+    white-space:nowrap;
   }
 
   .pq-row input,
-  .pq-row select {
-    flex: 1;
-    width: 100%;
-    font-size: 14px;
+  .pq-row select{
+    flex:1;
+    width:100%;
+    font-size:14px;
   }
 
-  /* Remove column stacking */
-  .pq-left .grid {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center;
-    gap: 8px;
-  }
+  /* ---------------------- */
+  /* REMINDER / FOLLOWUP   */
+  /* ---------------------- */
 
-  .pq-left label {
-    flex: 0 0 45%;
-    text-align: left;
-    padding-right: 6px;
-  }
-
-  .pq-left input,
-  .pq-left select {
-    flex: 1;
-    max-width: 100%;
-  }
-
-}
-
-/* ============================= */
-/* 📱 FOLLOWUP MOBILE FINAL FIX */
-/* ============================= */
-
-@media (max-width:768px){
-
-  /* 1️⃣ Layout single column */
   #followup-layout{
-    grid-template-columns: 1fr !important;
-    padding: 10px !important;
+    display:flex !important;
+    flex-direction:column !important;
+    gap:12px;
+    padding:10px !important;
   }
 
-  /* 2️⃣ Form full width */
-  #followup-addForm{
-    width: 100% !important;
-    max-width: 100% !important;
-    grid-template-columns: 1fr !important;
-  }
-
-  /* 3️⃣ Right section full width */
   #followup-layout > section{
-    width: 100%;
+    width:100% !important;
   }
 
-  /* 4️⃣ Table wrapper full width + scroll */
+  /* Form 2 column compact */
+  #followup-addForm{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:10px;
+    width:100% !important;
+  }
+
+  #followup-note,
+  #followup-addForm .col-span-4{
+    grid-column:1 / -1 !important;
+  }
+
+  /* Table scroll */
   #followup-layout .overflow-x-auto{
-    width: 100%;
-    overflow-x: auto;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
   }
 
-  /* 5️⃣ Table minimum width so scroll works */
   #followup-layout table{
-    min-width: 900px;  /* adjust if needed */
+    min-width:900px;
   }
 
-}
-/* Prevent form from stretching */
-#followup-layout {
-  align-items: start;
 }
 
 </style>
@@ -1225,6 +1189,7 @@ SUVIDHI INDUSTRIES PVT LTD – VAPI
     pq_updateCreditPeriod(); pq_addAutoCalculate(); pq_calculate();
   </script>
 <script>
+
 function followup_applyLayout(mode) {
   const layout = document.getElementById("followup-layout");
   if (!layout) return;
