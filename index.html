@@ -1449,14 +1449,16 @@ document.querySelectorAll("input[type='date']:not(#followup-filterFrom):not(#fol
     <button onclick="closeWATemplates()" class="mt-4 w-full bg-gray-300 dark:bg-gray-600 text-black dark:text-white py-2 rounded-lg">Close</button>
   </div>
 </div>
+
+    window.addEventListener("resize", () => {
+  const saved = localStorage.getItem("followupLayout") || "grid";
+  followup_applyLayout(saved);
+});
 </script>
 <script>
 
 
-window.addEventListener("resize", () => {
-  const saved = localStorage.getItem("followupLayout") || "grid";
-  followup_applyLayout(saved);
-});
+
 
  if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js')
@@ -1468,4 +1470,5 @@ window.addEventListener("resize", () => {
 
 </body>
 </html>
+
 
