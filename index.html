@@ -349,60 +349,75 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
   .pq-right .pq-btn{
     flex:1;
     padding:6px 4px;
-    font-size:12px;
+    font-size:11px;
     white-space:nowrap;
   }
 
 }
 
-
-
 /* ===================================== */
-/* 📱 FOLLOWUP HEADER MOBILE CLEAN FIX  */
+/* 📱 FOLLOWUP HEADER 3-LINE MOBILE FIX */
 /* ===================================== */
 
 @media (max-width:768px){
 
-  /* Hide Layout button on mobile */
+  /* Hide layout toggle */
   #followup-layout-btn{
     display:none !important;
   }
 
-  /* Make header container vertical */
+  /* Make header vertical */
   header .flex.items-center.justify-between{
     flex-direction:column;
     align-items:stretch;
+    gap:10px;
   }
 
-  /* Action buttons wrap nicely */
+  /* Target action container */
   header .flex.items-center.gap-2.flex-wrap{
-    justify-content:center;
+    display:flex;
+    flex-wrap:wrap;
     gap:6px;
   }
 
-  /* Compact buttons */
-  header button{
+  /* -------- LINE 1 -------- */
+  h1{
+    flex:1 1 70%;
+    font-size:20px;
+  }
+
+  label:has(#followup-enableAlerts){
+    flex:1 1 30%;
     font-size:12px;
-    padding:6px 8px !important;
+    justify-content:flex-end;
   }
 
-  /* Checkbox label compact */
-  #followup-enableAlerts{
-    transform:scale(0.9);
-  }
-
-  /* User badge full width */
-  #loggedInUser{
+  /* -------- LINE 2 -------- */
+  button[onclick="followup_exportCSV()"],
+  button[onclick="followup_downloadBackup()"],
+  button[onclick*="followup-uploadBackup"]{
+    flex:1 1 30%;
     font-size:12px;
+    padding:6px 4px;
+    text-align:center;
   }
 
-  /* Logout button full width */
+  /* -------- LINE 3 -------- */
+  #installBtn,
+  #logoutBtn,
+  .bg-blue-100{
+    flex:1 1 30%;
+    font-size:12px;
+    text-align:center;
+  }
+
   #logoutBtn{
-    width:100%;
-    margin-top:6px;
+    padding:6px 6px !important;
   }
 
 }
+
+
 </style>
 
 
