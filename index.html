@@ -148,14 +148,6 @@
     padding: 4px 0;
 }
 
-.app-title {
-  font-size: 24px;
-  font-weight: 700;
-  background: linear-gradient(90deg, #4e73df, #1cc88a);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
 /* Required field markers (example: Customer Name & Product) */
 #pq-customerName:required,
 #pq-product:required {
@@ -416,11 +408,7 @@ const db   = firebase.firestore();
         class="bg-purple-600 text-white px-3 py-1 rounded"
         onclick="followup_toggleLayout()">↔ Layout: 25/75</button>
 
-<button id="installBtn"
-        onclick="installApp()"
-        class="hidden bg-green-500 text-white px-3 py-1 rounded">
-  📲 Install App
-</button>
+<button class="bg-gray-800 text-white px-3 py-1 rounded" onclick="followup_toggleDarkMode()">🌓 Dark Mode</button>
 <!-- Firebase Controls -->
 <div class="flex gap-2 items-center text-sm mt-2">
   <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
@@ -506,15 +494,15 @@ const db   = firebase.firestore();
 </div>
 
 <div class="flex flex-wrap gap-2 items-center text-sm">
-<input class="border rounded px-3 py-1 flex-grow min-w-[100px]" id="followup-filterName" oninput="followup_renderTable()" placeholder="Search by name..." type="text"/>
-<select class="border rounded px-2 py-1 max-w-[100px]" id="followup-filterStatus" onchange="followup_renderTable()">
+<input class="border rounded px-3 py-1 flex-grow min-w-[140px]" id="followup-filterName" oninput="followup_renderTable()" placeholder="Search by name..." type="text"/>
+<select class="border rounded px-2 py-1 max-w-[150px]" id="followup-filterStatus" onchange="followup_renderTable()">
 <option value="">All Status</option>
 <option value="Pending">Pending</option>
 <option value="Completed">Completed</option>
 </select>
-<input class="border rounded px-2 py-1 max-w-[100px]" id="followup-filterFrom" onchange="followup_renderTable()" type="date"/>
-<input class="border rounded px-2 py-1 max-w-[100px]" id="followup-filterTo" onchange="followup_renderTable()" type="date"/>
-<select class="border rounded px-2 py-1 max-w-[100px]" id="followup-sortBy" onchange="followup_renderTable()">
+<input class="border rounded px-2 py-1 max-w-[140px]" id="followup-filterFrom" onchange="followup_renderTable()" type="date"/>
+<input class="border rounded px-2 py-1 max-w-[140px]" id="followup-filterTo" onchange="followup_renderTable()" type="date"/>
+<select class="border rounded px-2 py-1 max-w-[150px]" id="followup-sortBy" onchange="followup_renderTable()">
 <option value="date">Sort by Date</option>
 <option value="name">Sort by Name</option>
 <option value="priority">Sort by Priority</option>
@@ -650,9 +638,9 @@ const db   = firebase.firestore();
 <section class="pq-right bg-white dark:bg-gray-800 p-4 rounded-xl shadow flex flex-col gap-2">
 <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200">Quotation Preview</h3>
 <div class="flex flex-wrap gap-2 mb-2">
-<button class="bg-indigo-600 text-white px-2 py-1 rounded hover:bg-indigo-700" onclick="pq_copyQuote()">📋 Copy</button>
-<button class="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700" onclick="pq_openWhatsApp()">🟢 WhatsApp</button>
-<button class="bg-sky-600 text-white px-2 py-1 rounded hover:bg-sky-700" onclick="pq_shareViaEmail()">✉️ Share via Email</button>
+<button class="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700" onclick="pq_copyQuote()">📋 Copy</button>
+<button class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700" onclick="pq_openWhatsApp()">🟢 WhatsApp</button>
+<button class="bg-sky-600 text-white px-3 py-1 rounded hover:bg-sky-700" onclick="pq_shareViaEmail()">✉️ Share via Email</button>
 
 
 </div>
@@ -1461,41 +1449,14 @@ document.querySelectorAll("input[type='date']:not(#followup-filterFrom):not(#fol
     <button onclick="closeWATemplates()" class="mt-4 w-full bg-gray-300 dark:bg-gray-600 text-black dark:text-white py-2 rounded-lg">Close</button>
   </div>
 </div>
-
 <script>
-let deferredPrompt = null;
-
-window.addEventListener('beforeinstallprompt', (e) => {
-  console.log("Install event fired ✅");
-  e.preventDefault();
-  deferredPrompt = e;
-
-  document.getElementById('installBtn').classList.remove('hidden');
-});
-
-function installApp() {
-  if (!deferredPrompt) {
-    alert("Install not available yet");
-    return;
-  }
-
-  deferredPrompt.prompt();
-
-  deferredPrompt.userChoice.then((choiceResult) => {
-    if (choiceResult.outcome === 'accepted') {
-      console.log('User accepted install');
-    } else {
-      console.log('User dismissed install');
-    }
-
-    deferredPrompt = null;
-    document.getElementById('installBtn').classList.add('hidden');
-  });
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js')
+    .then(() => console.log("Service Worker Registered"));
 }
+
 </script>
+
 
 </body>
 </html>
-
-
-
