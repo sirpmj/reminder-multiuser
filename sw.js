@@ -1,4 +1,4 @@
-const CACHE_NAME = "Reminder-app-v10";
+const CACHE_NAME = "Reminder-app-v11";
 
 const urlsToCache = [
   "./",
@@ -40,4 +40,5 @@ self.addEventListener("fetch", event => {
       .then(response => response || fetch(event.request))
       .catch(() => caches.match("./index.html"))
   );
+
 });
