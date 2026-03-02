@@ -148,6 +148,14 @@
     padding: 4px 0;
 }
 
+.app-title {
+  font-size: 24px;
+  font-weight: 700;
+  background: linear-gradient(90deg, #4e73df, #1cc88a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 /* Required field markers (example: Customer Name & Product) */
 #pq-customerName:required,
 #pq-product:required {
@@ -498,15 +506,15 @@ const db   = firebase.firestore();
 </div>
 
 <div class="flex flex-wrap gap-2 items-center text-sm">
-<input class="border rounded px-3 py-1 flex-grow min-w-[140px]" id="followup-filterName" oninput="followup_renderTable()" placeholder="Search by name..." type="text"/>
-<select class="border rounded px-2 py-1 max-w-[150px]" id="followup-filterStatus" onchange="followup_renderTable()">
+<input class="border rounded px-3 py-1 flex-grow min-w-[100px]" id="followup-filterName" oninput="followup_renderTable()" placeholder="Search by name..." type="text"/>
+<select class="border rounded px-2 py-1 max-w-[100px]" id="followup-filterStatus" onchange="followup_renderTable()">
 <option value="">All Status</option>
 <option value="Pending">Pending</option>
 <option value="Completed">Completed</option>
 </select>
-<input class="border rounded px-2 py-1 max-w-[140px]" id="followup-filterFrom" onchange="followup_renderTable()" type="date"/>
-<input class="border rounded px-2 py-1 max-w-[140px]" id="followup-filterTo" onchange="followup_renderTable()" type="date"/>
-<select class="border rounded px-2 py-1 max-w-[150px]" id="followup-sortBy" onchange="followup_renderTable()">
+<input class="border rounded px-2 py-1 max-w-[100px]" id="followup-filterFrom" onchange="followup_renderTable()" type="date"/>
+<input class="border rounded px-2 py-1 max-w-[100px]" id="followup-filterTo" onchange="followup_renderTable()" type="date"/>
+<select class="border rounded px-2 py-1 max-w-[100px]" id="followup-sortBy" onchange="followup_renderTable()">
 <option value="date">Sort by Date</option>
 <option value="name">Sort by Name</option>
 <option value="priority">Sort by Priority</option>
