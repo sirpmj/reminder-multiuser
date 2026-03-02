@@ -333,6 +333,76 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
 
 }
 
+
+/* ================================= */
+/* 📱 PRICE QUOTE BUTTON MOBILE FIX */
+/* ================================= */
+
+@media (max-width:768px){
+
+  .pq-right .flex.flex-wrap{
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    gap:6px;
+  }
+
+  .pq-right .pq-btn{
+    flex:1;
+    padding:6px 4px;
+    font-size:12px;
+    white-space:nowrap;
+  }
+
+}
+
+
+
+/* ===================================== */
+/* 📱 FOLLOWUP HEADER MOBILE CLEAN FIX  */
+/* ===================================== */
+
+@media (max-width:768px){
+
+  /* Hide Layout button on mobile */
+  #followup-layout-btn{
+    display:none !important;
+  }
+
+  /* Make header container vertical */
+  header .flex.items-center.justify-between{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  /* Action buttons wrap nicely */
+  header .flex.items-center.gap-2.flex-wrap{
+    justify-content:center;
+    gap:6px;
+  }
+
+  /* Compact buttons */
+  header button{
+    font-size:12px;
+    padding:6px 8px !important;
+  }
+
+  /* Checkbox label compact */
+  #followup-enableAlerts{
+    transform:scale(0.9);
+  }
+
+  /* User badge full width */
+  #loggedInUser{
+    font-size:12px;
+  }
+
+  /* Logout button full width */
+  #logoutBtn{
+    width:100%;
+    margin-top:6px;
+  }
+
+}
 </style>
 
 
