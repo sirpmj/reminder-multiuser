@@ -1451,17 +1451,21 @@ document.querySelectorAll("input[type='date']:not(#followup-filterFrom):not(#fol
 </div>
 </script>
 <script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js')
-    .then(() => console.log("Service Worker Registered"));
-}
+
 
 window.addEventListener("resize", () => {
   const saved = localStorage.getItem("followupLayout") || "grid";
   followup_applyLayout(saved);
 });
+
+ if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js')
+    .then(() => console.log("Service Worker Registered"));
+}   
+    
 </script>
 
 
 </body>
 </html>
+
