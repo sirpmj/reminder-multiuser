@@ -249,202 +249,126 @@ html, body, .pq-body, .pq-container, .pq-gridwrap, .pq-pre {
 
 
 
-/* ===================================== */
-/* 📱 FINAL MOBILE FIX (PQ + REMINDER)  */
-/* ===================================== */
+@media (max-width:768px){
+
+  .pq-row {
+    grid-template-columns: 1fr;
+  }
+
+  .pq-row label {
+    text-align: left;
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .pq-left .grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  .pq-left label {
+    flex: unset;
+    text-align: left;
+  }
+
+  .pq-left input,
+  .pq-left select {
+    width: 100%;
+    max-width: 100%;
+  }
+
+}
+
+/* ============================= */
+/* 📱 MOBILE SINGLE LINE FIX    */
+/* ============================= */
 
 @media (max-width:768px){
 
-  /* ---------------------- */
-  /* PRICE QUOTE FIX       */
-  /* ---------------------- */
-
-  .pq-container{
-    flex-direction:column;
+  .pq-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
   }
 
-  .pq-left,
-  .pq-right{
-    min-width:100%;
-    flex:1 1 100%;
-  }
-
-  /* Keep single line but responsive */
-  .pq-row{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    padding:6px 0;
-  }
-
-  .pq-row label{
-    flex:0 0 45%;
-    text-align:left;
-    border:none;
-    padding:0;
-    font-size:13px;
-    white-space:nowrap;
+  .pq-row label {
+    flex: 0 0 45%;
+    text-align: left;
+    border: none;
+    padding: 0;
+    font-size: 13px;
+    white-space: nowrap;
   }
 
   .pq-row input,
-  .pq-row select{
-    flex:1;
-    width:100%;
-    font-size:14px;
+  .pq-row select {
+    flex: 1;
+    width: 100%;
+    font-size: 14px;
   }
 
-  /* ---------------------- */
-  /* REMINDER / FOLLOWUP   */
-  /* ---------------------- */
+  /* Remove column stacking */
+  .pq-left .grid {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 8px;
+  }
 
+  .pq-left label {
+    flex: 0 0 45%;
+    text-align: left;
+    padding-right: 6px;
+  }
+
+  .pq-left input,
+  .pq-left select {
+    flex: 1;
+    max-width: 100%;
+  }
+
+}
+
+/* ============================= */
+/* 📱 FOLLOWUP MOBILE FINAL FIX */
+/* ============================= */
+
+@media (max-width:768px){
+
+  /* 1️⃣ Layout single column */
   #followup-layout{
-    display:flex !important;
-    flex-direction:column !important;
-    gap:12px;
-    padding:10px !important;
+    grid-template-columns: 1fr !important;
+    padding: 10px !important;
   }
 
-  #followup-layout > section{
-    width:100% !important;
-  }
-
-  /* Form 2 column compact */
+  /* 2️⃣ Form full width */
   #followup-addForm{
-    display:grid !important;
-    grid-template-columns:1fr 1fr !important;
-    gap:10px;
-    width:100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    grid-template-columns: 1fr !important;
   }
 
-  #followup-note,
-  #followup-addForm .col-span-4{
-    grid-column:1 / -1 !important;
+  /* 3️⃣ Right section full width */
+  #followup-layout > section{
+    width: 100%;
   }
 
-  /* Table scroll */
+  /* 4️⃣ Table wrapper full width + scroll */
   #followup-layout .overflow-x-auto{
-    overflow-x:auto;
-    -webkit-overflow-scrolling:touch;
+    width: 100%;
+    overflow-x: auto;
   }
 
+  /* 5️⃣ Table minimum width so scroll works */
   #followup-layout table{
-    min-width:900px;
+    min-width: 900px;  /* adjust if needed */
   }
 
 }
-
-
-/* ================================= */
-/* 📱 PRICE QUOTE BUTTON MOBILE FIX */
-/* ================================= */
-
-@media (max-width:768px){
-
-  .pq-right .flex.flex-wrap{
-    display:flex !important;
-    flex-wrap:nowrap !important;
-    gap:6px;
-  }
-
-  .pq-right .pq-btn{
-    flex:1;
-    padding:6px 4px;
-    font-size:11px;
-    white-space:nowrap;
-  }
-
-}
-
-/* ===================================== */
-/* 📱 FORCE STRICT SINGLE LINE MOBILE   */
-/* ===================================== */
-
-@media (max-width:768px){
-
-  /* Sticky */
-  header{
-    position:sticky;
-    top:0;
-    z-index:1000;
-    background:#fff;
-  }
-
-  .dark header{
-    background:#1f2937;
-  }
-
-  /* Hide Layout button */
-  #followup-layout-btn{
-    display:none !important;
-  }
-
-  /* Break main container */
-  header > div{
-    display:flex !important;
-    flex-direction:column !important;
-    gap:6px !important;
-  }
-
-  /* ===== ROW 1 ===== */
-  header > div > div:first-child{
-    display:flex !important;
-    flex-wrap:nowrap !important;
-    justify-content:space-between !important;
-    align-items:center !important;
-    width:100% !important;
-  }
-
-  header h1{
-    font-size:15px !important;
-    white-space:nowrap !important;
-  }
-
-  header label{
-    font-size:11px !important;
-    white-space:nowrap !important;
-  }
-
-  /* ===== ROW 2 ===== */
-  header > div > div:nth-child(2){
-    display:flex !important;
-    flex-wrap:nowrap !important;
-    justify-content:space-between !important;
-    gap:3px !important;
-    width:100% !important;
-  }
-
-  header > div > div:nth-child(2) button{
-    flex:1 1 0 !important;
-    font-size:10px !important;
-    padding:4px 2px !important;
-    white-space:nowrap !important;
-  }
-
-  /* ===== ROW 3 ===== */
-  header .flex.gap-2.items-center{
-    display:flex !important;
-    flex-wrap:nowrap !important;
-    justify-content:space-between !important;
-    gap:4px !important;
-    width:100% !important;
-  }
-
-  .bg-blue-100{
-    flex:1 1 auto !important;
-    font-size:10px !important;
-    padding:4px 6px !important;
-    white-space:nowrap !important;
-    overflow:hidden !important;
-    text-overflow:ellipsis !important;
-  }
-
-  #logoutBtn{
-    flex:0 0 auto !important;
-    font-size:10px !important;
-    padding:4px 6px !important;
-    white-space:nowrap !important;
-  }
-
+/* Prevent form from stretching */
+#followup-layout {
+  align-items: start;
 }
 
 </style>
@@ -481,9 +405,9 @@ const db   = firebase.firestore();
 </div>
 <div class="flex items-center gap-2 flex-wrap text-sm">
 <label class="flex items-center gap-1">
-<input id="followup-enableAlerts" type="checkbox"/>Alerts
+<input id="followup-enableAlerts" type="checkbox"/> Enable Alerts
         </label>
-<button class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700" onclick="followup_exportCSV()">⬇️ Export</button>
+<button class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700" onclick="followup_exportCSV()">⬇️ Export CSV</button>
 <button class="bg-yellow-500 text-white px-3 py-1 rounded" onclick="followup_downloadBackup()">📦 Backup</button>
 
 <input accept=".json" class="hidden" id="followup-uploadBackup" onchange="followup_uploadBackup(event)" type="file"/>
@@ -503,6 +427,9 @@ const db   = firebase.firestore();
     👤 <span id="loggedInUser"></span>
   </span>
 </div>
+
+
+
 <button id="logoutBtn" style="
   padding:8px 14px;
   background:#e74c3c;
@@ -738,6 +665,51 @@ const db   = firebase.firestore();
 <!-- Tooltip element required by pq_showTooltip() -->
 <div class="text-xs" id="pq-tooltip-msg"></div>
 </div>
+
+
+<script>
+
+firebase.auth().onAuthStateChanged(function(user){
+
+  if(user){
+
+    // Firestore se profile load karo
+    db.collection("users").doc(user.uid).get()
+      .then(doc => {
+
+        if(doc.exists){
+
+          const data = doc.data().profile;
+
+          // 🔥 Auto Signature Generate
+          const autoSignature = `
+Regards,
+${data.name}
+${data.company}
+📞 ${data.mobile}
+✉️ ${data.email}
+`;
+
+          // Global variable me store
+          window.userRegards = autoSignature;
+
+          // Optional: localStorage me bhi save
+          localStorage.setItem("userSignature", autoSignature);
+
+        }
+
+      });
+
+  } else {
+
+    // Agar login nahi hai to login page pe bhejo
+    location.href = "login.html";
+
+  }
+
+});
+
+</script>
 <script>
     // Tab switching
     
@@ -825,68 +797,55 @@ function followup_cleanPhoneDigits(raw = "") {
     });
 
 
-let currentUID = null;   // 👈 यहाँ user की पहचान store होगी
 
-auth.onAuthStateChanged(user => {
+let currentUID = null;
+let currentUserProfile = null;
 
-  // ❌ अगर user login नहीं है
-  if (!user) {
-    alert("Please login first");
-    window.location.href = "login.html";
-    return;
-  }
+auth.onAuthStateChanged(async (user) => {
 
-auth.onAuthStateChanged(async user => {
   if (!user) {
     window.location.replace("login.html");
     return;
   }
 
-firebase.auth().onAuthStateChanged(function(user) {
-  if (user) {
-    document.getElementById("loggedInUser").innerText =
-      user.displayName ? user.displayName : "User";
-  }
-});
-
   currentUID = user.uid;
+
+  // Show logged user name
+  document.getElementById("loggedInUser").innerText =
+    user.displayName || user.email;
 
   const userRef = db.collection("users").doc(currentUID);
   const snap = await userRef.get();
 
-  // 🛠 profile missing? auto-create
+  // If profile missing → auto create
   if (!snap.exists) {
     await userRef.set({
       profile: {
-        name: user.email.split("@")[0],
+        name: user.displayName || user.email.split("@")[0],
         email: user.email,
-        createdAt: Date.now(),
-        autoCreated: true
+        phone: "",
+        company: "",
+        createdAt: Date.now()
       }
     });
-    console.log("Profile auto-created for:", user.email);
   }
 
-  currentUserProfile = (await userRef.get()).data();
+  const updatedSnap = await userRef.get();
+  currentUserProfile = updatedSnap.data().profile;
+
+  // 🔥 Auto Generate Regards
+  window.userRegards = generateRegards(currentUserProfile);
 
   loadFollowups();
 });
 
 
-  // ✅ अगर user login है
-  currentUID = user.uid;   // 🔑 यही सबसे IMPORTANT line है
-
-  console.log("Logged in UID:", currentUID);
-
-  // 👉 अब इसी UID का data load करेंगे
-  loadFollowups();
-});
 
 
-let currentUserProfile = {
-  name: "",
-  company: ""
-};
+
+
+
+
 
 function loadCurrentUserProfile() {
   if (!currentUID) return;
@@ -916,12 +875,17 @@ document.getElementById("logoutBtn").addEventListener("click", function () {
 });
 
 function addWASignatory(msg) {
-  if (currentUserProfile && currentUserProfile.profile?.name) {
-    return msg + "\n\nRegards,\n" + currentUserProfile.profile.name;
-  }
-  return msg;
-}
 
+  if (!currentUserProfile) return msg;
+
+  return msg + `
+
+Regards,
+${currentUserProfile.name || ""}
+${currentUserProfile.company || ""}
+📞 ${currentUserProfile.phone || ""}
+✉️ ${currentUserProfile.email || ""}`;
+}
 
 
     document.getElementById("followup-addForm").addEventListener("submit", (e) => {
@@ -1049,12 +1013,14 @@ function loadFollowups() {
     const phoneClean = followup_cleanPhoneDigits(f.phone || "");
     const telHref = phoneClean.forTel ? `tel:${phoneClean.forTel}` : "";
 
-    let msg = `📅 Follow-Up Reminder
+let msg = `📅 Follow-Up Reminder
 
 Name: ${f.name}
 Date: ${followup_formatDate(f.date)}
 Status: ${f.status}
 Note: ${f.note || "-"}`;
+
+msg = addWASignatory(msg);
 
     const waHref = phoneClean.forWA
       ? `https://wa.me/${phoneClean.forWA}?text=${encodeURIComponent(msg)}`
@@ -1118,7 +1084,7 @@ Note: ${f.note || "-"}`;
     function followup_exportCSV() { let csv = "Name,Phone,Date,Note,Tags,Status,Priority\n"; followup_followups.forEach(f => { csv += `"${f.name.replace(/"/g, '""')}","${(f.phone||'').replace(/"/g,'""')}","${followup_formatDate(f.date)}","${(f.note||'').replace(/"/g,'""')}","${(f.tags||'').replace(/"/g,'""')}","${f.status}","${f.priority}"\n`; }); const blob = new Blob([csv], { type: "text/csv" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "followups.csv"; a.click(); }
     function followup_downloadBackup() { const blob = new Blob([JSON.stringify(followup_followups, null, 2)], { type: "application/json" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "followup-backup.json"; a.click(); }
     function followup_uploadBackup(event) { const file = event.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const data = JSON.parse(e.target.result); if (!Array.isArray(data)) throw new Error("Invalid format"); const valid = data.every(item => item.name && item.date); if (!valid) throw new Error("Missing required fields"); followup_followups = data; followup_saveData(); followup_renderTable(); alert("Backup restored."); } catch (err) { alert("Invalid backup file."); } }; reader.readAsText(file); event.target.value = ""; }
-    function followup_filterOverdue() { const today = new Date(); today.setHours(0,0,0,0); const overdueItems = followup_followups.filter(f => new Date(f.date) < today && f.status === "Pending"); if (overdueItems.length === 0) { alert("No overdue follow-ups."); return; } document.getElementById("followup-filterName").value = ""; document.getElementById("followup-filterStatus").value = "Pending"; document.getElementById("followup-filterFrom").value = ""; document.getElementById("followup-filterTo").value = ""; document.getElementById("followup-sortBy").value = "date"; followup_renderTable(); alert(`Found ${overdueItems.length} overdue follow-up(s). Check the list.`); }
+    
 
 
 function followup_filterToday() {
@@ -1190,8 +1156,21 @@ function sendAutoWA(type, name, phone, date){
 
     document.getElementById("followup-enableAlerts").addEventListener("change", (e) => { if (e.target.checked && "Notification" in window && Notification.permission !== "granted") { Notification.requestPermission(); } });
   </script>
+
+
 <!-- Price Quote script (scoped names with pq_ prefix) -->
 <script>
+function generateRegards(profile) {
+
+  if (!profile) return "";
+
+  return `Regards,
+${profile.name || ""}
+${profile.company || ""}
+📞 ${profile.phone || ""}
+✉️ ${profile.email || ""}`;
+}
+
     function pq_get(id) { return document.getElementById(id).value; }
     function pq_showTooltip(message) { const el = document.getElementById('pq-tooltip-msg'); el.textContent = message; el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 3000); }
     function pq_updateCreditPeriod() { const selected = pq_get("pq-paymentTerms"); const creditInput = document.getElementById("pq-creditDays"); creditInput.disabled = (selected !== "Days"); }
@@ -1264,11 +1243,7 @@ Payment    : ${paymentText}
 
 Please confirm.
 
-Regards,
-SB Prajapati
-SUVIDHI INDUSTRIES PVT LTD – VAPI
-📞 8000932893
-✉️ sbprajapati@suvidhigroup.com`;
+` + "\n\n" + (window.userRegards || "");
 
       document.getElementById("pq-output").textContent = quotation.trim();
     }
@@ -1303,7 +1278,6 @@ SUVIDHI INDUSTRIES PVT LTD – VAPI
     pq_updateCreditPeriod(); pq_addAutoCalculate(); pq_calculate();
   </script>
 <script>
-
 function followup_applyLayout(mode) {
   const layout = document.getElementById("followup-layout");
   if (!layout) return;
@@ -1573,5 +1547,6 @@ function installApp() {
 
 </body>
 </html>
+
 
 
