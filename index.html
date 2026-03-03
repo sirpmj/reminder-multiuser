@@ -570,7 +570,7 @@ const db   = firebase.firestore();
   </div>
 </form>
 <!-- Right section -->
-<section class="flex flex-col gap-1">
+<section class="flex flex-col gap-2">
 <div class="flex gap-2 text-sm mb-1">
   <button class="bg-yellow-200 text-yellow-800 px-2 py-1 rounded"
           onclick="followup_filterToday()">⚡ Today</button>
@@ -582,16 +582,16 @@ const db   = firebase.firestore();
           onclick="followup_filterOverdue()">⛔ Overdue</button>
 </div>
 
-<div class="flex flex-col sm:flex-row gap-2 sm:gap-1 items-start sm:items-center text-sm">
-<input class="border rounded px-2 py-1 flex-grow max-w-[280px]" id="followup-filterName" oninput="followup_renderTable()" placeholder="Search by name..." type="text"/>
-<select class="border rounded px-2 py-1 max-w-[150px]" id="followup-filterStatus" onchange="followup_renderTable()">
+<div class="flex flex-wrap gap-1 items-center text-sm">
+<input class="border rounded px-2 py-1 flex-grow max-w-[150px]" id="followup-filterName" oninput="followup_renderTable()" placeholder="Search by name..." type="text"/>
+<select class="border rounded px-2 py-1 max-w-[110px]" id="followup-filterStatus" onchange="followup_renderTable()">
 <option value="">All Status</option>
 <option value="Pending">Pending</option>
 <option value="Completed">Completed</option>
 </select>
-<input class="border rounded px-2 py-1 max-w-[150px]" id="followup-filterFrom" onchange="followup_renderTable()" type="date"/>
-<input class="border rounded px-2 py-1 max-w-[150px]" id="followup-filterTo" onchange="followup_renderTable()" type="date"/>
-<select class="border rounded px-2 py-1 max-w-[150px]" id="followup-sortBy" onchange="followup_renderTable()">
+<input class="border rounded px-2 py-1 max-w-[120px]" id="followup-filterFrom" onchange="followup_renderTable()" type="date"/>
+<input class="border rounded px-2 py-1 max-w-[120px]" id="followup-filterTo" onchange="followup_renderTable()" type="date"/>
+<select class="border rounded px-2 py-1 max-w-[130px]" id="followup-sortBy" onchange="followup_renderTable()">
 <option value="date">Sort by Date</option>
 <option value="name">Sort by Name</option>
 <option value="priority">Sort by Priority</option>
