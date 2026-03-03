@@ -477,15 +477,15 @@ const db   = firebase.firestore();
 <h1 class="text-xl font-bold text-indigo-600 dark:text-indigo-400">🧭 Personal follow up </h1>
 <span class="text-xs text-gray-500"></span>
 </div>
-<div class="flex items-center gap-2 flex-wrap text-sm">
+<div class="flex items-center gap-1 flex-wrap text-sm">
 <label class="flex items-center gap-1">
-<input id="followup-enableAlerts" type="checkbox"/> Enable Alerts
+<input id="followup-enableAlerts" type="checkbox"/>Alerts
         </label>
-<button class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700" onclick="followup_exportCSV()">⬇️ Export CSV</button>
-<button class="bg-yellow-500 text-white px-3 py-1 rounded" onclick="followup_downloadBackup()">📦 Backup</button>
+<button class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700" onclick="followup_exportCSV()">⬇️Export</button>
+<button class="bg-yellow-500 text-white px-3 py-1 rounded" onclick="followup_downloadBackup()">📦Backup</button>
 
 <input accept=".json" class="hidden" id="followup-uploadBackup" onchange="followup_uploadBackup(event)" type="file"/>
-<button class="bg-blue-500 text-white px-3 py-1 rounded" onclick="document.getElementById('followup-uploadBackup').click()">📤 Restore</button>
+<button class="bg-blue-500 text-white px-3 py-1 rounded" onclick="document.getElementById('followup-uploadBackup').click()">📤Restore</button>
 <button id="followup-layout-btn"
         class="bg-purple-600 text-white px-3 py-1 rounded"
         onclick="followup_toggleLayout()">↔ Layout: 25/75</button>
@@ -496,8 +496,8 @@ const db   = firebase.firestore();
   📲 Install App
 </button>
 <!-- Firebase Controls -->
-<div class="flex gap-2 items-center text-sm mt-2">
-  <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+<div class="flex gap-2 items-center text-sm mt-0">
+  <span class="bg-blue-700 text-white px-3 py-1 rounded">
     👤 <span id="loggedInUser"></span>
   </span>
 </div>
@@ -505,14 +505,14 @@ const db   = firebase.firestore();
 
 
 <button id="logoutBtn" style="
-  padding:8px 14px;
+  padding:6px 8px;
   background:#e74c3c;
   color:#fff;
   border:none;
-  border-radius:6px;
+  border-radius:8px;
   cursor:pointer;
 ">
-  Logout
+  🔓
 </button>
 </div>
 
@@ -756,12 +756,12 @@ firebase.auth().onAuthStateChanged(function(user){
           const data = doc.data().profile;
 
           // 🔥 Auto Signature Generate
-          const autoSignature = `
+const autoSignature = `
 Regards,
-${data.name}
-${data.company}
-📞 ${data.mobile}
-✉️ ${data.email}
+${data.name || ""}
+${data.company || ""}
+${data.mobile ? "📞 " + data.mobile : ""}
+${data.email ? "✉️ " + data.email : ""}
 `;
 
           // Global variable me store
@@ -957,7 +957,7 @@ function addWASignatory(msg) {
 Regards,
 ${currentUserProfile.name || ""}
 ${currentUserProfile.company || ""}
-📞 ${currentUserProfile.phone || ""}
+📞 ${currentUserProfile.mobile || ""}
 ✉️ ${currentUserProfile.email || ""}`;
 }
 
@@ -1241,7 +1241,7 @@ function generateRegards(profile) {
   return `Regards,
 ${profile.name || ""}
 ${profile.company || ""}
-📞 ${profile.phone || ""}
+📞 ${profile.mobile || ""}
 ✉️ ${profile.email || ""}`;
 }
 
@@ -1306,7 +1306,8 @@ Dear Sir / Madam,
 
 Greetings from SUVIDHI INDUSTRIES PVT LTD !
 
-Thanks for your inquiry. We offer our best rate as below –
+Thanks for your inquiry. 
+We offer our best rate as below –
 
 Product    : ${product}
 Qty.       : ${quantity.toLocaleString()} Mt
