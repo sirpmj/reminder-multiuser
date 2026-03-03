@@ -582,7 +582,7 @@ const db   = firebase.firestore();
           onclick="followup_filterOverdue()">⛔ Overdue</button>
 </div>
 
-<div class="flex flex-wrap gap-1 items-center text-sm">
+<div class="flex flex-col sm:flex-row gap-2 sm:gap-1 items-start sm:items-center text-sm">
 <input class="border rounded px-2 py-1 flex-grow max-w-[280px]" id="followup-filterName" oninput="followup_renderTable()" placeholder="Search by name..." type="text"/>
 <select class="border rounded px-2 py-1 max-w-[150px]" id="followup-filterStatus" onchange="followup_renderTable()">
 <option value="">All Status</option>
