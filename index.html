@@ -583,21 +583,24 @@ const db   = firebase.firestore();
 </div>
 
 <div class="flex flex-wrap gap-1 items-center text-sm">
-<input class="border rounded px-2 py-1 flex-grow max-w-[150px]" id="followup-filterName" oninput="followup_renderTable()" placeholder="Search by name..." type="text"/>
-<select class="border rounded px-2 py-1 max-w-[110px]" id="followup-filterStatus" onchange="followup_renderTable()">
-<option value="">All Status</option>
-<option value="Pending">Pending</option>
-<option value="Completed">Completed</option>
-</select>
-<input class="border rounded px-2 py-1 max-w-[120px]" id="followup-filterFrom" onchange="followup_renderTable()" type="date"/>
-<input class="border rounded px-2 py-1 max-w-[120px]" id="followup-filterTo" onchange="followup_renderTable()" type="date"/>
-<select class="border rounded px-2 py-1 max-w-[130px]" id="followup-sortBy" onchange="followup_renderTable()">
-<option value="date">Sort by Date</option>
-<option value="name">Sort by Name</option>
-<option value="priority">Sort by Priority</option>
-</select>
+  <input class="border rounded px-2 py-1 flex-grow max-w-[150px]" id="followup-filterName" oninput="followup_renderTable()" placeholder="Search by name..." type="text"/>
 
+  <select class="border rounded px-2 py-1 max-w-[110px]" id="followup-filterStatus" onchange="followup_renderTable()">
+    <option value="">All Status</option>
+    <option value="Pending">Pending</option>
+    <option value="Completed">Completed</option>
+  </select>
+
+  <input class="border rounded px-2 py-1 max-w-[120px] hidden sm:block" id="followup-filterFrom" onchange="followup_renderTable()" type="date"/>
+  <input class="border rounded px-2 py-1 max-w-[120px] hidden sm:block" id="followup-filterTo" onchange="followup_renderTable()" type="date"/>
+
+  <select class="border rounded px-2 py-1 max-w-[130px]" id="followup-sortBy" onchange="followup_renderTable()">
+    <option value="date">Sort by Date</option>
+    <option value="name">Sort by Name</option>
+    <option value="priority">Sort by Priority</option>
+  </select>
 </div>
+
 <div class="font-semibold text-xs text-gray-700 dark:text-gray-300 mt-1" id="followup-summaryBar"></div>
 <div class="overflow-x-auto bg-white dark:bg-gray-800 shadow rounded-xl mt-1 flex-grow min-h-[150px]">
 <table class="w-full table-auto text-left table">
