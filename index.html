@@ -643,18 +643,61 @@ const db   = firebase.firestore();
 <input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-customerName" placeholder="Enter customer Name" type="text"/>
 
 </div>
+<!-- 🆕 Delivery Field (Editable Dropdown) -->
 <div class="grid grid-cols-3 gap-2 py-1 items-center">
-<label class="col-span-1 text-right pr-2 text-sm" for="pq-product">Product</label>
-<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-product" type="text" value="Caustic Soda Flakes"/>
+  <label class="col-span-1 text-right pr-2 text-sm" for="pq-product">Product</label>
+  <input
+    class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700"
+    id="pq-product"
+    list="productOptions"
+    type="text"
+    placeholder="Select or type product"
+    value="Ex Vapi"
+  />
 </div>
+
+<!-- Dropdown list (kept outside the grid) -->
+<datalist id="productOptions">
+  <option value="Caustic Soda Flakes"></option>
+  <option value="Caustic Soda Lye"></option>
+  <option value="Soda Ash"></option>
+    <option value="Hyderogen Peroxide"></option>
+<option value="Hydrochloric Acid "></option>
+  <option value="Sodium Sulphate"></option>
+  <option value="Bleaching Powder"></option>
+<option value="Slurry Labsa"></option>
+<option value="Sab 18 Powder"></option>
+<option value="Calcium Chloride"></option>
+<option value="Sodium Hypo Chlorite"></option>
+
+</datalist>
 <div class="grid grid-cols-3 gap-2 py-1 items-center">
 <label class="col-span-1 text-right pr-2 text-sm" for="pq-quantity">Quantity (Mt)</label>
 <input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-quantity" type="number" value="10"/>
 </div>
+<!-- 🆕 Delivery Field (Editable Dropdown) -->
 <div class="grid grid-cols-3 gap-2 py-1 items-center">
-<label class="col-span-1 text-right pr-2 text-sm" for="pq-make">Make</label>
-<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-make" type="text" value="DCM"/>
+  <label class="col-span-1 text-right pr-2 text-sm" for="pq-make">Make</label>
+  <input
+    class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700"
+    id="pq-make"
+    list="makeOptions"
+    type="text"
+    placeholder="Select or type Make"
+    value="DCM"
+  />
 </div>
+
+<!-- Dropdown list (kept outside the grid) -->
+<datalist id="makeOptions">
+  <option value="Grasim"></option>
+  <option value="Epigral"></option>
+  <option value="Atul"></option>
+    <option value="GACL"></option>
+<option value="DCM"></option>
+  <option value="NPL"></option>
+</datalist>
+
 <div class="grid grid-cols-3 gap-2 py-1 items-center">
 <label class="col-span-1 text-right pr-2 text-sm" for="pq-basic">Basic + (₹)</label>
 <input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-basic" type="number" value="43000"/>
