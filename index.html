@@ -1621,7 +1621,59 @@ function installApp() {
   });
 }
 </script>
+<script>
+// ===============================
+// Price Quote Auto Save
+// ===============================
 
+const pqFields = [
+  "pq-customerName",
+  "pq-product",
+  "pq-basic",
+  "pq-freight",
+  "pq-profit",
+  "pq-cd",
+  "pq-other",
+  "pq-otherDiscount"
+];
+
+// Load saved data
+function pq_loadLastData(){
+  const saved = JSON.parse(localStorage.getItem("pq_lastQuote") || "{}");
+
+  pqFields.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el && saved[id] !== undefined){
+      el.value = saved[id];
+    }
+  });
+}
+
+// Save data
+function pq_saveLastData(){
+  const data = {};
+
+  pqFields.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el){
+      data[id] = el.value;
+    }
+  });
+
+  localStorage.setItem("pq_lastQuote", JSON.stringify(data));
+}
+
+// Attach auto-save
+pqFields.forEach(id=>{
+  const el = document.getElementById(id);
+  if(el){
+    el.addEventListener("input", pq_saveLastData);
+  }
+});
+
+// Load when page opens
+window.addEventListener("load", pq_loadLastData);
+</script>
 </body>
 </html>
 
