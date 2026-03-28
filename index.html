@@ -468,6 +468,52 @@ const db   = firebase.firestore();
 
 
 
+<div id="installPopup" style="
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.5);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+">
+
+  <div style="
+    background:#fff;
+    padding:20px;
+    border-radius:12px;
+    width:90%;
+    max-width:320px;
+    text-align:center;
+    box-shadow:0 10px 25px rgba(0,0,0,0.3);
+  ">
+
+    <h3>🎉 Welcome</h3>
+
+    <p style="font-size:14px; margin:10px 0;">
+      📲 Install this app for better experience
+    </p>
+
+    <button id="installBtn" style="
+      background:#4e73df;
+      color:#fff;
+      padding:8px 14px;
+      border:none;
+      border-radius:6px;
+      margin-right:6px;
+    ">Install</button>
+
+    <button onclick="closeInstallPopup()" style="
+      background:#ccc;
+      padding:8px 14px;
+      border:none;
+      border-radius:6px;
+    ">Later</button>
+
+  </div>
+</div>
+
+
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
 <!-- GLOBAL TOOLBAR -->
@@ -1631,40 +1677,59 @@ document.querySelectorAll("input[type='date']:not(#followup-filterFrom):not(#fol
 </div>
 
 <script>
-let deferredPrompt;
+function showFirstTimePopup() {
 
+  const lastShown = localStorage.getItem("popupTime");
+  const now = Date.now();
+
+  // 🔥 Show only if 24 hrs passed
+  if (!lastShown || (now - lastShown) > 24*60*60*1000) {
+
+    // 👇 popup show
+    document.getElementById("installPopup").style.display = "flex";
+
+    localStorage.setItem("popupTime", now);
+  }
+}
+
+
+
+
+let deferredPrompt = null;
+
+// Install event capture
 window.addEventListener('beforeinstallprompt', (e) => {
-
-  console.log("🔥 Install event fired");
-
   e.preventDefault();
   deferredPrompt = e;
-
-  let lastShown = localStorage.getItem("installPromptDate");
-  let today = new Date().toDateString();
-
-  if (!lastShown || lastShown !== today) {
-
-    setTimeout(() => {
-
-      if (!deferredPrompt) return;
-
-      let install = confirm("📲 Install App?");
-
-      if (install) {
-        deferredPrompt.prompt();
-
-        deferredPrompt.userChoice.then(() => {
-          deferredPrompt = null;
-        });
-      }
-
-      localStorage.setItem("installPromptDate", today);
-
-    }, 2000);
-
-  }
 });
+
+// Install button click
+document.addEventListener("click", async (e) => {
+
+  if (e.target.id === "installBtn") {
+
+    if (!deferredPrompt) {
+      alert("Install option not available yet");
+      return;
+    }
+
+    deferredPrompt.prompt();
+
+    const { outcome } = await deferredPrompt.userChoice;
+
+    console.log("Install result:", outcome);
+
+    deferredPrompt = null;
+
+    closeInstallPopup();
+  }
+
+});
+
+// Close popup
+function closeInstallPopup(){
+  document.getElementById("installPopup").style.display = "none";
+}
 
 </script>
 <script>
@@ -1719,13 +1784,13 @@ pqFields.forEach(id=>{
 
 // Load when page opens
 window.addEventListener("load", pq_loadLastData);
+</script>
 
+<script>
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js')
-    .then(() => console.log("✅ SW Registered"))
-    .catch(err => console.log("❌ SW Error:", err));
+  navigator.serviceWorker.register('sw.js')
+    .then(() => console.log("Service Worker Registered"));
 }
-
 </script>
 </body>
 </html>
