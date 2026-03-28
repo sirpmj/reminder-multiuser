@@ -101,6 +101,8 @@
 }
 .dark .pq-left::before { background:#4b5563; }
 
+
+
 /* small screens – keep one line but adjust widths */
 @media (max-width:600px){
   .pq-left label { flex:0 0 180px; font-size:14px; }
@@ -521,7 +523,9 @@ const db   = firebase.firestore();
 <header class="max-w-6xl mx-auto px-3 pt-3">
 <div class="flex items-center justify-between flex-wrap gap-2 bg-white dark:bg-gray-800 rounded-xl shadow p-3">
 <div class="flex items-center gap-2 text-sm">
-<h1 class="text-xl font-bold text-indigo-600 dark:text-indigo-400">🧭 Personal follow up </h1>
+<h1 class="text-xl sm:text-2xl md:text-4xl font-extrabold text-indigo-600 dark:text-indigo-400 tracking-wide">
+  🧭 Personal follow up
+</h1>
 <span class="text-xs text-gray-500"></span>
 </div>
 <div class="flex items-center gap-1 flex-wrap text-sm">
