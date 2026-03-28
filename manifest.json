@@ -1,10 +1,9 @@
-
 {
-  "name": "Personal Reminder System",
-  "short_name": "ReminderApp",
-  "start_url": "./index.html",
+  "name": "Reminder & Follow-Up",
+  "short_name": "Reminder",
+  "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#f0f4f8",
+  "background_color": "#4a90e2",
   "theme_color": "#4a90e2",
   "orientation": "portrait",
   "icons": [
