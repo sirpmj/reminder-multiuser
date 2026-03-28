@@ -490,11 +490,6 @@ const db   = firebase.firestore();
         class="bg-purple-600 text-white px-3 py-1 rounded"
         onclick="followup_toggleLayout()">↔ Layout: 25/75</button>
 
-<button id="installBtn"
-        onclick="installApp()"
-        class="hidden bg-green-500 text-white px-3 py-1 rounded">
-  📲 Install App
-</button>
 <!-- Firebase Controls -->
 <div class="flex gap-2 items-center text-sm mt-0">
   <span class="bg-blue-700 text-white px-3 py-1 rounded">
@@ -536,7 +531,7 @@ const db   = firebase.firestore();
 <form class="grid grid-cols-1 md:grid-cols-4 gap-3 bg-white dark:bg-gray-800 p-4 rounded-xl shadow m-0" id="followup-addForm">
   <!-- Row 1 -->
   <input class="border rounded w-full m-0" id="followup-name" placeholder="Name" required type="text"/>
-  <input class="border rounded w-full m-0" id="followup-mobile" placeholder="Mobile (optional)" type="tel"/>
+  <input class="border rounded w-full m-0" id="followup-phone" placeholder="Mobile (optional)" type="tel"/>
   <input class="border rounded w-full m-0" id="followup-date" required type="date"/>
   <select class="border rounded w-full m-0" id="followup-status">
     <option value="Pending">Pending</option>
@@ -609,7 +604,7 @@ const db   = firebase.firestore();
 <tr>
 <th class="p-1">⭐</th>
 <th class="p-1 max-w-[50px]">Name</th>
-<th class="p-1">mobile</th>
+<th class="p-1">Phone</th>
 <th class="p-1">Date</th>
 <th class="p-1 max-w-[140px]">Note</th>
 <th class="p-1 max-w-[100px]">Tags</th>
@@ -641,14 +636,7 @@ const db   = firebase.firestore();
 <div class="grid grid-cols-3 gap-2 py-1 items-center">
 <label class="col-span-1 text-right pr-2 text-sm" for="pq-customerName">Customer Name</label>
 <input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-customerName" placeholder="Enter customer Name" type="text"/>
-</div>
 
-<div class="grid grid-cols-3 gap-2 py-1 items-center">
-<label class="col-span-1 text-right pr-2 text-sm" for="pq-mobile">Customer Mobile</label>
-<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700"
-       id="pq-mobile"
-       type="tel"
-       placeholder="Enter mobile number">
 </div>
 <!-- 🆕 Product Field (Editable Dropdown) -->
 <div class="grid grid-cols-3 gap-2 py-1 items-center">
@@ -703,7 +691,6 @@ const db   = firebase.firestore();
     <option value="GACL"></option>
 <option value="DCM"></option>
   <option value="NPL"></option>
-<option value="Tata"></option>
 </datalist>
 
 <div class="grid grid-cols-3 gap-2 py-1 items-center">
@@ -900,7 +887,7 @@ activateTab(lastTab);
       if (diff > 0) return `(in ${diff} days)`;
       return `(${Math.abs(diff)} days ago)`;
     }
-function followup_cleanmobileDigits(raw = "") {
+function followup_cleanPhoneDigits(raw = "") {
   if (!raw) return { forTel: "", forWA: "" };
   let digits = raw.replace(/\D+/g, "");
   if (digits.length === 10) digits = "91" + digits;
@@ -939,8 +926,10 @@ auth.onAuthStateChanged(async (user) => {
   currentUID = user.uid;
 
   // Show logged user name
-  document.getElementById("loggedInUser").innerText =
-    user.displayName || user.email;
+let fullName = user.displayName || user.email;
+let firstName = fullName.split(" ")[0]; // sirf first name
+
+document.getElementById("loggedInUser").innerText = firstName;
 
   const userRef = db.collection("users").doc(currentUID);
   const snap = await userRef.get();
@@ -951,7 +940,7 @@ auth.onAuthStateChanged(async (user) => {
       profile: {
         name: user.displayName || user.email.split("@")[0],
         email: user.email,
-        mobile: "",
+        phone: "",
         company: "",
         createdAt: Date.now()
       }
@@ -1019,7 +1008,7 @@ ${currentUserProfile.company || ""}
     document.getElementById("followup-addForm").addEventListener("submit", (e) => {
       e.preventDefault();
       const name = document.getElementById("followup-name").value.trim();
-      const mobile = document.getElementById("followup-mobile").value.trim();
+      const phone = document.getElementById("followup-phone").value.trim();
       const date = document.getElementById("followup-date").value;
       const note = document.getElementById("followup-note").value.trim();
       const tags = document.getElementById("followup-tags").value.trim();
@@ -1028,7 +1017,7 @@ ${currentUserProfile.company || ""}
       const autoSnooze = document.getElementById("followup-autoSnooze").checked;
       if (!name || !date) return alert("Name and date required!");
 
-      const data = { id: followup_editingId || Date.now(), name, mobile, date, note, tags, status, priority, autoSnooze, starred: followup_editingId ? followup_followups.find(f => f.id === followup_editingId)?.starred || false : false };
+      const data = { id: followup_editingId || Date.now(), name, phone, date, note, tags, status, priority, autoSnooze, starred: followup_editingId ? followup_followups.find(f => f.id === followup_editingId)?.starred || false : false };
 
       if (followup_editingId) {
         const idx = followup_followups.findIndex(f => f.id === followup_editingId);
@@ -1138,20 +1127,20 @@ function loadFollowups() {
 
     const badge = isOverdue ? "🟥" : isToday ? "🟨" : "🟩";
 
-    const mobileClean = followup_cleanmobileDigits(f.mobile || "");
-    const telHref = mobileClean.forTel ? `tel:${mobileClean.forTel}` : "";
+    const phoneClean = followup_cleanPhoneDigits(f.phone || "");
+    const telHref = phoneClean.forTel ? `tel:${phoneClean.forTel}` : "";
 
 let msg = `📅 Follow-Up Reminder
 
-Date: ${followup_formatDate(f.date)}
 Name: ${f.name}
+Date: ${followup_formatDate(f.date)}
 Status: ${f.status}
 Note: ${f.note || "-"}`;
 
 msg = addWASignatory(msg);
 
-    const waHref = mobileClean.forWA
-      ? `https://wa.me/${mobileClean.forWA}?text=${encodeURIComponent(msg)}`
+    const waHref = phoneClean.forWA
+      ? `https://wa.me/${phoneClean.forWA}?text=${encodeURIComponent(msg)}`
       : "";
 
     tbody.innerHTML += `
@@ -1163,7 +1152,7 @@ msg = addWASignatory(msg);
         <td class="p-1 truncate">${followup_escapeHtml(f.name)}</td>
 
         <td class="p-1">
-          ${telHref ? `<a href="${telHref}">${followup_escapeHtml(f.mobile)}</a>` : '<span class="text-gray-400">—</span>'}
+          ${telHref ? `<a href="${telHref}">${followup_escapeHtml(f.phone)}</a>` : '<span class="text-gray-400">—</span>'}
           ${waHref ? `<a href="${waHref}" target="_blank" class="ml-2">💬</a>` : ''}
         </td>
 
@@ -1204,12 +1193,12 @@ msg = addWASignatory(msg);
 
     function followup_toggleStar(id) { const f = followup_followups.find(x => x.id === id); if (!f) return; f.starred = !f.starred; followup_saveData(); followup_renderTable(); }
     function followup_deleteFollowUp(id) { if (!confirm("Delete this follow-up?")) return; followup_followups = followup_followups.filter(f => f.id !== id); followup_saveData(); followup_renderTable(); }
-    function followup_editFollowUp(id) { const f = followup_followups.find(x => x.id === id); if (!f) return; followup_editingId = id; document.getElementById("followup-name").value = f.name; document.getElementById("followup-mobile").value = f.mobile || ""; document.getElementById("followup-date").value = f.date; document.getElementById("followup-note").value = f.note || ""; document.getElementById("followup-tags").value = f.tags || ""; document.getElementById("followup-status").value = f.status; document.getElementById("followup-priority").value = f.priority; document.getElementById("followup-autoSnooze").checked = !!f.autoSnooze; window.scrollTo({ top: 0, behavior: 'smooth' }); }
-    function followup_toggleStatus(id) { const f = followup_followups.find(x => x.id === id); if (!f) return; if (f.status === "Pending") { f.status = "Completed"; if (f.autoSnooze) { const newDate = new Date(f.date); newDate.setDate(newDate.getDate() + 7); followup_followups.push({ id: Date.now() + Math.floor(Math.random()*1000), name: f.name, mobile: f.mobile || "", date: newDate.toISOString().split("T")[0], note: f.note, tags: f.tags, status: "Pending", priority: f.priority, autoSnooze: f.autoSnooze, starred: f.starred }); } } else { f.status = "Pending"; } followup_saveData(); followup_renderTable(); }
+    function followup_editFollowUp(id) { const f = followup_followups.find(x => x.id === id); if (!f) return; followup_editingId = id; document.getElementById("followup-name").value = f.name; document.getElementById("followup-phone").value = f.phone || ""; document.getElementById("followup-date").value = f.date; document.getElementById("followup-note").value = f.note || ""; document.getElementById("followup-tags").value = f.tags || ""; document.getElementById("followup-status").value = f.status; document.getElementById("followup-priority").value = f.priority; document.getElementById("followup-autoSnooze").checked = !!f.autoSnooze; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    function followup_toggleStatus(id) { const f = followup_followups.find(x => x.id === id); if (!f) return; if (f.status === "Pending") { f.status = "Completed"; if (f.autoSnooze) { const newDate = new Date(f.date); newDate.setDate(newDate.getDate() + 7); followup_followups.push({ id: Date.now() + Math.floor(Math.random()*1000), name: f.name, phone: f.phone || "", date: newDate.toISOString().split("T")[0], note: f.note, tags: f.tags, status: "Pending", priority: f.priority, autoSnooze: f.autoSnooze, starred: f.starred }); } } else { f.status = "Pending"; } followup_saveData(); followup_renderTable(); }
 
     function followup_toggleDarkMode() { followup_isDark = !followup_isDark; localStorage.setItem("darkMode", followup_isDark); document.documentElement.classList.toggle("dark", followup_isDark); document.body.classList.toggle("dark-mode", followup_isDark); }
 
-    function followup_exportCSV() { let csv = "Name,mobile,Date,Note,Tags,Status,Priority\n"; followup_followups.forEach(f => { csv += `"${f.name.replace(/"/g, '""')}","${(f.mobile||'').replace(/"/g,'""')}","${followup_formatDate(f.date)}","${(f.note||'').replace(/"/g,'""')}","${(f.tags||'').replace(/"/g,'""')}","${f.status}","${f.priority}"\n`; }); const blob = new Blob([csv], { type: "text/csv" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "followups.csv"; a.click(); }
+    function followup_exportCSV() { let csv = "Name,Phone,Date,Note,Tags,Status,Priority\n"; followup_followups.forEach(f => { csv += `"${f.name.replace(/"/g, '""')}","${(f.phone||'').replace(/"/g,'""')}","${followup_formatDate(f.date)}","${(f.note||'').replace(/"/g,'""')}","${(f.tags||'').replace(/"/g,'""')}","${f.status}","${f.priority}"\n`; }); const blob = new Blob([csv], { type: "text/csv" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "followups.csv"; a.click(); }
     function followup_downloadBackup() { const blob = new Blob([JSON.stringify(followup_followups, null, 2)], { type: "application/json" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "followup-backup.json"; a.click(); }
     function followup_uploadBackup(event) { const file = event.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const data = JSON.parse(e.target.result); if (!Array.isArray(data)) throw new Error("Invalid format"); const valid = data.every(item => item.name && item.date); if (!valid) throw new Error("Missing required fields"); followup_followups = data; followup_saveData(); followup_renderTable(); alert("Backup restored."); } catch (err) { alert("Invalid backup file."); } }; reader.readAsText(file); event.target.value = ""; }
     
@@ -1242,10 +1231,10 @@ function followup_filterOverdue() {
 
 
 
-function sendAutoWA(type, name, mobile, date){
-  let finalmobile = cleanmobile(mobile);
-  if(!finalmobile){
-    alert("mobile number missing!");
+function sendAutoWA(type, name, phone, date){
+  let finalPhone = cleanPhone(phone);
+  if(!finalPhone){
+    alert("Phone number missing!");
     return;
   }
 
@@ -1263,7 +1252,7 @@ function sendAutoWA(type, name, mobile, date){
     msg = `Dear ${name}, your follow-up is overdue. Kindly revert at the earliest.`;
   }
 
-  const url = "https://wa.me/" + finalmobile + "?text=" + encodeURIComponent(msg);
+  const url = "https://wa.me/" + finalPhone + "?text=" + encodeURIComponent(msg);
   window.open(url, "_blank");
 }
 
@@ -1376,40 +1365,29 @@ Please confirm.
       document.getElementById("pq-output").textContent = quotation.trim();
     }
     function pq_copyQuote() {
-  const message = document.getElementById("pq-output").textContent.trim();
-
-  if (!message || message === "Quotation will appear here...") {
-    pq_showTooltip("Please generate the quotation first.");
-    return;
-  }
-
-  navigator.clipboard.writeText(message).then(() => {
-
-    pq_showTooltip("Quotation copied to clipboard!");
-
-    // 👉 Auto-add a Follow-Up when copying the quote
-    const name = document.getElementById("pq-customerName").value.trim() || "Unnamed";
-    const mobile = document.getElementById("pq-mobile").value || "-";
-    const today = new Date().toISOString().split("T")[0];
-
-    followup_followups.push({
-      id: Date.now(),
-      name,
-      mobile: mobile,   // ✅ FIX
-      date: today,
-      note: "Quotation sent",
-      tags: "Quote",
-      status: "Pending",
-      priority: "Medium",
-      autoSnooze: false,
-      starred: false
-    });
-
-    followup_saveData();
-    followup_renderTable();
-
-  });
-}
+      const message = document.getElementById("pq-output").textContent.trim();
+      if (!message || message === "Quotation will appear here...") { pq_showTooltip("Please generate the quotation first."); return; }
+      navigator.clipboard.writeText(message).then(() => {
+        pq_showTooltip("Quotation copied to clipboard!");
+        // 👉 Auto-add a Follow-Up when copying the quote
+        const name = document.getElementById("pq-customerName").value.trim() || "Unnamed";
+        const today = new Date().toISOString().split("T")[0];
+        followup_followups.push({
+          id: Date.now(),
+          name,
+          phone: "",
+          date: today,
+          note: "Quotation sent",
+          tags: "Quote",
+          status: "Pending",
+          priority: "Medium",
+          autoSnooze: false,
+          starred: false
+        });
+        followup_saveData();
+        followup_renderTable();
+      });
+    }
     function pq_openWhatsApp() { const message = document.getElementById("pq-output").textContent.trim(); if (!message || message === "Quotation will appear here...") { pq_showTooltip("Please generate the quotation first."); return; } const encodedMessage = encodeURIComponent(message); const url = `https://wa.me/?text=${encodedMessage}`; window.open(url, "_blank"); }
     function pq_shareViaEmail() { let message = document.getElementById("pq-output").textContent.trim(); if (!message || message === "Quotation will appear here...") { pq_showTooltip("Please generate the quotation first."); return; } const trimmedMessage = message.replace(/Regards[\s\S]+?(📞.*)?(✉️.*)?$/gi, "").trim(); const fullMessage = `${trimmedMessage}\n\nLet us know in case there is any query regarding the quote or product. Awaiting for your positive response.\n\nThanks & Regards \n\nSuresh Prajapati | Manager - Sales & Accounts  \na: SUVIDHI INDUSTRIES PVT LTD  \n   Plot No. 572, Shed No. C1-B/73, 100 Shed Area, GIDC, VAPI - 396 195, Gujarat  \ne: sbprajapati@suvidhigroup.com | w: www.suvidhigroup.com  \nm: 08000932893 | p: 07490053194`; const subject = encodeURIComponent("Quotation from Suvidhi Industries"); const body = encodeURIComponent(fullMessage); const mailto = `mailto:?subject=${subject}&body=${body}`; window.location.href = mailto; }
 
@@ -1492,26 +1470,26 @@ function followup_autoBackup(isManual = false) {
   followup_updateBackupUI();
 }
 
-function cleanmobile(mobile) {
-  if(!mobile) return "";
+function cleanPhone(phone) {
+  if(!phone) return "";
 
   // Remove spaces, +, -, brackets, text etc.
-  mobile = mobile.toString().replace(/\D+/g, "");
+  phone = phone.toString().replace(/\D+/g, "");
 
   // If starts with 0 → remove 0
-  if(mobile.length === 11 && mobile.startsWith("0")) {
-    mobile = mobile.substring(1);
+  if(phone.length === 11 && phone.startsWith("0")) {
+    phone = phone.substring(1);
   }
 
   // If length=10 → add India code
-  if(mobile.length === 10) {
-    mobile = "91" + mobile;
+  if(phone.length === 10) {
+    phone = "91" + phone;
   }
 
   // If length=12 and starts with 91 → okay
   // If length=12 but does not start with 91 → no change
 
-  return mobile;
+  return phone;
 }
 
 // WhatsApp Templates
@@ -1535,7 +1513,7 @@ let msg = waTemplates[i];   // i = selected template index
 msg = addWASignatory(msg);
 
 
-function openWATemplates(name, mobile, note){
+function openWATemplates(name, phone, note){
   const box = document.getElementById("waTemplatesList");
   box.innerHTML = "";
 
@@ -1544,17 +1522,17 @@ function openWATemplates(name, mobile, note){
     const div = document.createElement("button");
     div.className = "w-full text-left bg-blue-100 dark:bg-blue-700 p-2 rounded";
     div.innerText = msg;
-    div.onclick = ()=> sendWATemplate(mobile, msg, note);
+    div.onclick = ()=> sendWATemplate(phone, msg, note);
     box.appendChild(div);
   });
 
   document.getElementById("waTemplatesPopup").classList.remove("hidden");
 }
 
-function sendAutoWA(type, name, mobile, date) {
-    let cleanmobile = mobile.replace(/\D/g, "");
-    if (cleanmobile.startsWith("0")) cleanmobile = cleanmobile.substring(1);
-    if (!cleanmobile.startsWith("91")) cleanmobile = "91" + cleanmobile;
+function sendAutoWA(type, name, phone, date) {
+    let cleanPhone = phone.replace(/\D/g, "");
+    if (cleanPhone.startsWith("0")) cleanPhone = cleanPhone.substring(1);
+    if (!cleanPhone.startsWith("91")) cleanPhone = "91" + cleanPhone;
 
     let msg = "";
 
@@ -1568,18 +1546,18 @@ function sendAutoWA(type, name, mobile, date) {
         msg = `Dear ${name}, your follow-up is overdue. Kindly revert at the earliest.`;
     }
 
-    window.open(`https://wa.me/${cleanmobile}?text=` + encodeURIComponent(msg));
+    window.open(`https://wa.me/${cleanPhone}?text=` + encodeURIComponent(msg));
 }
 
-function sendWATemplate(mobile, msg){
-  let finalmobile = cleanmobile(mobile);
+function sendWATemplate(phone, msg){
+  let finalPhone = cleanPhone(phone);
   
-  if(!finalmobile){
-    alert("mobile number missing!");
+  if(!finalPhone){
+    alert("Phone number missing!");
     return;
   }
 
-  const url = "https://wa.me/" + finalmobile + "?text=" + encodeURIComponent(msg);
+  const url = "https://wa.me/" + finalPhone + "?text=" + encodeURIComponent(msg);
   window.open(url, "_blank");
 }
 
@@ -1653,35 +1631,41 @@ document.querySelectorAll("input[type='date']:not(#followup-filterFrom):not(#fol
 </div>
 
 <script>
-let deferredPrompt = null;
+let deferredPrompt;
 
 window.addEventListener('beforeinstallprompt', (e) => {
-  console.log("Install event fired ✅");
+
+  console.log("🔥 Install event fired");
+
   e.preventDefault();
   deferredPrompt = e;
 
-  document.getElementById('installBtn').classList.remove('hidden');
+  let lastShown = localStorage.getItem("installPromptDate");
+  let today = new Date().toDateString();
+
+  if (!lastShown || lastShown !== today) {
+
+    setTimeout(() => {
+
+      if (!deferredPrompt) return;
+
+      let install = confirm("📲 Install App?");
+
+      if (install) {
+        deferredPrompt.prompt();
+
+        deferredPrompt.userChoice.then(() => {
+          deferredPrompt = null;
+        });
+      }
+
+      localStorage.setItem("installPromptDate", today);
+
+    }, 2000);
+
+  }
 });
 
-function installApp() {
-  if (!deferredPrompt) {
-    alert("Install not available yet");
-    return;
-  }
-
-  deferredPrompt.prompt();
-
-  deferredPrompt.userChoice.then((choiceResult) => {
-    if (choiceResult.outcome === 'accepted') {
-      console.log('User accepted install');
-    } else {
-      console.log('User dismissed install');
-    }
-
-    deferredPrompt = null;
-    document.getElementById('installBtn').classList.add('hidden');
-  });
-}
 </script>
 <script>
 // ===============================
@@ -1690,10 +1674,7 @@ function installApp() {
 
 const pqFields = [
   "pq-customerName",
-  "pq-mobile",
- "pq-quantity",
   "pq-product",
-  "pq-make",
   "pq-basic",
   "pq-freight",
   "pq-profit",
@@ -1738,8 +1719,16 @@ pqFields.forEach(id=>{
 
 // Load when page opens
 window.addEventListener("load", pq_loadLastData);
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js')
+    .then(() => console.log("✅ SW Registered"))
+    .catch(err => console.log("❌ SW Error:", err));
+}
+
 </script>
 </body>
 </html>
+
 
 
