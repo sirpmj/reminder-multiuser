@@ -12,7 +12,6 @@
 <script>tailwind.config = { darkMode: 'class' };</script>
 <style>
     /* Styles from Price Quote (scoped) */
-<body style="display:none;">
     .pq-body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 10px; }
     .pq-container { display: flex; flex-wrap: wrap; gap: 10px; max-width: 960px; margin: auto; background: #fff; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     .pq-left, .pq-right { flex: 1 1 300px; min-width: 300px; }
@@ -514,6 +513,7 @@ const db   = firebase.firestore();
   </div>
 </div>
 
+<body style="display:none;">
 
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
@@ -970,7 +970,7 @@ auth.onAuthStateChanged(async (user) => {
     return;
   }
 
-  // ✅ Show page AFTER login confirmed
+  // ✅ PAGE SHOW AFTER LOGIN
   document.body.style.display = "block";
 
   currentUID = user.uid;
@@ -1000,9 +1000,11 @@ auth.onAuthStateChanged(async (user) => {
   window.userRegards = generateRegards(currentUserProfile);
 
   loadFollowups();
+
+  // ✅ POPUP AFTER LOGIN
+  showFirstTimePopup();
+
 });
-
-
 
 
 
@@ -1785,9 +1787,7 @@ pqFields.forEach(id=>{
 // Load when page opens
 window.addEventListener("load", pq_loadLastData);
 
-window.addEventListener("load", () => {
-  showFirstTimePopup();
-});
+
 
 </script>
 
