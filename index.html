@@ -746,15 +746,15 @@ const db   = firebase.firestore();
 
 <div class="grid grid-cols-3 gap-2 py-1 items-center">
 <label class="col-span-1 text-right pr-2 text-sm" for="pq-basic">Basic + (₹)</label>
-<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-basic" type="number" value="43000"/>
+<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-basic" type="number" value="0"/>
 </div>
 <div class="grid grid-cols-3 gap-2 py-1 items-center">
 <label class="col-span-1 text-right pr-2 text-sm" for="pq-freight">Freight + (₹)</label>
-<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-freight" type="number" value="1000"/>
+<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-freight" type="number" value="0"/>
 </div>
 <div class="grid grid-cols-3 gap-2 py-1 items-center">
 <label class="col-span-1 text-right pr-2 text-sm" for="pq-profit">Profit + (₹)</label>
-<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-profit" type="number" value="500"/>
+<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-profit" type="number" value="250"/>
 </div>
 <div class="grid grid-cols-3 gap-2 py-1 items-center">
 <label class="col-span-1 text-right pr-2 text-sm" for="pq-other">Other Charges + (₹)</label>
@@ -765,10 +765,22 @@ const db   = firebase.firestore();
 <input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-cd" type="number" value="0"/>
 </div>
 <div class="grid grid-cols-3 gap-2 py-1 items-center">
-<label class="col-span-1 text-right pr-2 text-sm" for="pq-otherDiscount">Other Discount – (₹)</label>
-<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-otherDiscount" type="number" value="0"/>
-
+<label class="col-span-1 text-right pr-2 text-sm" for="pq-otherDiscount">Discount – (₹)</label>
+<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-otherDiscount" type="number" value="1500"/>
 </div>
+
+<!-- ✅ New Field -->
+<div class="grid grid-cols-3 gap-2 py-1 items-center">
+<label class="col-span-1 text-right pr-2 text-sm" for="pq-specialDiscount">Special Discount – (₹)</label>
+<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-specialDiscount" type="number" value="500"/>
+</div>
+
+<!-- ✅ New Field -->
+<div class="grid grid-cols-3 gap-2 py-1 items-center">
+<label class="col-span-1 text-right pr-2 text-sm" for="pq-Commission">Commission – (₹)</label>
+<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-Commission" type="number" value="350"/>
+</div>
+
 <div class="grid grid-cols-3 gap-2 py-1 items-center">
 <label class="col-span-1 text-right pr-2 text-sm" for="pq-paymentTerms">Payment</label>
 <select class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-paymentTerms" onchange="pq_updateCreditPeriod()">
@@ -1356,18 +1368,21 @@ ${profile.company || ""}
       const other = parseFloat(pq_get("pq-other")) || 0;
       const cd = parseFloat(pq_get("pq-cd")) || 0;
       const otherDiscount = parseFloat(pq_get("pq-otherDiscount")) || 0;
+const specialDiscount =    parseFloat(pq_get("pq-specialDiscount")) || 0;
+const Commission =    parseFloat(pq_get("pq-Commission")) || 0;
+
       const creditDays = parseFloat(pq_get("pq-creditDays")) || 0;
       const interestRate = parseFloat(pq_get("pq-interestRate")) || 0;
       const paymentTerms = pq_get("pq-paymentTerms");
       if (paymentTerms === "Days" && creditDays === 0) { document.getElementById("pq-output").textContent = "Quotation will appear here..."; pq_showTooltip("Payment set to Days."); setTimeout(() => pq_showTooltip("Please enter valid Credit Days."), 3200); return; }
-      const totalPerMT = Math.max(0, Math.round(basic + freight + profit + other - cd - otherDiscount));
+      const totalPerMT = Math.max(0, Math.round(basic + freight + profit + other - cd - otherDiscount-specialDiscount-Commission));
       const effectiveRate = (paymentTerms === "Days") ? Math.max(1, interestRate) : 0;
       const interest = Math.round(((creditDays / 30) * effectiveRate / 100) * totalPerMT);
       const finalTotal = Math.round(totalPerMT + interest);
       const rawRate = finalTotal / 1000;
       const roundedRate = Math.round(rawRate * 4) / 4;
       const ratePerKg = roundedRate.toFixed(2);
-      document.getElementById("pq-actualRateDisplay").value = rawRate.toFixed(2);
+      document.getElementById("pq-actualRateDisplay").value = rawRate.toFixed(3);
       const paymentText = paymentTerms === "Days" ? `${creditDays} Days` : paymentTerms;
       const today = new Date().toLocaleDateString("en-IN", { day: 'numeric', month: 'long', year: 'numeric' });
       
@@ -1752,6 +1767,8 @@ const pqFields = [
   "pq-cd",
   "pq-other",
   "pq-otherDiscount"
+"pq-specialDiscount"
+"pq-Commission"
 ];
 
 // Load saved data
@@ -1803,6 +1820,5 @@ if ('serviceWorker' in navigator) {
 </script>
 </body>
 </html>
-
 
 
