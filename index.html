@@ -122,11 +122,14 @@
 }
 
 /* Minus fields (discounts) */
-#pq-cd, #pq-otherDiscount {
+#pq-cd, #pq-otherDiscount, #pq-specialDiscount, #pq-Commission  {
     background-color: #fef2f2;
 }
 .dark #pq-cd, 
-.dark #pq-otherDiscount {
+.dark #pq-otherDiscount,
+.dark #pq-specialDiscount, 
+.dark #pq-Commission {
+
     background-color: #7f1d1d;
 }
 
@@ -766,19 +769,19 @@ const db   = firebase.firestore();
 </div>
 <div class="grid grid-cols-3 gap-2 py-1 items-center">
 <label class="col-span-1 text-right pr-2 text-sm" for="pq-otherDiscount">Discount – (₹)</label>
-<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-otherDiscount" type="number" value="1500"/>
+<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-otherDiscount" type="number" value="0"/>
 </div>
 
 <!-- ✅ New Field -->
 <div class="grid grid-cols-3 gap-2 py-1 items-center">
 <label class="col-span-1 text-right pr-2 text-sm" for="pq-specialDiscount">Special Discount – (₹)</label>
-<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-specialDiscount" type="number" value="500"/>
+<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-specialDiscount" type="number" value="0"/>
 </div>
 
 <!-- ✅ New Field -->
 <div class="grid grid-cols-3 gap-2 py-1 items-center">
 <label class="col-span-1 text-right pr-2 text-sm" for="pq-Commission">Commission – (₹)</label>
-<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-Commission" type="number" value="350"/>
+<input class="col-span-2 border rounded w-full px-3 py-1 bg-white dark:bg-gray-700" id="pq-Commission" type="number" value="0"/>
 </div>
 
 <div class="grid grid-cols-3 gap-2 py-1 items-center">
